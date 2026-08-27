@@ -2,18 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  CalendarCheck,
   CaretRight,
   CheckCircle,
   ChatCircleDots,
-  Clock,
   Eye,
-  HouseLine,
   List,
   Moon,
   PlayCircle,
   Ruler,
-  ShieldCheck,
   SlidersHorizontal,
   Sun,
   ThermometerSimple,
@@ -223,10 +219,10 @@ const products = [
 ];
 
 const benefitItems = [
-  { icon: Sun, title: "Control de luz", copy: "Regula la entrada de luz según tu estilo de vida." },
-  { icon: Eye, title: "Privacidad", copy: "Protege tus espacios sin perder la vista exterior." },
-  { icon: ThermometerSimple, title: "Confort térmico", copy: "Reduce el calor y mejora la temperatura de tu hogar." },
-  { icon: ShieldCheck, title: "Calidad premium", copy: "Materiales duraderos e instalación profesional." },
+  { icon: Sun, title: "La luz que realmente recibes", copy: "Revisamos sol, reflejo y cuánto quieres filtrar antes de hablar de telas." },
+  { icon: Eye, title: "La privacidad que necesitas", copy: "No pide lo mismo una sala que una alcoba: definimos cuánto quieres ver y cuánto quieres cubrir." },
+  { icon: Ruler, title: "Cómo funciona tu ventana", copy: "La apertura, el paso y el tamaño determinan qué sistema puede trabajar sin estorbar." },
+  { icon: SlidersHorizontal, title: "Cómo la vas a usar", copy: "Manual o motorizada según el tamaño, la rutina y la comodidad que buscas todos los días." },
 ];
 
 const recommenderQuestions = {
@@ -424,7 +420,7 @@ function Header({ openAdvisor }) {
     ["Productos", "#productos"],
     ["Papel tapiz", "#papel-tapiz"],
     ["Automatización", "#automatizacion"],
-    ["Nosotros", "#proceso"],
+    ["Cómo trabajamos", "#proceso"],
   ];
   return (
     <header className="site-header">
@@ -632,7 +628,7 @@ function Recommender() {
   };
 
   const choose = (value) => {
-    if (interactionLocked.current || answers[current.key] === value) return;
+    if (interactionLocked.current) return;
     interactionLocked.current = true;
     const next = { ...answers, [current.key]: value };
     if (current.key === "opening" && value !== "sliding") next.passage = "";
@@ -856,22 +852,34 @@ function Products() {
 }
 
 function Wallpaper() {
-  const [value, setValue] = useState(58);
+  const details = [
+    { n: "01", title: "Escala", copy: "Un patrón pequeño, medio o amplio cambia por completo la proporción visual del muro." },
+    { n: "02", title: "Textura", copy: "Mate, lino, relieve o brillo reaccionan distinto cuando la luz entra de frente o de lado." },
+    { n: "03", title: "Conjunto", copy: "El tono se decide con el piso, los muebles y la luz del espacio, no mirando una muestra aislada." },
+  ];
   return (
     <section className="wallpaper section-shell" id="papel-tapiz">
       <div className="wallpaper-copy">
         <p className="eyebrow rose">PAPEL TAPIZ</p>
-        <h2>La pared también transforma la luz.</h2>
-        <p>Texturas serenas, acabados precisos y colecciones que hacen que cada espacio se sienta propio.</p>
-        <label htmlFor="wallpaper-range">Desliza para ver la transformación</label>
-        <input id="wallpaper-range" type="range" min="8" max="92" value={value} onChange={(e) => setValue(Number(e.target.value))} />
+        <h2>Una pared puede cambiar el espacio sin llenarlo de cosas.</h2>
+        <p>Elegimos el papel dentro del ambiente: viendo la escala del diseño, la textura y cómo cambia con la luz durante el día.</p>
+        <div className="wallpaper-details">
+          {details.map((item) => (
+            <article key={item.n}>
+              <span>{item.n}</span>
+              <div><strong>{item.title}</strong><p>{item.copy}</p></div>
+            </article>
+          ))}
+        </div>
+        <a className="text-button" href="#contacto">Quiero ver opciones para mi pared <ArrowRight size={16} /></a>
       </div>
-      <div className="comparison" style={{ "--reveal": `${value}%` }}>
-        <img src="/assets/homeeasy-hero-room.jpg" alt="Ambiente antes de instalar papel tapiz" />
-        <img className="after" src="/assets/wallpaper-room.jpg" alt="Ambiente con papel tapiz HomeEasy" />
-        <span className="comparison-line"><SlidersHorizontal size={20} /></span>
-        <small className="before-label">ANTES</small><small className="after-label">DESPUÉS</small>
-      </div>
+      <figure className="wallpaper-editorial">
+        <img src="/assets/wallpaper-room.jpg" alt="Ambiente HomeEasy con papel tapiz instalado" />
+        <figcaption>
+          <span>LA ELECCIÓN SE HACE EN CONTEXTO</span>
+          <strong>La pared debe conversar con la luz y con lo que ya existe en la habitación.</strong>
+        </figcaption>
+      </figure>
     </section>
   );
 }
@@ -879,20 +887,27 @@ function Wallpaper() {
 function Automation() {
   const [moment, setMoment] = useState(0);
   const moments = [
-    { time: "6:30 a. m.", title: "Despierta con luz natural", copy: "Las persianas suben suavemente para comenzar el día.", icon: Sun },
-    { time: "2:00 p. m.", title: "Protección cuando más la necesitas", copy: "El Screen reduce el deslumbramiento sin perder la vista.", icon: ThermometerSimple },
-    { time: "7:00 p. m.", title: "Privacidad para descansar", copy: "La programación cierra las persianas y prepara el ambiente.", icon: Moon },
+    { tab: "Mañana", moment: "AL DESPERTAR", title: "Abre sin empezar el día buscando un control.", copy: "La persiana puede subir de forma programada para dejar entrar la primera luz del día.", icon: Sun },
+    { tab: "Tarde", moment: "CUANDO PEGA EL SOL", title: "Protege el espacio justo en las horas más incómodas.", copy: "Programa el cierre o ajuste cuando el reflejo y el calor son más fuertes, sin oscurecer antes de tiempo.", icon: ThermometerSimple },
+    { tab: "Noche", moment: "AL CAER LA NOCHE", title: "Recupera privacidad sin recorrer cada ventana.", copy: "Una escena nocturna puede cerrar las persianas y dejar el ambiente listo para descansar.", icon: Moon },
   ];
   const current = moments[moment];
+  const MomentIcon = current.icon;
   return (
     <section className={`automation moment-${moment}`} id="automatizacion">
-      <div className="automation-image"><img src="/assets/homeeasy-hero-room.jpg" alt="Habitación automatizada HomeEasy" /><div /></div>
+      <div className="automation-image"><img src="/assets/homeeasy-hero-room.jpg" alt="Persianas HomeEasy en un espacio automatizado" /><div /></div>
       <div className="automation-copy">
         <p className="eyebrow">AUTOMATIZACIÓN</p>
-        <h2>Tu espacio se adapta a cada momento.</h2>
-        <div className="moment-card"><current.icon size={28} /><strong>{current.time}</strong><h3>{current.title}</h3><p>{current.copy}</p></div>
-        <div className="moment-tabs" role="tablist" aria-label="Momentos del día">
-          {moments.map((item, index) => <button key={item.time} role="tab" aria-selected={moment === index} onClick={() => setMoment(index)}>{item.time}</button>)}
+        <h2>Automatizar sirve cuando te evita repetir lo mismo todos los días.</h2>
+        <p>Más que mover una persiana desde el celular, se trata de programar cómo quieres que responda tu espacio.</p>
+        <div className="moment-card">
+          <MomentIcon size={28} />
+          <strong>{current.moment}</strong>
+          <h3>{current.title}</h3>
+          <p>{current.copy}</p>
+        </div>
+        <div className="moment-tabs" role="tablist" aria-label="Escenas de automatización">
+          {moments.map((item, index) => <button key={item.tab} role="tab" aria-selected={moment === index} onClick={() => setMoment(index)}>{item.tab}</button>)}
         </div>
       </div>
     </section>
@@ -901,15 +916,26 @@ function Automation() {
 
 function Process() {
   const steps = [
-    { n: "01", icon: ChatCircleDots, title: "Asesoría", copy: "Entendemos tu espacio y necesidad." },
-    { n: "02", icon: Ruler, title: "Medición", copy: "Tomamos medidas profesionales." },
-    { n: "03", icon: Wrench, title: "Fabricación", copy: "Creamos cada solución a la medida." },
-    { n: "04", icon: CheckCircle, title: "Instalación", copy: "Dejamos todo listo para disfrutar." },
+    { n: "01", icon: ChatCircleDots, title: "Primero vemos tu ventana", copy: "Nos cuentas qué te molesta y vemos fotos del espacio antes de sugerir un producto." },
+    { n: "02", icon: Ruler, title: "Medimos en sitio", copy: "Confirmamos dimensiones, apertura, paso, orientación y puntos de instalación." },
+    { n: "03", icon: Wrench, title: "Definimos sistema y acabado", copy: "Elegimos el mecanismo, el tejido y el manejo que sí tienen sentido para esa ventana." },
+    { n: "04", icon: CheckCircle, title: "Instalamos y dejamos listo", copy: "Coordinamos la instalación, probamos el recorrido y verificamos que todo quede funcionando como debe." },
   ];
   return (
     <section className="process section-shell" id="proceso">
-      <p className="eyebrow rose">PROCESO HOMEEASY</p><h2>Así de fácil transformamos tu espacio.</h2>
-      <div className="process-track">{steps.map(({ n, icon: Icon, title, copy }) => <article key={n}><span>{n}</span><Icon size={28} /><h3>{title}</h3><p>{copy}</p></article>)}</div>
+      <div className="process-heading">
+        <div><p className="eyebrow rose">CÓMO TRABAJAMOS</p><h2>De la primera foto a la instalación.</h2></div>
+        <p>No empezamos preguntándote qué persiana quieres. Primero entendemos la ventana y lo que necesitas resolver.</p>
+      </div>
+      <div className="process-grid">
+        {steps.map(({ n, icon: Icon, title, copy }) => (
+          <article key={n}>
+            <div className="process-card-top"><span>{n}</span><Icon size={27} /></div>
+            <h3>{title}</h3>
+            <p>{copy}</p>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }
@@ -917,8 +943,27 @@ function Process() {
 function Footer({ openAdvisor }) {
   return (
     <footer id="contacto">
-      <div className="footer-cta"><div><p className="eyebrow">TU ESPACIO, NUESTRA EXPERIENCIA</p><h2>Ahora diseñemos tu espacio.</h2><p>Cuéntanos qué necesitas y recibe asesoría personalizada.</p><div className="hero-actions"><button className="button light" onClick={openAdvisor}>Agendar asesoría</button><a className="button whatsapp" href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20asesor%C3%ADa%20para%20mi%20espacio" target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Enviar mi espacio</a></div></div><img src="/assets/hommy.png" alt="Hommy" /></div>
-      <div className="footer-bottom"><Brand /><p>Diseñamos luz. Creamos bienestar.</p><small>© 2026 HomeEasy. Prototipo de experiencia digital.</small></div>
+      <div className="footer-cta">
+        <div className="footer-cta-copy">
+          <p className="eyebrow">HABLEMOS DE TU VENTANA</p>
+          <h2>Empieza con una foto de tu espacio.</h2>
+          <p>No necesitas saber qué producto pedir. Muéstranos la ventana, cuéntanos qué quieres mejorar y desde ahí te orientamos.</p>
+          <div className="hero-actions">
+            <button className="button light" onClick={openAdvisor}>Quiero asesoría</button>
+            <a className="button whatsapp" href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20mostrarles%20mi%20ventana%20para%20recibir%20asesor%C3%ADa" target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Enviar mi espacio</a>
+          </div>
+        </div>
+        <aside className="footer-start-card" aria-label="Qué enviar para recibir asesoría">
+          <span>PARA ORIENTARTE MEJOR</span>
+          <h3>Con tres datos podemos empezar.</h3>
+          <ol>
+            <li><b>01</b><div><strong>Una foto de frente</strong><small>Que se vea la ventana completa y su entorno.</small></div></li>
+            <li><b>02</b><div><strong>Cómo se abre</strong><small>Fija, corrediza, abatible o salida a balcón.</small></div></li>
+            <li><b>03</b><div><strong>Qué quieres resolver</strong><small>Luz, privacidad, calor, oscuridad o diseño.</small></div></li>
+          </ol>
+        </aside>
+      </div>
+      <div className="footer-bottom"><Brand /><p>Diseñamos luz. Creamos bienestar.</p><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
     </footer>
   );
 }
@@ -950,19 +995,12 @@ function AdvisorModal({ open, onClose }) {
 export function App() {
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const openAdvisor = () => setAdvisorOpen(true);
-  const facts = useMemo(() => [
-    [HouseLine, "Diseño a la medida"],
-    [CalendarCheck, "Asesoría personalizada"],
-    [Clock, "Instalación coordinada"],
-    [ShieldCheck, "Garantía y soporte"],
-  ], []);
   return (
     <>
       <Header openAdvisor={openAdvisor} />
       <main>
         <HomeEasyHero openAdvisor={openAdvisor} />
         <Benefits />
-        <div className="trust-row">{facts.map(([Icon, label]) => <span key={label}><Icon size={19} />{label}</span>)}</div>
         <Recommender />
         <Products />
         <Wallpaper />
