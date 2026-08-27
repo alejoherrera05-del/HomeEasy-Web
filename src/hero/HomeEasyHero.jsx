@@ -31,7 +31,7 @@ export function HomeEasyHero({ openAdvisor }) {
           <p className="hero-copy">Te ayudamos a elegir según cómo entra el sol, cómo se abre tu ventana y la privacidad que necesitas, con soluciones fabricadas a la medida.</p>
           <div className="hero-actions">
             <a className="button" href="#productos">Explorar soluciones</a>
-            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Agendar asesoría</button>
+            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Pedir asesoría</button>
           </div>
         </div>
 
@@ -39,8 +39,8 @@ export function HomeEasyHero({ openAdvisor }) {
           className="hommy-hero"
           src={HERO_SCENE.assets.hommy}
           alt="Hommy, asistente virtual de HomeEasy"
-          width="1080"
-          height="1080"
+          width="1122"
+          height="1402"
           decoding="async"
         />
 

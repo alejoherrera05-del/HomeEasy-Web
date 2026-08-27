@@ -48,7 +48,7 @@ export const HERO_SCENE = {
     plant: "/assets/hero-scene-v6/plant-original.png",
     lamp: "/assets/hero-scene-v2/lamp-complete.webp",
     lampOn: "/assets/hero-scene-v2/lamp-on.webp",
-    hommy: "/assets/hommy.png",
+    hommy: "/assets/hommy-hero-approved.png",
   },
   windows: [
     {

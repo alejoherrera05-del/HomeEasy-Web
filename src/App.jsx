@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -19,6 +19,9 @@ import {
 } from "@phosphor-icons/react";
 import { HomeEasyHero } from "./hero/HomeEasyHero.jsx";
 import HommyLayered from "./components/HommyLayered.jsx";
+
+const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
+const whatsappUrl = (message) => `https://wa.me/${HOMEEASY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({ type: "video", id, title, duration, label: "Video oficial" });
@@ -950,7 +953,7 @@ function Footer({ openAdvisor }) {
           <p>No necesitas saber qué producto pedir. Muéstranos la ventana, cuéntanos qué quieres mejorar y desde ahí te orientamos.</p>
           <div className="hero-actions">
             <button className="button light" onClick={openAdvisor}>Quiero asesoría</button>
-            <a className="button whatsapp" href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20mostrarles%20mi%20ventana%20para%20recibir%20asesor%C3%ADa" target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Enviar mi espacio</a>
+            <a className="button whatsapp" href={whatsappUrl("Hola HomeEasy, quiero mostrarles mi ventana para recibir asesoría.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Enviar mi espacio</a>
           </div>
         </div>
         <aside className="footer-start-card" aria-label="Qué enviar para recibir asesoría">
@@ -969,24 +972,87 @@ function Footer({ openAdvisor }) {
 }
 
 function AdvisorModal({ open, onClose }) {
-  const [sent, setSent] = useState(false);
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
+
   useEffect(() => {
-    if (!open) setSent(false);
-  }, [open]);
+    if (!open) return undefined;
+
+    previousFocusRef.current = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const dialog = dialogRef.current;
+    window.requestAnimationFrame(() => dialog?.focus());
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+
+      const focusable = [...dialog.querySelectorAll(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+      )].filter((element) => element.getAttribute("aria-hidden") !== "true");
+      if (!focusable.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      const previousFocus = previousFocusRef.current;
+      if (previousFocus instanceof HTMLElement && document.contains(previousFocus)) previousFocus.focus();
+    };
+  }, [open, onClose]);
+
+  const continueOnWhatsApp = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") || "").trim();
+    const phone = String(formData.get("phone") || "").trim();
+    const space = String(formData.get("space") || "").trim();
+    const message = [
+      "Hola HomeEasy, quiero asesoría para mi espacio.",
+      "",
+      `Nombre: ${name}`,
+      `Mi WhatsApp: ${phone}`,
+      `Espacio: ${space}`,
+      "",
+      "Quiero enviarles una foto de la ventana para que me orienten.",
+    ].join("\n");
+    window.location.assign(whatsappUrl(message));
+  };
+
   if (!open) return null;
   return (
     <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <section className="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title">
+      <section ref={dialogRef} className="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title" aria-describedby="advisor-description" tabIndex="-1">
         <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={22} /></button>
-        {!sent ? <>
-          <p className="eyebrow rose">ASESORÍA PERSONALIZADA</p><h2 id="advisor-title">Hablemos de tu espacio.</h2><p>Déjanos tus datos y un asesor HomeEasy te contactará.</p>
-          <form onSubmit={(e) => { e.preventDefault(); setSent(true); }}>
-            <label>Nombre<input required name="name" autoFocus placeholder="Tu nombre" /></label>
-            <label>WhatsApp<input required name="phone" type="tel" placeholder="300 000 0000" /></label>
-            <label>Espacio<select name="space"><option>Sala</option><option>Habitación</option><option>Oficina</option><option>Comedor</option><option>Otro</option></select></label>
-            <button className="button" type="submit">Solicitar asesoría <ArrowRight size={18} /></button>
-          </form>
-        </> : <div className="success-state"><CheckCircle size={48} weight="fill" /><h2>¡Gracias!</h2><p>Recibimos tu solicitud. Muy pronto hablaremos de tu espacio.</p><button className="button" onClick={onClose}>Entendido</button></div>}
+        <p className="eyebrow rose">ASESORÍA POR WHATSAPP</p>
+        <h2 id="advisor-title">Hablemos de tu espacio.</h2>
+        <p id="advisor-description">Cuéntanos lo básico y prepararemos tu mensaje para WhatsApp. Tú decides cuándo enviarlo.</p>
+        <form onSubmit={continueOnWhatsApp}>
+          <label>Nombre<input required name="name" autoComplete="name" placeholder="Tu nombre" /></label>
+          <label>Tu WhatsApp<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="300 000 0000" /></label>
+          <label>Espacio<select name="space"><option>Sala</option><option>Habitación</option><option>Oficina</option><option>Comedor</option><option>Otro</option></select></label>
+          <button className="button" type="submit"><WhatsappLogo size={18} /> Continuar por WhatsApp <ArrowRight size={18} /></button>
+        </form>
+        <small className="advisor-privacy-note">No enviamos estos datos a ningún servidor desde la web. Se incluyen únicamente en el mensaje que tú confirmas en WhatsApp.</small>
       </section>
     </div>
   );
@@ -994,7 +1060,8 @@ function AdvisorModal({ open, onClose }) {
 
 export function App() {
   const [advisorOpen, setAdvisorOpen] = useState(false);
-  const openAdvisor = () => setAdvisorOpen(true);
+  const openAdvisor = useCallback(() => setAdvisorOpen(true), []);
+  const closeAdvisor = useCallback(() => setAdvisorOpen(false), []);
   return (
     <>
       <Header openAdvisor={openAdvisor} />
@@ -1008,8 +1075,8 @@ export function App() {
         <Process />
       </main>
       <Footer openAdvisor={openAdvisor} />
-      <a className="floating-whatsapp" href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20una%20asesor%C3%ADa" target="_blank" rel="noreferrer" aria-label="Escribir a HomeEasy por WhatsApp"><WhatsappLogo size={26} weight="fill" /></a>
-      <AdvisorModal open={advisorOpen} onClose={() => setAdvisorOpen(false)} />
+      <a className="floating-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero una asesoría para mi espacio.")} target="_blank" rel="noreferrer" aria-label="Escribir a HomeEasy por WhatsApp"><WhatsappLogo size={26} weight="fill" /></a>
+      <AdvisorModal open={advisorOpen} onClose={closeAdvisor} />
     </>
   );
 }
