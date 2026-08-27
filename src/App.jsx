@@ -415,7 +415,7 @@ function Header({ openAdvisor }) {
       <Brand />
       <nav className={open ? "nav-open" : ""} aria-label="Navegación principal">
         {links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
-        <button className="button small" onClick={() => { setOpen(false); openAdvisor(); }}>Enviar una foto</button>
+        <button className="button small" onClick={() => { setOpen(false); openAdvisor(); }}>Cotizar proyecto</button>
       </nav>
       <button className="menu-button" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open}>
         {open ? <X size={24} /> : <List size={24} />}
@@ -644,9 +644,9 @@ function Recommender() {
   return (
     <section className="recommender section-shell" id="recomendador">
       <div className="editorial-heading recommender-heading">
-        <span className="section-label">Recomendador de producto</span>
-        <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
-        <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
+        <span className="section-label">Encuentra tu sistema</span>
+        <h2>Cuéntale a Hommy cómo es tu ventana y qué necesitas.</h2>
+        <p>En menos de 2 minutos compara apertura, tamaño, luz y privacidad para mostrarte las opciones que mejor encajan.</p>
       </div>
       <div className="recommender-card">
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
@@ -726,8 +726,8 @@ function Products({ openAdvisorFor }) {
   return (
     <section className="products section-shell" id="productos">
       <div className="section-heading editorial-heading split-heading">
-        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
-        <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
+        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Explora las persianas según lo que necesitas controlar.</h2></div>
+        <p>Compara luz, privacidad, tamaño, tejido y accionamiento para entender rápidamente qué sistema puede funcionar mejor.</p>
       </div>
 
       <div className="product-filters" role="group" aria-label="Filtrar productos por necesidad">
@@ -835,8 +835,8 @@ function Wallpaper({ openAdvisorFor }) {
   return (
     <section className="wallpaper section-shell" id="papel-tapiz">
       <div className="wallpaper-copy">
-        <h2>El papel no se elige mirando una muestra de diez centímetros.</h2>
-        <p>Lo decidimos dentro del ambiente, con la luz real y los materiales que ya están ahí. Así la pared se integra en vez de parecer añadida después.</p>
+        <h2>El papel tapiz cambia con la escala, la luz y los materiales del espacio.</h2>
+        <p>Por eso lo elegimos pensando en el ambiente completo: muro, iluminación, piso y mobiliario.</p>
         <div className="wallpaper-details">
           {details.map((item) => (
             <article key={item.n}>
@@ -861,16 +861,16 @@ function Wallpaper({ openAdvisorFor }) {
 
 function Process() {
   const steps = [
-    { n: "01", title: "Vemos la ventana", copy: "Una foto nos permite revisar apertura, paso, orientación y qué está pasando hoy con la luz." },
-    { n: "02", title: "Medimos en sitio", copy: "Confirmamos dimensiones y puntos de instalación antes de cerrar sistema, tejido y recogida." },
-    { n: "03", title: "Definimos la solución", copy: "Elegimos mecanismo y acabado por uso real: privacidad, oscuridad, vista, calor o mantenimiento." },
-    { n: "04", title: "Instalamos y probamos", copy: "Revisamos recorrido, accionamiento y terminación para que la ventana quede lista para usar." },
+    { n: "01", title: "Entendemos tu espacio", copy: "Revisamos el tipo de ventana, la entrada de luz, la privacidad y cómo usas el ambiente." },
+    { n: "02", title: "Tomamos medidas", copy: "Confirmamos dimensiones y condiciones de instalación directamente en sitio." },
+    { n: "03", title: "Elegimos sistema y tejido", copy: "Definimos mecanismo, recogida, tejido y accionamiento según lo que necesitas controlar." },
+    { n: "04", title: "Instalamos y comprobamos", copy: "Dejamos el sistema instalado y revisamos recorrido, accionamiento y terminación." },
   ];
   return (
     <section className="process section-shell" id="proceso">
       <div className="process-heading editorial-heading split-heading">
-        <div><h2>No cotizamos una persiana antes de entender cómo abre la ventana.</h2></div>
-        <p>La foto da contexto. La visita confirma la medida. La recomendación sale de esas dos cosas, no de escoger un producto por nombre.</p>
+        <div><h2>De la asesoría a la instalación, te acompañamos en todo el proceso.</h2></div>
+        <p>Primero entendemos lo que necesitas; después medimos, definimos la solución y dejamos todo instalado.</p>
       </div>
       <div className="process-list">
         {steps.map(({ n, title, copy }) => (
@@ -891,18 +891,18 @@ function Footer({ openAdvisor }) {
       <div className="contact-editorial">
         <div className="contact-symbol" aria-hidden="true"><img src="/assets/brand/triangulo.png" alt="" /></div>
         <div className="contact-copy">
-          <span className="contact-line">WhatsApp · {HOMEEASY_WHATSAPP_DISPLAY}</span>
-          <h2>Mándanos una foto de la ventana. Con eso empezamos.</h2>
-          <p>Que se vea completa y, si puedes, cómo abre. No hace falta que sepas las medidas ni el nombre del sistema.</p>
+          <span className="contact-line">Asesoría personalizada · {HOMEEASY_WHATSAPP_DISPLAY}</span>
+          <h2>Cotiza tu proyecto con un asesor de HomeEasy.</h2>
+          <p>Cuéntanos qué espacio quieres intervenir y qué necesitas controlar. Te orientamos en sistema, tejido, medida e instalación.</p>
           <div className="contact-actions">
-            <a className="button contact-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero enviarles una foto de mi ventana para que me orienten.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Abrir WhatsApp</a>
-            <button type="button" className="contact-secondary" onClick={openAdvisor}>Preparar la consulta <ArrowRight size={16} /></button>
+            <a className="button contact-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero cotizar un proyecto de persianas.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Hablar con un asesor</a>
+            <button type="button" className="contact-secondary" onClick={openAdvisor}>Solicitar cotización <ArrowRight size={16} /></button>
           </div>
         </div>
-        <div className="contact-notes" aria-label="Qué ayuda a revisar tu ventana">
-          <div><span>01</span><p><strong>Foto completa</strong><small>Ventana y un poco del muro alrededor.</small></p></div>
-          <div><span>02</span><p><strong>Cómo abre</strong><small>Fija, corrediza, abatible o salida de paso.</small></p></div>
-          <div><span>03</span><p><strong>Qué quieres corregir</strong><small>Luz, privacidad, calor, oscuridad o apariencia.</small></p></div>
+        <div className="contact-notes" aria-label="Cómo empieza una cotización">
+          <div><span>01</span><p><strong>Tu espacio</strong><small>Sala, habitación, oficina, balcón u otro ambiente.</small></p></div>
+          <div><span>02</span><p><strong>Lo que necesitas</strong><small>Luz, privacidad, calor, oscuridad, vista o diseño.</small></p></div>
+          <div><span>03</span><p><strong>Medición</strong><small>Confirmamos medidas y condiciones antes de fabricar.</small></p></div>
         </div>
       </div>
       <div className="footer-bottom"><Brand /><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
@@ -966,14 +966,14 @@ function AdvisorModal({ open, onClose, context }) {
     const phone = String(formData.get("phone") || "").trim();
     const space = String(formData.get("space") || "").trim();
     const message = [
-      "Hola HomeEasy, quiero revisar una ventana.",
+      "Hola HomeEasy, quiero cotizar un proyecto de persianas.",
       "",
       `Nombre: ${name}`,
       `Mi WhatsApp: ${phone}`,
       `Espacio: ${space}`,
       context ? `Interés: ${context}` : null,
       "",
-      "Quiero enviarles una foto de la ventana para que me orienten.",
+      "Quisiera recibir asesoría y cotización para este espacio.",
     ].filter((line) => line !== null).join("\n");
     window.location.assign(whatsappUrl(message));
   };
@@ -983,14 +983,14 @@ function AdvisorModal({ open, onClose, context }) {
     <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <section ref={dialogRef} className="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title" aria-describedby="advisor-description" tabIndex="-1">
         <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={22} /></button>
-        <h2 id="advisor-title">Cuéntanos qué ventana quieres resolver.</h2>
-        <p id="advisor-description">Con estos datos preparamos el mensaje. Después puedes adjuntar la foto directamente en WhatsApp.</p>
+        <h2 id="advisor-title">Solicita tu cotización.</h2>
+        <p id="advisor-description">Déjanos estos datos básicos y continuamos contigo por WhatsApp con un asesor de HomeEasy.</p>
         {context && <div className="advisor-context"><span>CONSULTA</span><strong>{context}</strong></div>}
         <form onSubmit={continueOnWhatsApp}>
           <label>Nombre<input required name="name" autoComplete="name" placeholder="Tu nombre" /></label>
           <label>Tu WhatsApp<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="300 000 0000" /></label>
           <label>Espacio<select name="space"><option>Sala</option><option>Habitación</option><option>Oficina</option><option>Comedor</option><option>Otro</option></select></label>
-          <button className="button" type="submit"><WhatsappLogo size={18} /> Preparar mensaje en WhatsApp <ArrowRight size={18} /></button>
+          <button className="button" type="submit"><WhatsappLogo size={18} /> Continuar con un asesor <ArrowRight size={18} /></button>
         </form>
         <small className="advisor-privacy-note">No enviamos estos datos a ningún servidor desde la web. Se incluyen únicamente en el mensaje que tú confirmas en WhatsApp.</small>
       </section>
@@ -1021,7 +1021,7 @@ export function App() {
         <Process />
       </main>
       <Footer openAdvisor={openAdvisor} />
-      <a className="floating-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero enviarles una foto de mi ventana para que me orienten.")} target="_blank" rel="noreferrer" aria-label="Escribir a HomeEasy por WhatsApp"><WhatsappLogo size={26} weight="fill" /></a>
+      {/* WhatsApp remains available through clear consultation CTAs; no floating button over the product experience. */}
       <AdvisorModal open={advisorOpen} onClose={closeAdvisor} context={advisorContext} />
     </>
   );

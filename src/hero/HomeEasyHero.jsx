@@ -26,18 +26,18 @@ export function HomeEasyHero({ openAdvisor }) {
         <SheerEleganceScene ref={sceneRef} />
 
         <div className="hero-content">
-          <h1>La luz cambia durante el día.<br /><span>Tu ventana puede acompañarla.</span></h1>
-          <p className="hero-copy">Elegimos el sistema por cómo abre la ventana, cuánto sol recibe y qué necesitas resolver: vista, privacidad, oscuridad o calor.</p>
+          <h1>Persianas a la medida para controlar <span>luz, privacidad y calor.</span></h1>
+          <p className="hero-copy">Te ayudamos a elegir el sistema según el tipo de ventana, su tamaño y la entrada de sol. Medimos, fabricamos e instalamos.</p>
           <div className="hero-actions">
             <a className="button" href="#productos">Ver sistemas</a>
-            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Enviar una foto</button>
+            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Cotizar proyecto</button>
           </div>
         </div>
 
         <img
           className="hommy-hero"
           src={HERO_SCENE.assets.hommy}
-          alt="Hommy, asistente virtual de HomeEasy"
+          alt="Hommy, guía de HomeEasy"
           width="1122"
           height="1402"
           decoding="async"
