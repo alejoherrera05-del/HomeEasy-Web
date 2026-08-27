@@ -1,0 +1,587 @@
+name: Apply HomeEasy editorial refinement
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/editorial-refinement.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout HomeEasy app brand assets
+        uses: actions/checkout@v4
+        with:
+          repository: alejoherrera05-del/Homeeasy
+          path: source-app
+
+      - name: Bring official triangle marks into the website
+        run: |
+          mkdir -p public/assets/brand
+          cp source-app/triangulo.png public/assets/brand/triangulo.png
+          cp source-app/triangulogold.png public/assets/brand/triangulogold.png
+
+      - name: Apply editorial direction
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('src/App.jsx')
+          s = app.read_text()
+
+          # Imports that belonged only to decorative benefit/automation/process blocks.
+          for name in ['ChatCircleDots', 'Eye', 'Moon', 'Ruler', 'SlidersHorizontal', 'Sun', 'ThermometerSimple', 'Wrench']:
+              s = s.replace(f'  {name},\n', '')
+
+          # Display phone in the interface without duplicating formatting literals.
+          anchor = 'const HOMEEASY_WHATSAPP_NUMBER = "573334319374";\n'
+          if 'HOMEEASY_WHATSAPP_DISPLAY' not in s:
+              s = s.replace(anchor, anchor + 'const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";\n')
+
+          # Remove the decorative benefits data.
+          if 'const benefitItems = [' in s:
+              start = s.index('const benefitItems = [')
+              end = s.index('const recommenderQuestions', start)
+              s = s[:start] + s[end:]
+
+          # Replace the brand mark with the real HomeEasy triangle used by the app.
+          start = s.index('function Brand() {')
+          end = s.index('\nfunction Header', start)
+          s = s[:start] + '''function Brand() {
+            return (
+              <a className="brand" href="#inicio" aria-label="HomeEasy, inicio">
+                <img src="/assets/brand/triangulogold.png" alt="" aria-hidden="true" />
+                <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL TAPIZ</small></span>
+              </a>
+            );
+          }
+          ''' + s[end:]
+
+          # Header: fewer destinations and one concrete action.
+          start = s.index('function Header({ openAdvisor }) {')
+          end = s.index('\nfunction Benefits', start)
+          s = s[:start] + '''function Header({ openAdvisor }) {
+            const [open, setOpen] = useState(false);
+            const links = [
+              ["Sistemas", "#productos"],
+              ["Papel tapiz", "#papel-tapiz"],
+              ["Cómo trabajamos", "#proceso"],
+            ];
+            return (
+              <header className="site-header">
+                <Brand />
+                <nav className={open ? "nav-open" : ""} aria-label="Navegación principal">
+                  {links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
+                  <button className="button small" onClick={() => { setOpen(false); openAdvisor(); }}>Enviar una foto</button>
+                </nav>
+                <button className="menu-button" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open}>
+                  {open ? <X size={24} /> : <List size={24} />}
+                </button>
+              </header>
+            );
+          }
+          ''' + s[end:]
+
+          # Remove the benefit strip component.
+          if 'function Benefits() {' in s:
+              start = s.index('function Benefits() {')
+              end = s.index('const HOMMY_INITIAL_MESSAGE', start)
+              s = s[:start] + s[end:]
+
+          old_recommender = '''      <div className="section-intro">
+                <p className="eyebrow rose">HOMMY TE AYUDA</p>
+                <h2>Hablemos de tu ventana como lo haría un buen asesor.</h2>
+                <p>Sin palabras técnicas. Hommy primero entiende cómo se abre y cómo la usas; después busca el sistema y el tejido que realmente te sirven.</p>
+              </div>'''
+          new_recommender = '''      <div className="editorial-heading recommender-heading">
+                <span className="section-label">Hommy / recomendador</span>
+                <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
+                <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
+              </div>'''
+          if old_recommender not in s:
+              raise SystemExit('Recommender heading anchor not found')
+          s = s.replace(old_recommender, new_recommender)
+
+          old_products = '''      <div className="section-heading">
+                <div><p className="eyebrow rose">CATÁLOGO GUIADO</p><h2>No tienes que saber de persianas para elegir bien.</h2></div>
+                <p>Explora por lo que quieres lograr. Te mostramos cómo funciona cada sistema, sus materiales y dónde da el mejor resultado.</p>
+              </div>'''
+          new_products = '''      <div className="section-heading editorial-heading split-heading">
+                <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
+                <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
+              </div>'''
+          if old_products not in s:
+              raise SystemExit('Products heading anchor not found')
+          s = s.replace(old_products, new_products)
+
+          s = s.replace('            <span className="gallery-badge">{selected.tag}</span>\n', '')
+          s = s.replace(
+              '            <div className="product-detail-head">\n              <p className="eyebrow rose">CONOCE EL SISTEMA</p>\n              <h3>{selected.name}</h3>',
+              '            <div className="product-detail-head">\n              <p className="product-kind">{selected.tag}</p>\n              <h3>{selected.name}</h3>',
+          )
+
+          # Wallpaper: expert, contextual copy instead of a broad transformation claim.
+          start = s.index('function Wallpaper({ openAdvisorFor }) {')
+          end = s.index('\nfunction Automation()', start)
+          s = s[:start] + '''function Wallpaper({ openAdvisorFor }) {
+            const details = [
+              { n: "01", title: "Escala", copy: "Un patrón que funciona en una muestra pequeña puede verse completamente distinto cuando ocupa un muro entero." },
+              { n: "02", title: "Textura", copy: "Mate, lino, relieve o brillo cambian según la luz que recibe la pared durante el día." },
+              { n: "03", title: "Entorno", copy: "Piso, muebles, iluminación y color existente pesan más que elegir el diseño aislado en un catálogo." },
+            ];
+            return (
+              <section className="wallpaper section-shell" id="papel-tapiz">
+                <div className="wallpaper-copy">
+                  <span className="section-label">Papel tapiz</span>
+                  <h2>El papel no se elige mirando una muestra de diez centímetros.</h2>
+                  <p>Lo decidimos dentro del ambiente, con la luz real y los materiales que ya están ahí. Así la pared se integra en vez de parecer añadida después.</p>
+                  <div className="wallpaper-details">
+                    {details.map((item) => (
+                      <article key={item.n}>
+                        <span>{item.n}</span>
+                        <div><strong>{item.title}</strong><p>{item.copy}</p></div>
+                      </article>
+                    ))}
+                  </div>
+                  <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel tapiz")}>Ver opciones para mi pared <ArrowRight size={16} /></button>
+                </div>
+                <figure className="wallpaper-editorial">
+                  <img src="/assets/wallpaper-room.jpg" alt="Ambiente HomeEasy con papel tapiz instalado" loading="lazy" decoding="async" />
+                  <figcaption>
+                    <span>ESCALA REAL · LUZ REAL</span>
+                    <strong>El diseño se decide viendo el muro completo, no una muestra aislada.</strong>
+                  </figcaption>
+                </figure>
+              </section>
+            );
+          }
+          ''' + s[end:]
+
+          # Remove automation completely.
+          start = s.index('function Automation() {')
+          end = s.index('\nfunction Process()', start)
+          s = s[:start] + s[end:]
+
+          # Process becomes editorial: numbers and facts, no decorative icon grid.
+          start = s.index('function Process() {')
+          end = s.index('\nfunction Footer', start)
+          s = s[:start] + '''function Process() {
+            const steps = [
+              { n: "01", title: "Vemos la ventana", copy: "Una foto nos permite revisar apertura, paso, orientación y qué está pasando hoy con la luz." },
+              { n: "02", title: "Medimos en sitio", copy: "Confirmamos dimensiones y puntos de instalación antes de cerrar sistema, tejido y recogida." },
+              { n: "03", title: "Definimos la solución", copy: "Elegimos mecanismo y acabado por uso real: privacidad, oscuridad, vista, calor o mantenimiento." },
+              { n: "04", title: "Instalamos y probamos", copy: "Revisamos recorrido, accionamiento y terminación para que la ventana quede lista para usar." },
+            ];
+            return (
+              <section className="process section-shell" id="proceso">
+                <div className="process-heading editorial-heading split-heading">
+                  <div><span className="section-label">Cómo trabajamos</span><h2>No cotizamos una persiana antes de entender cómo abre la ventana.</h2></div>
+                  <p>La foto da contexto. La visita confirma la medida. La recomendación sale de esas dos cosas, no de escoger un producto por nombre.</p>
+                </div>
+                <div className="process-grid">
+                  {steps.map(({ n, title, copy }) => (
+                    <article key={n}>
+                      <div className="process-card-top"><span>{n}</span></div>
+                      <h3>{title}</h3>
+                      <p>{copy}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            );
+          }
+          ''' + s[end:]
+
+          # Contact is a branded closing composition, not a card nested inside a footer.
+          start = s.index('function Footer({ openAdvisor }) {')
+          end = s.index('\nfunction AdvisorModal', start)
+          s = s[:start] + '''function Footer({ openAdvisor }) {
+            return (
+              <footer id="contacto">
+                <div className="contact-editorial">
+                  <div className="contact-symbol" aria-hidden="true"><img src="/assets/brand/triangulo.png" alt="" /></div>
+                  <div className="contact-copy">
+                    <span className="contact-line">WhatsApp · {HOMEEASY_WHATSAPP_DISPLAY}</span>
+                    <h2>Mándanos una foto de la ventana. Con eso empezamos.</h2>
+                    <p>Que se vea completa y, si puedes, cómo abre. No hace falta que sepas las medidas ni el nombre del sistema.</p>
+                    <div className="contact-actions">
+                      <a className="button contact-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero enviarles una foto de mi ventana para que me orienten.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Abrir WhatsApp</a>
+                      <button type="button" className="contact-secondary" onClick={openAdvisor}>Preparar la consulta <ArrowRight size={16} /></button>
+                    </div>
+                  </div>
+                  <div className="contact-notes" aria-label="Qué ayuda a revisar tu ventana">
+                    <div><span>01</span><p><strong>Foto completa</strong><small>Ventana y un poco del muro alrededor.</small></p></div>
+                    <div><span>02</span><p><strong>Cómo abre</strong><small>Fija, corrediza, abatible o salida de paso.</small></p></div>
+                    <div><span>03</span><p><strong>Qué quieres corregir</strong><small>Luz, privacidad, calor, oscuridad o apariencia.</small></p></div>
+                  </div>
+                </div>
+                <div className="footer-bottom"><Brand /><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
+              </footer>
+            );
+          }
+          ''' + s[end:]
+
+          # Modal copy: concrete task, no generic “hablemos”.
+          s = s.replace('        <p className="eyebrow rose">ASESORÍA POR WHATSAPP</p>\n        <h2 id="advisor-title">Hablemos de tu espacio.</h2>\n        <p id="advisor-description">Cuéntanos lo básico y prepararemos tu mensaje para WhatsApp. Tú decides cuándo enviarlo.</p>',
+                        '        <h2 id="advisor-title">Cuéntanos qué ventana quieres resolver.</h2>\n        <p id="advisor-description">Con estos datos preparamos el mensaje. Después puedes adjuntar la foto directamente en WhatsApp.</p>')
+          s = s.replace('<button className="button" type="submit"><WhatsappLogo size={18} /> Continuar por WhatsApp <ArrowRight size={18} /></button>',
+                        '<button className="button" type="submit"><WhatsappLogo size={18} /> Preparar mensaje en WhatsApp <ArrowRight size={18} /></button>')
+          s = s.replace('"Hola HomeEasy, quiero asesoría para mi espacio.",', '"Hola HomeEasy, quiero revisar una ventana.",')
+
+          # The page is intentionally shorter: no benefit strip, no automation filler.
+          s = s.replace('        <Benefits />\n', '')
+          s = s.replace('        <Automation />\n', '')
+          s = s.replace('href={whatsappUrl("Hola HomeEasy, quiero una asesoría para mi espacio.")}', 'href={whatsappUrl("Hola HomeEasy, quiero enviarles una foto de mi ventana para que me orienten.")}')
+
+          app.write_text(s)
+
+          # Hero copy follows the actual interaction rather than generic comfort language.
+          hero = Path('src/hero/HomeEasyHero.jsx')
+          h = hero.read_text()
+          h = h.replace('          <p className="eyebrow">LUZ, PRIVACIDAD Y CONFORT A TU MEDIDA</p>\n          <h1>Controla la luz.<br /><span>Vive el confort.</span></h1>\n          <p className="hero-copy">Te ayudamos a elegir según cómo entra el sol, cómo se abre tu ventana y la privacidad que necesitas, con soluciones fabricadas a la medida.</p>',
+                        '          <h1>La luz cambia durante el día.<br /><span>Tu ventana puede acompañarla.</span></h1>\n          <p className="hero-copy">Elegimos el sistema por cómo abre la ventana, cuánto sol recibe y qué necesitas resolver: vista, privacidad, oscuridad o calor.</p>')
+          h = h.replace('>Explorar soluciones</a>', '>Ver sistemas</a>')
+          h = h.replace('<WhatsappLogo size={18} /> Pedir asesoría', '<WhatsappLogo size={18} /> Enviar una foto')
+          h = h.replace('<div className="scroll-hint"><span /> TÚ CONTROLAS LA PERSIANA</div>', '<div className="scroll-hint"><span /> DESLIZA PARA GRADUAR LA LUZ</div>')
+          hero.write_text(h)
+
+          # Editorial CSS overrides. Kept at the end so existing responsive rules remain a safe fallback.
+          styles = Path('src/styles.css')
+          css = styles.read_text()
+          marker = '/* HOMEEASY_EDITORIAL_REFINEMENT_2026 */'
+          if marker not in css:
+              css += r'''
+
+          /* HOMEEASY_EDITORIAL_REFINEMENT_2026 */
+          .site-header {
+            height: 74px;
+            padding-block: 9px;
+            background: rgba(242,243,244,.96);
+            border: 0;
+            border-bottom: 1px solid rgba(25,25,25,.09);
+            box-shadow: none;
+            backdrop-filter: blur(12px);
+          }
+          .brand { gap: 11px; }
+          .brand img { width: 28px; height: 31px; object-fit: contain; }
+          .brand strong { font-size: 19px; letter-spacing: -.045em; }
+          .brand small { margin-top: 5px; font-size: 6px; letter-spacing: .14em; }
+          .site-header nav { font-size: 12px; }
+
+          .hero-content {
+            top: 20%;
+            width: min(540px, 43vw);
+            padding: 0;
+            background: transparent;
+            border-radius: 0;
+            backdrop-filter: none;
+          }
+          .hero-content h1 { max-width: 530px; text-shadow: 0 1px 18px rgba(244,244,243,.58); }
+          .hero-copy { max-width: 510px; color: #2e2a28; text-shadow: 0 1px 16px rgba(244,244,243,.58); }
+          .stage-copy {
+            width: 230px;
+            padding: 0 0 0 15px;
+            border-left: 1px solid rgba(255,255,255,.72);
+            border-radius: 0;
+            background: transparent;
+            backdrop-filter: none;
+          }
+          .stage-copy span { color: #f0c779; font-size: 10px; letter-spacing: .08em; }
+          .stage-copy strong { margin-top: 9px; font-size: 19px; font-weight: 550; }
+          .stage-copy p { color: rgba(255,255,255,.78); }
+          .stage-track {
+            width: min(660px, 60vw);
+            gap: 18px;
+            overflow: visible;
+            border-radius: 0;
+            box-shadow: none;
+          }
+
+          .section-shell { padding-block: 128px; }
+          .section-label {
+            display: block;
+            margin-bottom: 20px;
+            color: #726b67;
+            font-size: 10px;
+            font-weight: 650;
+            letter-spacing: .035em;
+          }
+          .editorial-heading { max-width: 760px; margin-bottom: 48px; }
+          .editorial-heading > p, .split-heading > p { color: var(--muted); line-height: 1.7; }
+          .split-heading { max-width: none; }
+          .split-heading > div { max-width: 760px; }
+
+          .recommender-card {
+            border: 0;
+            border-top: 1px solid #cbc6c2;
+            border-bottom: 1px solid #cbc6c2;
+            border-radius: 0;
+            box-shadow: none;
+            background: transparent;
+          }
+          .hommy-test-guide { background: #d8d7d3; }
+          .hommy-motion-status {
+            left: 20px;
+            right: 20px;
+            bottom: 18px;
+            border-radius: 3px;
+            border-color: rgba(25,25,25,.12);
+            box-shadow: none;
+            background: rgba(247,247,246,.95);
+          }
+          .question-panel { background: #f6f6f4; }
+
+          .catalog-layout {
+            border-radius: 0;
+            border-color: #cfcbc7;
+            box-shadow: none;
+          }
+          .catalog-product {
+            border-radius: 0;
+            border-left: 2px solid transparent;
+          }
+          .catalog-product.selected {
+            border-color: transparent;
+            border-left-color: var(--rose);
+            box-shadow: none;
+          }
+          .catalog-product img { border-radius: 2px; }
+          .media-thumbnails button, .media-thumbnails button > img, .video-thumb { border-radius: 2px; }
+          .product-kind {
+            margin: 0 0 12px;
+            color: var(--rose-dark);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .06em;
+          }
+
+          .wallpaper-editorial { border-radius: 0; box-shadow: none; }
+          .wallpaper-editorial figcaption { max-width: 560px; }
+
+          .process-grid article { min-height: 300px; }
+          .process-card-top { justify-content: flex-start; margin-bottom: 64px; }
+          .process-card-top span {
+            color: #aaa098;
+            font-size: clamp(28px, 3vw, 42px);
+            font-weight: 400;
+            letter-spacing: -.045em;
+          }
+          .process-grid h3 { font-size: 20px; }
+
+          footer { position: relative; overflow: hidden; background: #1f1e1d; }
+          .contact-editorial {
+            width: min(1320px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 118px 0 92px;
+            display: grid;
+            grid-template-columns: 140px minmax(0, 1.25fr) minmax(280px, .65fr);
+            gap: clamp(38px, 5vw, 78px);
+            align-items: start;
+          }
+          .contact-symbol { padding-top: 7px; }
+          .contact-symbol img { width: 112px; max-height: 126px; object-fit: contain; opacity: .94; }
+          .contact-line {
+            display: block;
+            margin-bottom: 22px;
+            color: #d6ad68;
+            font-size: 11px;
+            font-weight: 650;
+            letter-spacing: .04em;
+          }
+          .contact-copy h2 {
+            max-width: 760px;
+            margin-bottom: 22px;
+            color: white;
+            font-size: clamp(42px, 5vw, 72px);
+            line-height: 1.01;
+          }
+          .contact-copy > p {
+            max-width: 650px;
+            margin-bottom: 0;
+            color: rgba(255,255,255,.65);
+            font-size: 14px;
+            line-height: 1.75;
+          }
+          .contact-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 34px; }
+          .contact-whatsapp { border-color: var(--rose); }
+          .contact-secondary {
+            min-height: 42px;
+            padding: 8px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 0;
+            border-bottom: 1px solid rgba(255,255,255,.5);
+            border-radius: 0;
+            color: white;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 650;
+          }
+          .contact-secondary:hover { border-color: white; }
+          .contact-notes { border-top: 1px solid rgba(255,255,255,.17); }
+          .contact-notes > div {
+            display: grid;
+            grid-template-columns: 36px 1fr;
+            gap: 14px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,.17);
+          }
+          .contact-notes > div > span { color: #d6ad68; font-size: 9px; letter-spacing: .08em; }
+          .contact-notes p { margin: 0; display: grid; gap: 5px; }
+          .contact-notes strong { color: white; font-size: 12px; font-weight: 650; }
+          .contact-notes small { color: rgba(255,255,255,.53); font-size: 10px; line-height: 1.5; }
+          .footer-bottom {
+            min-height: 92px;
+            border-top: 1px solid rgba(255,255,255,.13);
+          }
+          .footer-bottom > a { color: rgba(255,255,255,.72); font-size: 11px; }
+          .footer-bottom .brand strong { color: #dd728b; }
+          .footer-bottom .brand img { opacity: .92; }
+
+          .advisor-modal { border-radius: 4px; }
+          .advisor-modal h2 { max-width: 430px; margin-top: 0; }
+          .advisor-context {
+            padding: 12px 0;
+            border: 0;
+            border-top: 1px solid #d8d2ce;
+            border-bottom: 1px solid #d8d2ce;
+            border-radius: 0;
+            background: transparent;
+          }
+
+          @media (max-width: 1050px) {
+            .hero-content { width: min(500px, 46vw); }
+            .contact-editorial { grid-template-columns: 92px 1fr; }
+            .contact-symbol img { width: 76px; }
+            .contact-notes { grid-column: 2; }
+          }
+
+          @media (max-width: 760px) {
+            .site-header { height: 66px; }
+            .site-header .brand img { width: 25px; height: 28px; }
+            .hero-content {
+              left: 18px;
+              right: 18px;
+              top: 92px;
+              width: auto;
+              padding: 16px;
+              border-left: 2px solid var(--rose);
+              background: rgba(242,243,244,.84);
+              backdrop-filter: blur(3px);
+            }
+            .stage-track { gap: 8px; }
+            .section-shell { padding-block: 88px; }
+            .editorial-heading { margin-bottom: 30px; }
+            .recommender-card { border-radius: 0; }
+            .catalog-layout { border-radius: 0; }
+            .process-card-top { margin-bottom: 38px; }
+            .process-card-top span { font-size: 30px; }
+            .contact-editorial {
+              width: calc(100% - 30px);
+              padding: 82px 0 64px;
+              grid-template-columns: 1fr;
+              gap: 34px;
+            }
+            .contact-symbol { padding: 0; }
+            .contact-symbol img { width: 64px; }
+            .contact-copy h2 { font-size: clamp(40px, 12vw, 56px); }
+            .contact-copy > p { font-size: 12px; }
+            .contact-notes { grid-column: auto; }
+            .footer-bottom { min-height: 0; padding-block: 28px; }
+          }
+          '''
+          styles.write_text(css)
+
+          hero_css = Path('src/hero/heroScene.css')
+          hc = hero_css.read_text()
+          if '/* HOMEEASY_EDITORIAL_HERO_TRACK */' not in hc:
+              hc += r'''
+
+          /* HOMEEASY_EDITORIAL_HERO_TRACK */
+          .stage-track button {
+            padding: 9px 0 8px;
+            border-top: 1px solid rgba(255,255,255,.35);
+            border-radius: 0;
+            color: rgba(255,255,255,.68);
+            background: transparent;
+            text-align: left;
+            backdrop-filter: none;
+          }
+          .stage-track button:hover { color: #fff; border-top-color: rgba(255,255,255,.72); }
+          .stage-track button.active { color: #fff; background: transparent; border-top-color: var(--rose); }
+          @media (max-width: 760px) {
+            .stage-track button { padding: 8px 0 6px; font-size: 7px; text-align: center; }
+          }
+          '''
+          hero_css.write_text(hc)
+
+          agents = Path('AGENTS.md')
+          a = agents.read_text()
+          rule_marker = '## Anti-template design rules'
+          if rule_marker not in a:
+              a += '''
+
+          ## Anti-template design rules
+
+          - HomeEasy must not drift into generic AI/SaaS landing-page defaults. Avoid decorative card grids, card-inside-card compositions, gratuitous pills, glassmorphism, gradients used only for decoration, and repeated eyebrow tags above every heading.
+          - Use containers only when they carry interaction or structure (for example the recommender choices or product explorer). Editorial content should rely on typography, spacing, rules, photography, and deliberate asymmetry before introducing another surface.
+          - Copy must describe a concrete customer action, product behavior, or decision. Avoid broad filler such as “transform your space”, “elevate your experience”, “unlock”, “hablemos de tu espacio”, or other interchangeable marketing phrases.
+          - HomeEasy brand personality comes from the real assets and product expertise: `triangulo.png`, `triangulogold.png`, Hommy only where useful, the rose/gold palette, real window constraints, real fabrics, and real installation logic.
+          - Prefer one strong idea per section. If a section does not help a visitor understand a product, make a decision, trust the service, or contact HomeEasy, remove it.
+          '''
+          agents.write_text(a)
+
+          # Hard assertions before tests.
+          final = app.read_text()
+          assert '<Automation />' not in final
+          assert 'function Automation()' not in final
+          assert '<Benefits />' not in final
+          assert 'Hablemos de tu espacio' not in final
+          assert '/assets/brand/triangulogold.png' in final
+          assert '/assets/brand/triangulo.png' in final
+          assert 'Mándanos una foto de la ventana. Con eso empezamos.' in final
+          assert Path('public/assets/brand/triangulo.png').stat().st_size > 10000
+          assert Path('public/assets/brand/triangulogold.png').stat().st_size > 10000
+          PY
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify editorial build
+        run: |
+          pnpm run test:hero
+          pnpm run test:hommy
+          pnpm run build
+          pnpm run test:sites
+
+      - name: Commit refinement
+        run: |
+          rm -rf source-app
+          git config user.name "alejoherrera05-del"
+          git config user.email "alejoherrera05@gmail.com"
+          git add src/App.jsx src/styles.css src/hero/HomeEasyHero.jsx src/hero/heroScene.css AGENTS.md public/assets/brand/triangulo.png public/assets/brand/triangulogold.png
+          git diff --cached --check
+          git commit -m "Refine HomeEasy into an editorial product experience"
+          git push origin main
