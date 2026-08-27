@@ -12,25 +12,25 @@ export const HERO_STAGES = [
   {
     id: "natural",
     label: "Luz natural",
-    copy: "Sheer Elegance recogida: el espacio recibe toda la luz.",
+    copy: "Persiana recogida: máxima apertura, más luz y la vista completamente libre.",
     progress: 0,
   },
   {
     id: "filtered",
     label: "Luz filtrada",
-    copy: "La Sheer desciende sin deformarse y suaviza el sol conservando la vista.",
+    copy: "Las franjas empiezan a filtrar el sol sin cerrar la relación con el exterior.",
     progress: 0.3,
   },
   {
     id: "privacy",
     label: "Privacidad",
-    copy: "La capa frontal cambia de fase y cubre los vanos transparentes sin convertirse en blackout.",
+    copy: "Las franjas opacas cubren la vista desde afuera mientras el espacio conserva claridad.",
     progress: 0.68,
   },
   {
     id: "ambient",
     label: "Luz ambiente",
-    copy: "La persiana permanece cerrada y la lámpara aporta una luz cálida localizada.",
+    copy: "Con la persiana cerrada, la luz interior toma protagonismo y el ambiente se vuelve más íntimo.",
     progress: 0.94,
   },
 ];
