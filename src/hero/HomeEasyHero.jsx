@@ -26,9 +26,9 @@ export function HomeEasyHero({ openAdvisor }) {
         <SheerEleganceScene ref={sceneRef} />
 
         <div className="hero-content">
-          <p className="eyebrow">DISEÑO QUE TRANSFORMA LA LUZ</p>
+          <p className="eyebrow">LUZ, PRIVACIDAD Y CONFORT A TU MEDIDA</p>
           <h1>Controla la luz.<br /><span>Vive el confort.</span></h1>
-          <p className="hero-copy">Persianas, cortinas y papel tapiz que combinan diseño, tecnología y funcionalidad para crear espacios más cómodos y elegantes.</p>
+          <p className="hero-copy">Te ayudamos a elegir según cómo entra el sol, cómo se abre tu ventana y la privacidad que necesitas, con soluciones fabricadas a la medida.</p>
           <div className="hero-actions">
             <a className="button" href="#productos">Explorar soluciones</a>
             <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Agendar asesoría</button>
