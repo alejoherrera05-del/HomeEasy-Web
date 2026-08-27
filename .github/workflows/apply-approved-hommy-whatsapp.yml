@@ -1,0 +1,207 @@
+name: Apply approved Hommy and WhatsApp flow
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/apply-approved-hommy-whatsapp.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Patch approved experience
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          app = Path('src/App.jsx')
+          s = app.read_text()
+          s = s.replace(
+              'import { useEffect, useMemo, useRef, useState } from "react";',
+              'import { useCallback, useEffect, useMemo, useRef, useState } from "react";',
+          )
+
+          anchor = 'import HommyLayered from "./components/HommyLayered.jsx";\n\n'
+          constants = (
+              'const HOMEEASY_WHATSAPP_NUMBER = "573334319374";\n'
+              'const whatsappUrl = (message) => `https://wa.me/${HOMEEASY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;\n\n'
+          )
+          if 'HOMEEASY_WHATSAPP_NUMBER' not in s:
+              s = s.replace(anchor, anchor + constants)
+
+          s = s.replace(
+              'href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20mostrarles%20mi%20ventana%20para%20recibir%20asesor%C3%ADa"',
+              'href={whatsappUrl("Hola HomeEasy, quiero mostrarles mi ventana para recibir asesoría.")}',
+          )
+          s = s.replace(
+              'href="https://wa.me/?text=Hola%20HomeEasy%2C%20quiero%20una%20asesor%C3%ADa"',
+              'href={whatsappUrl("Hola HomeEasy, quiero una asesoría para mi espacio.")}',
+          )
+
+          start = s.index('function AdvisorModal({ open, onClose }) {')
+          end = s.index('\nexport function App() {', start)
+          new_advisor = r'''function AdvisorModal({ open, onClose }) {
+            const dialogRef = useRef(null);
+            const previousFocusRef = useRef(null);
+
+            useEffect(() => {
+              if (!open) return undefined;
+
+              previousFocusRef.current = document.activeElement;
+              const previousOverflow = document.body.style.overflow;
+              document.body.style.overflow = "hidden";
+              const dialog = dialogRef.current;
+              window.requestAnimationFrame(() => dialog?.focus());
+
+              const handleKeyDown = (event) => {
+                if (event.key === "Escape") {
+                  event.preventDefault();
+                  onClose();
+                  return;
+                }
+                if (event.key !== "Tab" || !dialog) return;
+
+                const focusable = [...dialog.querySelectorAll(
+                  'button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+                )].filter((element) => element.getAttribute("aria-hidden") !== "true");
+                if (!focusable.length) {
+                  event.preventDefault();
+                  dialog.focus();
+                  return;
+                }
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (event.shiftKey && document.activeElement === first) {
+                  event.preventDefault();
+                  last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                  event.preventDefault();
+                  first.focus();
+                }
+              };
+
+              document.addEventListener("keydown", handleKeyDown);
+              return () => {
+                document.removeEventListener("keydown", handleKeyDown);
+                document.body.style.overflow = previousOverflow;
+                const previousFocus = previousFocusRef.current;
+                if (previousFocus instanceof HTMLElement && document.contains(previousFocus)) previousFocus.focus();
+              };
+            }, [open, onClose]);
+
+            const continueOnWhatsApp = (event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
+              const name = String(formData.get("name") || "").trim();
+              const phone = String(formData.get("phone") || "").trim();
+              const space = String(formData.get("space") || "").trim();
+              const message = [
+                "Hola HomeEasy, quiero asesoría para mi espacio.",
+                "",
+                `Nombre: ${name}`,
+                `Mi WhatsApp: ${phone}`,
+                `Espacio: ${space}`,
+                "",
+                "Quiero enviarles una foto de la ventana para que me orienten.",
+              ].join("\n");
+              window.location.assign(whatsappUrl(message));
+            };
+
+            if (!open) return null;
+            return (
+              <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+                <section ref={dialogRef} className="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title" aria-describedby="advisor-description" tabIndex="-1">
+                  <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={22} /></button>
+                  <p className="eyebrow rose">ASESORÍA POR WHATSAPP</p>
+                  <h2 id="advisor-title">Hablemos de tu espacio.</h2>
+                  <p id="advisor-description">Cuéntanos lo básico y prepararemos tu mensaje para WhatsApp. Tú decides cuándo enviarlo.</p>
+                  <form onSubmit={continueOnWhatsApp}>
+                    <label>Nombre<input required name="name" autoComplete="name" placeholder="Tu nombre" /></label>
+                    <label>Tu WhatsApp<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="300 000 0000" /></label>
+                    <label>Espacio<select name="space"><option>Sala</option><option>Habitación</option><option>Oficina</option><option>Comedor</option><option>Otro</option></select></label>
+                    <button className="button" type="submit"><WhatsappLogo size={18} /> Continuar por WhatsApp <ArrowRight size={18} /></button>
+                  </form>
+                  <small className="advisor-privacy-note">No enviamos estos datos a ningún servidor desde la web. Se incluyen únicamente en el mensaje que tú confirmas en WhatsApp.</small>
+                </section>
+              </div>
+            );
+          }
+          '''
+          s = s[:start] + new_advisor + s[end:]
+          s = s.replace(
+              'const openAdvisor = () => setAdvisorOpen(true);',
+              'const openAdvisor = useCallback(() => setAdvisorOpen(true), []);\n  const closeAdvisor = useCallback(() => setAdvisorOpen(false), []);',
+          )
+          s = s.replace(
+              '<AdvisorModal open={advisorOpen} onClose={() => setAdvisorOpen(false)} />',
+              '<AdvisorModal open={advisorOpen} onClose={closeAdvisor} />',
+          )
+          app.write_text(s)
+
+          config = Path('src/hero/heroScene.config.js')
+          s = config.read_text().replace(
+              'hommy: "/assets/hommy.png",',
+              'hommy: "/assets/hommy-hero-approved.png",',
+          )
+          config.write_text(s)
+
+          hero = Path('src/hero/HomeEasyHero.jsx')
+          s = hero.read_text()
+          s = s.replace('width="1080"\n          height="1080"', 'width="1122"\n          height="1402"')
+          s = s.replace('> Agendar asesoría</button>', '> Pedir asesoría</button>')
+          hero.write_text(s)
+
+          styles = Path('src/styles.css')
+          s = styles.read_text()
+          if '.advisor-privacy-note' not in s:
+              s = s.replace(
+                  '.advisor-modal form .button { margin-top: 7px; }',
+                  '.advisor-modal form .button { margin-top: 7px; }\n.advisor-privacy-note { display: block; margin-top: 16px; color: #817873; font-size: 9px; line-height: 1.55; }',
+              )
+          styles.write_text(s)
+
+          assert '573334319374' in app.read_text()
+          assert 'Recibimos tu solicitud' not in app.read_text()
+          assert '/assets/hommy-hero-approved.png' in config.read_text()
+          assert Path('public/assets/hommy-hero-approved.png').exists()
+          PY
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify changes
+        run: |
+          pnpm run test:hero
+          pnpm run test:hommy
+          pnpm run build
+          pnpm run test:sites
+
+      - name: Commit changes
+        run: |
+          git config user.name "alejoherrera05-del"
+          git config user.email "alejoherrera05@gmail.com"
+          git add src/App.jsx src/styles.css src/hero/HomeEasyHero.jsx src/hero/heroScene.config.js
+          git diff --cached --check
+          git commit -m "Connect approved Hommy and official WhatsApp flow"
+          git push origin main
