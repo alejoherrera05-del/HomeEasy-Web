@@ -53,3 +53,11 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - HomeEasy brand personality comes from the real assets and product expertise: `triangulo.png`, `triangulogold.png`, Hommy only where useful, the rose/gold palette, real window constraints, real fabrics, and real installation logic.
 - Product-category filters should read as navigation/tabs rather than decorative pill chips unless a pill shape has a genuine semantic or interaction reason.
 - Prefer one strong idea per section. If a section does not help a visitor understand a product, make a decision, trust the service, or contact HomeEasy, remove it.
+
+## Premium landing refinement — 2026-08-27
+
+- The hero sells the complete HomeEasy service, not only light control: use the approved project copy, give it a clean left reading zone, keep the layered Sheer animation unchanged, and integrate the approved ambassador Hommy at realistic scale on the right.
+- Prefer fewer, larger and more legible modules. Avoid microcopy, cards nested inside cards, decorative bars and repeated messages that make the page feel like a generated mockup.
+- The wallpaper section uses a true same-room before/after pair. The camera, architecture, furniture and lighting must match; only the wall finish may change.
+- Contact is a warm, light editorial closing section with the visible WhatsApp number `+57 333 431 9374`, clear service facts and two explicit conversion paths: WhatsApp and quotation request.
+- Decorative brand monograms should be flat vector artwork. Never use glossy or 3D logo treatments as UI decoration.

@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from "react";
-import { WhatsappLogo } from "@phosphor-icons/react";
 import { HERO_SCENE } from "./heroScene.config.js";
 import { SheerEleganceScene } from "./SheerEleganceScene.jsx";
 import { HeroStageIndicator } from "./HeroStageIndicator.jsx";
@@ -25,20 +24,21 @@ export function HomeEasyHero({ openAdvisor }) {
         <SheerEleganceScene ref={sceneRef} />
 
         <div className="hero-content">
-          <h1>Persianas a la medida para controlar <span>luz, privacidad y calor.</span></h1>
-          <p className="hero-copy">Te ayudamos a elegir el sistema según el tipo de ventana, su tamaño y la entrada de sol. Medimos, fabricamos e instalamos.</p>
+          <h1>Persianas y papel de colgadura para <span>transformar la luz y el ambiente</span> de tu espacio.</h1>
+          <p className="hero-copy">Te asesoramos según tu ventana, la entrada de sol, el nivel de privacidad que buscas y el estilo del ambiente. Medimos, fabricamos e instalamos.</p>
           <div className="hero-actions">
-            <a className="button" href="#productos">Ver sistemas</a>
-            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Cotizar proyecto</button>
+            <button className="button" onClick={openAdvisor}>Cotizar proyecto</button>
+            <a className="button secondary" href="#productos">Ver sistemas</a>
           </div>
         </div>
 
         <img
           className="hommy-hero"
           src={HERO_SCENE.assets.hommy}
-          alt="Hommy, guía de HomeEasy"
-          width="1122"
-          height="1402"
+          alt="Hommy, asesor virtual de HomeEasy, presentando las soluciones"
+          width="1024"
+          height="1280"
+          fetchPriority="high"
           decoding="async"
         />
 

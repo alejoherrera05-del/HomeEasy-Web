@@ -397,8 +397,8 @@ function recommendationReasons(match, answers) {
 function Brand() {
   return (
     <a className="brand" href="#inicio" aria-label="HomeEasy, inicio">
-      <img src="/assets/brand/triangulogold.png" alt="" aria-hidden="true" />
-      <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL TAPIZ</small></span>
+      <img src="/assets/homeeasy-triangle-mark.svg" alt="" aria-hidden="true" />
+      <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
     </a>
   );
 }
@@ -407,7 +407,7 @@ function Header({ openAdvisor }) {
   const [open, setOpen] = useState(false);
   const links = [
     ["Sistemas", "#productos"],
-    ["Papel tapiz", "#papel-tapiz"],
+    ["Papel de colgadura", "#papel-tapiz"],
     ["Cómo trabajamos", "#proceso"],
   ];
   return (
@@ -828,32 +828,37 @@ function Products({ openAdvisorFor }) {
 
 function Wallpaper({ openAdvisorFor }) {
   const details = [
-    { n: "01", title: "Escala", copy: "Un patrón que funciona en una muestra pequeña puede verse completamente distinto cuando ocupa un muro entero." },
-    { n: "02", title: "Textura", copy: "Mate, lino, relieve o brillo cambian según la luz que recibe la pared durante el día." },
-    { n: "03", title: "Entorno", copy: "Piso, muebles, iluminación y color existente pesan más que elegir el diseño aislado en un catálogo." },
+    { title: "Escala", copy: "Un patrón puede verse sutil en muestra y dominante en muro completo." },
+    { title: "Textura", copy: "Mate, lino, relieve o brillo reaccionan distinto con la luz del día." },
+    { title: "Integración", copy: "El papel se elige según el mobiliario, el color del piso y el carácter del espacio." },
   ];
   return (
     <section className="wallpaper section-shell" id="papel-tapiz">
-      <div className="wallpaper-copy">
-        <h2>El papel tapiz cambia con la escala, la luz y los materiales del espacio.</h2>
-        <p>Por eso lo elegimos pensando en el ambiente completo: muro, iluminación, piso y mobiliario.</p>
-        <div className="wallpaper-details">
-          {details.map((item) => (
-            <article key={item.n}>
-              <span>{item.n}</span>
-              <div><strong>{item.title}</strong><p>{item.copy}</p></div>
-            </article>
-          ))}
+      <div className="wallpaper-heading">
+        <div>
+          <p className="eyebrow rose">ANTES Y DESPUÉS</p>
+          <h2>El papel de colgadura no solo viste un muro: cambia la percepción del espacio.</h2>
         </div>
-        <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel tapiz")}>Ver opciones para mi pared <ArrowRight size={16} /></button>
+        <div className="wallpaper-lead">
+          <p>La elección correcta depende del diseño, la escala del patrón, el acabado y la luz que recibe el ambiente. Por eso no lo pensamos como un rollo aislado, sino como parte del conjunto: muro, piso, mobiliario e iluminación.</p>
+          <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel de colgadura")}>Ver opciones de papel de colgadura <ArrowRight size={17} /></button>
+        </div>
       </div>
-      <figure className="wallpaper-editorial">
-        <img src="/assets/wallpaper-room.jpg" alt="Ambiente HomeEasy con papel tapiz instalado" loading="lazy" decoding="async" />
-        <figcaption>
-          <span>ESCALA REAL · LUZ REAL</span>
-          <strong>El diseño se decide viendo el muro completo, no una muestra aislada.</strong>
-        </figcaption>
-      </figure>
+      <div className="wallpaper-comparison" aria-label="Comparación del mismo ambiente antes y después de instalar papel de colgadura">
+        <figure>
+          <img src="/assets/wallpaper-room-before.png" alt="Sala con el muro liso antes de instalar papel de colgadura" loading="lazy" decoding="async" />
+          <figcaption><span>ANTES</span><strong>Un ambiente sereno, pero visualmente plano.</strong></figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/wallpaper-room.jpg" alt="La misma sala después de instalar papel de colgadura botánico" loading="lazy" decoding="async" />
+          <figcaption><span>DESPUÉS</span><strong>El patrón aporta textura, carácter y profundidad.</strong></figcaption>
+        </figure>
+      </div>
+      <div className="wallpaper-details">
+        {details.map((item) => (
+          <article key={item.title}><strong>{item.title}</strong><p>{item.copy}</p></article>
+        ))}
+      </div>
     </section>
   );
 }
@@ -888,21 +893,20 @@ function Process() {
 function Footer({ openAdvisor }) {
   return (
     <footer id="contacto">
-      <div className="contact-editorial">
-        <div className="contact-symbol" aria-hidden="true"><img src="/assets/brand/triangulo.png" alt="" /></div>
-        <div className="contact-copy">
-          <span className="contact-line">Asesoría personalizada · {HOMEEASY_WHATSAPP_DISPLAY}</span>
-          <h2>Cotiza tu proyecto con un asesor de HomeEasy.</h2>
-          <p>Cuéntanos qué espacio quieres intervenir y qué necesitas controlar. Te orientamos en sistema, tejido, medida e instalación.</p>
+      <img className="contact-mark" src="/assets/homeeasy-triangle-mark.svg" alt="" aria-hidden="true" />
+      <div className="footer-cta">
+        <div className="footer-cta-copy">
+          <h2>Hablemos de tu proyecto</h2>
+          <p>Si ya sabes qué necesitas, te cotizamos. Si todavía estás comparando opciones, te orientamos según el tipo de ventana, la luz que entra y el nivel de privacidad que buscas.</p>
           <div className="contact-actions">
-            <a className="button contact-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero cotizar un proyecto de persianas.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} /> Hablar con un asesor</a>
-            <button type="button" className="contact-secondary" onClick={openAdvisor}>Solicitar cotización <ArrowRight size={16} /></button>
+            <a className="button" href={whatsappUrl("Hola HomeEasy, quiero hablar sobre mi proyecto.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} weight="fill" /> Hablar por WhatsApp</a>
+            <button type="button" className="button secondary" onClick={openAdvisor}>Solicitar cotización</button>
           </div>
         </div>
-        <div className="contact-notes" aria-label="Cómo empieza una cotización">
-          <div><span>01</span><p><strong>Tu espacio</strong><small>Sala, habitación, oficina, balcón u otro ambiente.</small></p></div>
-          <div><span>02</span><p><strong>Lo que necesitas</strong><small>Luz, privacidad, calor, oscuridad, vista o diseño.</small></p></div>
-          <div><span>03</span><p><strong>Medición</strong><small>Confirmamos medidas y condiciones antes de fabricar.</small></p></div>
+        <div className="contact-details" aria-label="Información de contacto y servicio">
+          <div><span>WHATSAPP</span><a href="tel:+573334319374">{HOMEEASY_WHATSAPP_DISPLAY}</a></div>
+          <p>Atención personalizada</p>
+          <p>Medición, fabricación e instalación</p>
         </div>
       </div>
       <div className="footer-bottom"><Brand /><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
