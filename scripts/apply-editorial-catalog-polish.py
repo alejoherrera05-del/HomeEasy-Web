@@ -1,0 +1,88 @@
+from pathlib import Path
+
+app = Path("src/App.jsx")
+s = app.read_text()
+
+old = '''      <div className="section-heading">
+        <div className="section-heading editorial-heading split-heading">
+      <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
+      <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
+    </div>
+        <p>Explora por lo que quieres lograr. Te mostramos cómo funciona cada sistema, sus materiales y dónde da el mejor resultado.</p>
+      </div>'''
+
+new = '''      <div className="section-heading editorial-heading split-heading">
+        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
+        <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
+      </div>'''
+
+if old not in s:
+    raise SystemExit("Current catalog heading block not found")
+s = s.replace(old, new)
+
+s = s.replace(
+    '''      <div className="editorial-heading recommender-heading">
+      <span className="section-label">Recomendador de producto</span>
+      <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
+      <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
+    </div>''',
+    '''      <div className="editorial-heading recommender-heading">
+        <span className="section-label">Recomendador de producto</span>
+        <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
+        <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
+      </div>''',
+)
+app.write_text(s)
+
+hero = Path("src/hero/HomeEasyHero.jsx")
+h = hero.read_text().replace('\n<p className="hero-copy">', '\n          <p className="hero-copy">')
+hero.write_text(h)
+
+styles = Path("src/styles.css")
+css = styles.read_text()
+marker = "/* HOMEEASY_EDITORIAL_CATALOG_POLISH_2026 */"
+if marker not in css:
+    css += r'''
+
+/* HOMEEASY_EDITORIAL_CATALOG_POLISH_2026 */
+.product-filters {
+  gap: 10px 24px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid #ddd7d2;
+}
+.product-filters button {
+  margin-bottom: -1px;
+  padding: 0 0 11px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  color: #746d68;
+  background: transparent;
+  box-shadow: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.product-filters button:hover {
+  color: #342f2c;
+  background: transparent;
+}
+.product-filters button.active {
+  color: var(--rose-dark);
+  background: transparent;
+  border-bottom-color: var(--rose);
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .product-filters { gap: 8px 18px; }
+  .product-filters button { padding-bottom: 9px; white-space: nowrap; }
+}
+'''
+styles.write_text(css)
+
+final = app.read_text()
+assert "Explora por lo que quieres lograr. Te mostramos cómo funciona cada sistema" not in final
+assert final.count("12 sistemas · catálogo Pentagrama") == 1
+assert '<div className="section-heading editorial-heading split-heading">' in final
+assert "<Automation />" not in final
+assert "Mándanos una foto de la ventana. Con eso empezamos." in final
