@@ -27,7 +27,7 @@ export function HomeEasyHero({ openAdvisor }) {
 
         <div className="hero-content">
           <h1>La luz cambia durante el día.<br /><span>Tu ventana puede acompañarla.</span></h1>
-<p className="hero-copy">Elegimos el sistema por cómo abre la ventana, cuánto sol recibe y qué necesitas resolver: vista, privacidad, oscuridad o calor.</p>
+          <p className="hero-copy">Elegimos el sistema por cómo abre la ventana, cuánto sol recibe y qué necesitas resolver: vista, privacidad, oscuridad o calor.</p>
           <div className="hero-actions">
             <a className="button" href="#productos">Ver sistemas</a>
             <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Enviar una foto</button>

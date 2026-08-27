@@ -482,3 +482,38 @@ footer { position: relative; overflow: hidden; background: #1f1e1d; }
   .contact-notes { grid-column: auto; }
   .footer-bottom { min-height: 0; padding-block: 28px; }
 }
+
+
+/* HOMEEASY_EDITORIAL_CATALOG_POLISH_2026 */
+.product-filters {
+  gap: 10px 24px;
+  padding-bottom: 1px;
+  border-bottom: 1px solid #ddd7d2;
+}
+.product-filters button {
+  margin-bottom: -1px;
+  padding: 0 0 11px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  color: #746d68;
+  background: transparent;
+  box-shadow: none;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.product-filters button:hover {
+  color: #342f2c;
+  background: transparent;
+}
+.product-filters button.active {
+  color: var(--rose-dark);
+  background: transparent;
+  border-bottom-color: var(--rose);
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .product-filters { gap: 8px 18px; }
+  .product-filters button { padding-bottom: 9px; white-space: nowrap; }
+}

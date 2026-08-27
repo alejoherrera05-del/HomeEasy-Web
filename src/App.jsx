@@ -644,10 +644,10 @@ function Recommender() {
   return (
     <section className="recommender section-shell" id="recomendador">
       <div className="editorial-heading recommender-heading">
-      <span className="section-label">Recomendador de producto</span>
-      <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
-      <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
-    </div>
+        <span className="section-label">Recomendador de producto</span>
+        <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
+        <p>Responde cómo abre, qué tamaño tiene y qué quieres resolver. El recomendador cruza eso con la mecánica y los tejidos de cada sistema.</p>
+      </div>
       <div className="recommender-card">
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
         <div className="question-panel">
@@ -725,12 +725,9 @@ function Products({ openAdvisorFor }) {
 
   return (
     <section className="products section-shell" id="productos">
-      <div className="section-heading">
-        <div className="section-heading editorial-heading split-heading">
-      <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
-      <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
-    </div>
-        <p>Explora por lo que quieres lograr. Te mostramos cómo funciona cada sistema, sus materiales y dónde da el mejor resultado.</p>
+      <div className="section-heading editorial-heading split-heading">
+        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Primero decide qué quieres resolver. Después miramos el sistema.</h2></div>
+        <p>Filtra por luz, oscuridad, tamaño o control solar. La ficha te muestra cómo se mueve, qué tejido usa y dónde funciona mejor.</p>
       </div>
 
       <div className="product-filters" role="group" aria-label="Filtrar productos por necesidad">
