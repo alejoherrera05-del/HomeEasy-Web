@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { WhatsappLogo } from "@phosphor-icons/react";
-import { HERO_SCENE, HERO_STAGES } from "./heroScene.config.js";
+import { HERO_SCENE } from "./heroScene.config.js";
 import { SheerEleganceScene } from "./SheerEleganceScene.jsx";
 import { HeroStageIndicator } from "./HeroStageIndicator.jsx";
 import { HeroDebugPanel } from "./HeroDebugPanel.jsx";
@@ -18,7 +18,6 @@ export function HomeEasyHero({ openAdvisor }) {
     sceneRef,
     onStageChange: updateStage,
   });
-  const currentStage = HERO_STAGES[stage];
 
   return (
     <section className="hero-scroll" id="inicio" ref={sectionRef}>
@@ -43,14 +42,7 @@ export function HomeEasyHero({ openAdvisor }) {
           decoding="async"
         />
 
-        <div className="stage-copy" aria-live="polite">
-          <span>0{stage + 1}</span>
-          <strong>{currentStage.label}</strong>
-          <p>{currentStage.copy}</p>
-        </div>
-
         <HeroStageIndicator stage={stage} onSelect={setProgress} />
-        <div className="scroll-hint"><span /> DESLIZA PARA GRADUAR LA LUZ</div>
         <HeroDebugPanel sceneRef={sceneRef} />
       </div>
     </section>
