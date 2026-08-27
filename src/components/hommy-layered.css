@@ -1,0 +1,139 @@
+.hommy-layered,
+.hommy-official-fallback,
+.hommy-rig-pose,
+.hommy-rig-layer,
+.hommy-rig-head,
+.hommy-rig-upper-arm,
+.hommy-rig-shoulder-rotor,
+.hommy-rig-elbow-rotor,
+.hommy-rig-forearm,
+.hommy-rig-transition-hand,
+.hommy-rig-bridge-hand,
+.hommy-rig-pointing-hand,
+.hommy-rig-hand {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hommy-layered {
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hommy-official-fallback,
+.hommy-rig-layer {
+  display: block;
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hommy-official-fallback {
+  z-index: 1;
+  transform: none;
+  filter: none;
+}
+
+.hommy-layered[data-hommy-renderer="layered"] .hommy-official-fallback {
+  opacity: 0;
+}
+
+.hommy-rig-pose {
+  z-index: 2;
+  opacity: 1;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.hommy-rig-layer { z-index: 1; }
+.hommy-rig-body { z-index: 1; }
+.hommy-rig-torso { z-index: 2; }
+.hommy-rig-shoulder-socket { z-index: 3; }
+.hommy-rig-head {
+  z-index: 3;
+  transform-origin: var(--hommy-head-pivot);
+}
+.hommy-rig-head-base { z-index: 1; }
+.hommy-rig-head-gaze,
+.hommy-rig-head-blink {
+  z-index: 2;
+  opacity: 0;
+}
+.hommy-rig-head-blink {
+  z-index: 3;
+  animation: hommy-natural-blink 4.2s linear 1.6s infinite both;
+}
+.hommy-rig-upper-arm {
+  z-index: 4;
+  transform-origin: var(--hommy-shoulder-pivot);
+}
+.hommy-rig-shoulder-rotor {
+  z-index: 6;
+  transform-origin: var(--hommy-shoulder-pivot);
+}
+.hommy-rig-forearm {
+  z-index: 3;
+  transform-origin: var(--hommy-elbow-pivot);
+}
+.hommy-rig-elbow-rotor {
+  z-index: 4;
+  transform-origin: var(--hommy-elbow-pivot);
+}
+.hommy-rig-pointing-hand {
+  z-index: 6;
+  opacity: 0;
+  transform-origin: var(--hommy-pointing-wrist-pivot);
+}
+.hommy-rig-transition-hand {
+  z-index: 6;
+  opacity: 0;
+  transform-origin: var(--hommy-pointing-wrist-pivot);
+}
+.hommy-rig-bridge-hand {
+  z-index: 6;
+  opacity: 0;
+  transform-origin: var(--hommy-pointing-wrist-pivot);
+}
+.hommy-rig-hand {
+  z-index: 6;
+  transform-origin: var(--hommy-wrist-pivot);
+}
+.hommy-rig-tablet { z-index: 5; }
+
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-head,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-head-gaze,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-upper-arm,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-shoulder-rotor,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-elbow-rotor,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-forearm,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-transition-hand,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-bridge-hand,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-pointing-hand,
+.hommy-layered[data-hommy-motion="tapTablet"] .hommy-rig-hand {
+  will-change: transform, opacity;
+}
+
+@keyframes hommy-natural-blink {
+  0%, 51% { opacity: 0; }
+  52.3% { opacity: .86; }
+  53%, 56.5% { opacity: 1; }
+  57.4% { opacity: .84; }
+  59%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hommy-rig-head,
+  .hommy-rig-upper-arm,
+  .hommy-rig-shoulder-rotor,
+  .hommy-rig-elbow-rotor,
+  .hommy-rig-forearm,
+  .hommy-rig-transition-hand,
+  .hommy-rig-bridge-hand,
+  .hommy-rig-pointing-hand,
+  .hommy-rig-hand {
+    transform: none !important;
+  }
+}

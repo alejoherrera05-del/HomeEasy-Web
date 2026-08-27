@@ -1,0 +1,29 @@
+node_modules/
+dist/
+.vite/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# Test and local-generation output
+coverage/
+work/
+research/
+__pycache__/
+*.py[cod]
+*.zip
+*.tar.gz
+qa-*.png
+audit-*.png
+
+# Legacy generated hero sequences replaced by the layered production scene
+public/assets/hero-sequence/
+public/assets/hero-sequence-v2/
+public/assets/hero-sequence-v3/
+public/assets/hero-scene/
+public/assets/hero-scene-v3/
+public/assets/hero-scene-v4/
+public/assets/hero-scene-v5/
