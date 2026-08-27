@@ -38,30 +38,35 @@ jobs:
       - name: Build staging site
         run: pnpm exec vite build --base=/HomeEasy-Web/
 
-      - name: Adapt public asset URLs for project Pages
+      - name: Verify staging asset paths
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           root = Path('dist/client')
+          assert (root / 'index.html').exists()
+          assert (root / 'assets' / 'hommy-hero-approved.png').exists()
+
+          offenders = []
           for path in root.rglob('*'):
               if not path.is_file() or path.suffix not in {'.html', '.js', '.css'}:
                   continue
               text = path.read_text()
-              text = text.replace('"/assets/', '"/HomeEasy-Web/assets/')
-              text = text.replace("'/assets/", "'/HomeEasy-Web/assets/")
-              text = text.replace('url(/assets/', 'url(/HomeEasy-Web/assets/')
-              path.write_text(text)
+              for match in re.finditer(r'(?<!HomeEasy-Web)/assets/', text):
+                  snippet = text[max(0, match.start() - 80):match.start() + 120]
+                  offenders.append((str(path), snippet))
+                  if len(offenders) >= 10:
+                      break
+              if len(offenders) >= 10:
+                  break
 
-          index = root / 'index.html'
-          assert index.exists()
-          bundle_text = '\n'.join(
-              p.read_text() for p in root.rglob('*')
-              if p.is_file() and p.suffix in {'.html', '.js', '.css'}
-          )
-          assert '/assets/hommy-hero-approved.png' not in bundle_text
-          assert '/HomeEasy-Web/assets/hommy-hero-approved.png' in bundle_text
+          if offenders:
+              print('Root-absolute asset paths still present in staging build:')
+              for path, snippet in offenders:
+                  print(path, snippet)
+              raise SystemExit(1)
           PY
 
       - name: Configure Pages
