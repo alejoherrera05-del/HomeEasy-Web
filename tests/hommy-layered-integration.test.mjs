@@ -144,13 +144,14 @@ test("the permanent blink holds the clean black-eye head long enough to read", (
   assert.doesNotMatch(guide, /hommy-rig-face-overlay|hommy-rig-eyes/);
 });
 
-test("answers save first, ignore duplicates, and advance after 480ms", () => {
-  const lockIndex = app.indexOf("if (interactionLocked.current || answers[current.key] === value) return;");
+test("answers save first, lock rapid clicks, and allow the same answer after going back", () => {
+  const lockIndex = app.indexOf("if (interactionLocked.current) return;");
   const saveIndex = app.indexOf("setAnswers(next);");
   const triggerIndex = app.indexOf("requestHommyReaction(isFinalAnswer");
   assert.ok(lockIndex >= 0);
   assert.ok(saveIndex > lockIndex);
   assert.ok(triggerIndex > saveIndex);
+  assert.doesNotMatch(app, /answers\[current\.key\] === value\) return/);
   assert.match(app, /setStep\(\(currentStep\) => currentStep \+ 1\);[\s\S]*?}, 480\)/);
   assert.doesNotMatch(app, /setInterval\(/);
 });
