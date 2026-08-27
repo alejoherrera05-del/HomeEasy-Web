@@ -1,12 +1,12 @@
-# Prototype Instructions
+# HomeEasy Web Instructions
 
 Run the local server yourself and open the preview in the browser available to this environment. Do not give the user server-start instructions when you can run it.
 
-Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable prototype-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
+Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable website-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
-Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
+Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local site can be handed to Sites. Before a Sites handoff, run `pnpm run build` and `pnpm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
 
 ## HomeEasy hero motion requirements
 
@@ -27,7 +27,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - The only approved motion is `idle -> tapTablet -> idle`: eyes look toward the tablet, the head follows subtly, the articulated free arm touches once, and every piece returns to its exact starting pose.
 - Build the character from full-canvas transparent layers aligned to the 1254 x 1254 official source. Rotate pieces only from the documented neck, shoulder, elbow and wrist pivots.
 - If any required layer is absent or invalid, keep the new official PNG completely static while the form remains fully functional.
-- Do not redesign the approved form layout, cards, typography, spacing, colors, Hommy crop, or subtitle panel while integrating the rig.
+- Do not redesign the approved form layout, typography, spacing, colors, Hommy crop, or subtitle panel while integrating the rig unless a later approved editorial refinement explicitly changes them.
 - Keep the approved head/face layers unchanged. The torso is a fixed shell and the shoulder and upper arm never crossfade. The elbow uses three clean layers: upper shell, independently rotating circular rotor, and lower forearm; no limb layer may contain a straight-cut scrap from its neighbour. Resting and pointing hands may use separately calibrated wrist pivots only when both cuffs retain visible overlap throughout the swap. The pointing hand must be colour-matched to the official arm and its fingertip must visibly enter the tablet screen plane during the press.
 - The circular shoulder cover belongs inside the articulated upper-arm chain and must rotate with it; never pin it above the moving arm. The tablet/backplate renders in front of the tapping finger so the fingertip disappears naturally around the far screen edge instead of being pasted over the tablet back.
 
@@ -37,14 +37,13 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Every section must have a clear narrative role in the buying journey and use concrete HomeEasy language tied to real window behavior: light, privacy, opening type, passage, size, daily use, manual/motorized control and installation.
 - Do not repeat the same Hommy pose across hero, recommender and closing CTA. The recommender keeps the approved articulated/tablet Hommy; the hero uses the approved ambassador pose; the footer should not reuse mascot art merely as decoration.
 - Wallpaper imagery must be visually honest. Never label two different rooms/camera angles as “antes” and “después”. Use a true same-scene transformation if one exists; otherwise use editorial product/context presentation instead of a comparison slider.
-- Process/service content should explain how HomeEasy actually works rather than use a decorative connected-circle timeline. Prefer specific service steps and editorial cards.
-- Automation examples should describe believable daily moments and user benefits; avoid arbitrary clock times unless they are user-set examples with clear context.
+- Process/service content should explain how HomeEasy actually works rather than use a decorative connected-circle timeline. Prefer ordered editorial rows, typography and spacing over a repeated grid of decorative cards.
+- The standalone automation section is intentionally omitted from the current public-site narrative. Do not restore it simply to add content length; only reintroduce automation if there is a concrete product story or customer need worth showing.
 - Brand rose is `#B2566C` across the main UI unless a documented variant is intentionally required.
 
 ## Repository maintenance
 
 - Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.
-
 
 ## Anti-template design rules
 
@@ -52,4 +51,5 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Use containers only when they carry interaction or structure. Editorial content should rely on typography, spacing, rules, photography, and deliberate asymmetry before introducing another surface.
 - Copy must describe a concrete customer action, product behavior, or decision. Avoid broad filler such as “transform your space”, “elevate your experience”, “unlock”, “hablemos de tu espacio”, or other interchangeable marketing phrases.
 - HomeEasy brand personality comes from the real assets and product expertise: `triangulo.png`, `triangulogold.png`, Hommy only where useful, the rose/gold palette, real window constraints, real fabrics, and real installation logic.
+- Product-category filters should read as navigation/tabs rather than decorative pill chips unless a pill shape has a genuine semantic or interaction reason.
 - Prefer one strong idea per section. If a section does not help a visitor understand a product, make a decision, trust the service, or contact HomeEasy, remove it.
