@@ -26,12 +26,11 @@ export function HomeEasyHero({ openAdvisor }) {
         <SheerEleganceScene ref={sceneRef} />
 
         <div className="hero-content">
-          <p className="eyebrow">LUZ, PRIVACIDAD Y CONFORT A TU MEDIDA</p>
-          <h1>Controla la luz.<br /><span>Vive el confort.</span></h1>
-          <p className="hero-copy">Te ayudamos a elegir según cómo entra el sol, cómo se abre tu ventana y la privacidad que necesitas, con soluciones fabricadas a la medida.</p>
+          <h1>La luz cambia durante el día.<br /><span>Tu ventana puede acompañarla.</span></h1>
+<p className="hero-copy">Elegimos el sistema por cómo abre la ventana, cuánto sol recibe y qué necesitas resolver: vista, privacidad, oscuridad o calor.</p>
           <div className="hero-actions">
-            <a className="button" href="#productos">Explorar soluciones</a>
-            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Pedir asesoría</button>
+            <a className="button" href="#productos">Ver sistemas</a>
+            <button className="button secondary" onClick={openAdvisor}><WhatsappLogo size={18} /> Enviar una foto</button>
           </div>
         </div>
 
@@ -51,7 +50,7 @@ export function HomeEasyHero({ openAdvisor }) {
         </div>
 
         <HeroStageIndicator stage={stage} onSelect={setProgress} />
-        <div className="scroll-hint"><span /> TÚ CONTROLAS LA PERSIANA</div>
+        <div className="scroll-hint"><span /> DESLIZA PARA GRADUAR LA LUZ</div>
         <HeroDebugPanel sceneRef={sceneRef} />
       </div>
     </section>

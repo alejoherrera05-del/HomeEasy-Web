@@ -44,3 +44,12 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 ## Repository maintenance
 
 - Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.
+
+
+## Anti-template design rules
+
+- HomeEasy must not drift into generic AI/SaaS landing-page defaults. Avoid decorative card grids, card-inside-card compositions, gratuitous pills, glassmorphism, gradients used only for decoration, and repeated eyebrow tags above every heading.
+- Use containers only when they carry interaction or structure. Editorial content should rely on typography, spacing, rules, photography, and deliberate asymmetry before introducing another surface.
+- Copy must describe a concrete customer action, product behavior, or decision. Avoid broad filler such as “transform your space”, “elevate your experience”, “unlock”, “hablemos de tu espacio”, or other interchangeable marketing phrases.
+- HomeEasy brand personality comes from the real assets and product expertise: `triangulo.png`, `triangulogold.png`, Hommy only where useful, the rose/gold palette, real window constraints, real fabrics, and real installation logic.
+- Prefer one strong idea per section. If a section does not help a visitor understand a product, make a decision, trust the service, or contact HomeEasy, remove it.

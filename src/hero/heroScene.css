@@ -310,3 +310,10 @@
   .lamp-halo-layer,
   .lamp-on-layer { will-change: auto; }
 }
+
+
+/* HOMEEASY_EDITORIAL_HERO_TRACK */
+.stage-track button { padding: 9px 0 8px; border-top: 1px solid rgba(255,255,255,.35); border-radius: 0; color: rgba(255,255,255,.68); background: transparent; text-align: left; backdrop-filter: none; }
+.stage-track button:hover { color: #fff; border-top-color: rgba(255,255,255,.72); }
+.stage-track button.active { color: #fff; background: transparent; border-top-color: var(--rose); }
+@media (max-width: 760px) { .stage-track button { padding: 8px 0 6px; font-size: 7px; text-align: center; } }
