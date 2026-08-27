@@ -846,7 +846,7 @@ function Wallpaper({ openAdvisorFor }) {
       </div>
       <div className="wallpaper-comparison" aria-label="Comparación del mismo ambiente antes y después de instalar papel de colgadura">
         <figure>
-          <img src="/assets/wallpaper-room-before.png" alt="Sala con el muro liso antes de instalar papel de colgadura" loading="lazy" decoding="async" />
+          <img src="/assets/wallpaper-room-before.jpg" alt="Sala con el muro liso antes de instalar papel de colgadura" loading="lazy" decoding="async" />
           <figcaption><span>ANTES</span><strong>Un ambiente sereno, pero visualmente plano.</strong></figcaption>
         </figure>
         <figure>
@@ -904,7 +904,7 @@ function Footer({ openAdvisor }) {
           </div>
         </div>
         <div className="contact-details" aria-label="Información de contacto y servicio">
-          <div><span>WHATSAPP</span><a href="tel:+573334319374">{HOMEEASY_WHATSAPP_DISPLAY}</a></div>
+          <div><span>WHATSAPP</span><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a></div>
           <p>Atención personalizada</p>
           <p>Medición, fabricación e instalación</p>
         </div>
