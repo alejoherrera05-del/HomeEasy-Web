@@ -1,0 +1,50 @@
+/* Final visual corrections based on rendered 1440px and 390px review. */
+
+/* The stage selector already communicates the four light states; a second floating
+   caption competes with Hommy and the room, so the hero keeps only one control layer. */
+.stage-copy,
+.scroll-hint {
+  display: none !important;
+}
+
+/* Let Hommy occupy the room instead of reading as a detached sticker. */
+.hommy-hero {
+  right: 1vw;
+  bottom: -3.5%;
+  width: min(42vw, 650px);
+  max-height: 89vh;
+}
+
+/* Keep the selector readable but visually subordinate to the scene. */
+.stage-track {
+  width: min(650px, 52vw);
+}
+.stage-track button {
+  font-size: 9px;
+  letter-spacing: .01em;
+}
+
+@media (max-width: 760px) {
+  /* A closer crop is intentional on mobile: Hommy enters the scene instead of
+     being shown as a small full-body cutout floating in the corner. */
+  .hommy-hero {
+    right: -14%;
+    bottom: -3%;
+    width: 94vw;
+    max-height: 62vh;
+  }
+
+  .stage-track {
+    left: 14px;
+    right: 14px;
+    bottom: 8px;
+    width: auto;
+    gap: 6px;
+    padding-inline: 8px;
+  }
+
+  .stage-track button {
+    min-height: 42px;
+    font-size: 7.5px;
+  }
+}
