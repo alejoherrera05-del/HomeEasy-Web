@@ -38,7 +38,7 @@ jobs:
       - name: Build staging site
         run: pnpm exec vite build --base=/HomeEasy-Web/
 
-      - name: Verify staging asset paths
+      - name: Adapt public asset URLs for Pages staging
         shell: bash
         run: |
           python - <<'PY'
@@ -49,22 +49,31 @@ jobs:
           assert (root / 'index.html').exists()
           assert (root / 'assets' / 'hommy-hero-approved.png').exists()
 
+          pattern = re.compile(r'(?<!HomeEasy-Web)/assets/')
+          changed = 0
+          for path in root.rglob('*'):
+              if not path.is_file() or path.suffix not in {'.html', '.js', '.css'}:
+                  continue
+              text = path.read_text()
+              updated, count = pattern.subn('/HomeEasy-Web/assets/', text)
+              if count:
+                  path.write_text(updated)
+                  changed += count
+
+          print(f'Adapted {changed} public asset URL references for GitHub Pages staging.')
+
           offenders = []
           for path in root.rglob('*'):
               if not path.is_file() or path.suffix not in {'.html', '.js', '.css'}:
                   continue
               text = path.read_text()
-              for match in re.finditer(r'(?<!HomeEasy-Web)/assets/', text):
-                  snippet = text[max(0, match.start() - 80):match.start() + 120]
-                  offenders.append((str(path), snippet))
-                  if len(offenders) >= 10:
-                      break
-              if len(offenders) >= 10:
-                  break
+              match = pattern.search(text)
+              if match:
+                  offenders.append((str(path), text[max(0, match.start() - 80):match.start() + 120]))
 
           if offenders:
-              print('Root-absolute asset paths still present in staging build:')
-              for path, snippet in offenders:
+              print('Unadapted root asset paths remain:')
+              for path, snippet in offenders[:10]:
                   print(path, snippet)
               raise SystemExit(1)
           PY
