@@ -26,19 +26,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Test hero scene
-        run: npm run test:hero
+        run: pnpm run test:hero
 
       - name: Test Hommy recommender
-        run: npm run test:hommy
+        run: pnpm run test:hommy
 
       - name: Build production site
-        run: npm run build
+        run: pnpm run build
 
       - name: Test hosting worker
-        run: npm run test:sites
+        run: pnpm run test:sites
