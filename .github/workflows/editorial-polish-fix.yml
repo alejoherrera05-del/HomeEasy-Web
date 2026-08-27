@@ -42,7 +42,6 @@ jobs:
               raise SystemExit('Current catalog heading block not found')
           s = s.replace(old, new)
 
-          # Normalize harmless indentation left by the previous scripted edit.
           s = s.replace('''      <div className="editorial-heading recommender-heading">
       <span className="section-label">Recomendador de producto</span>
       <h2>Hommy no empieza por una persiana. Empieza por cómo funciona tu ventana.</h2>
@@ -83,16 +82,8 @@ jobs:
             font-weight: 600;
             letter-spacing: .01em;
           }
-          .product-filters button:hover {
-            color: #342f2c;
-            background: transparent;
-          }
-          .product-filters button.active {
-            color: var(--rose-dark);
-            background: transparent;
-            border-bottom-color: var(--rose);
-            box-shadow: none;
-          }
+          .product-filters button:hover { color: #342f2c; background: transparent; }
+          .product-filters button.active { color: var(--rose-dark); background: transparent; border-bottom-color: var(--rose); box-shadow: none; }
           @media (max-width: 760px) {
             .product-filters { gap: 8px 18px; }
             .product-filters button { padding-bottom: 9px; white-space: nowrap; }
