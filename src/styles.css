@@ -297,6 +297,9 @@ footer { background: #202020; color: white; }
 .advisor-modal { width: min(520px, 100%); background: #f7f7f6; color: var(--ink); padding: 45px; border-radius: 18px; position: relative; box-shadow: 0 40px 100px rgba(0,0,0,.3); }
 .modal-close { position: absolute; top: 15px; right: 15px; border: 0; background: transparent; padding: 8px; }
 .advisor-modal h2 { font-size: 38px; }.advisor-modal > p { color: var(--muted); line-height: 1.65; }
+.advisor-context { margin: 18px 0 2px; padding: 11px 13px; display: grid; gap: 4px; border: 1px solid #ded7d4; border-radius: 8px; background: #fff; }
+.advisor-context span { color: #8b817b; font-size: 8px; font-weight: 750; letter-spacing: .1em; }
+.advisor-context strong { color: #3b3531; font-size: 12px; font-weight: 650; }
 .advisor-modal form { display: grid; gap: 15px; margin-top: 25px; }
 .advisor-modal label { font-size: 11px; font-weight: 700; display: grid; gap: 7px; }
 .advisor-modal input, .advisor-modal select { width: 100%; border: 1px solid #d5d2cf; background: white; border-radius: 7px; padding: 13px 14px; min-height: 48px; color: #282421; }

@@ -715,7 +715,7 @@ function Recommender() {
   );
 }
 
-function Products() {
+function Products({ openAdvisorFor }) {
   const filters = [
     ["todos", "Todos"], ["luz", "Filtrar luz"], ["oscuridad", "Oscurecer"],
     ["grandes", "Grandes ventanales"], ["decorar", "Decorar"], ["termico", "Aislar calor"],
@@ -775,7 +775,7 @@ function Products() {
                 onClick={() => chooseProduct(product.id)}
                 aria-pressed={selected.id === product.id}
               >
-                <img src={product.media.find((item) => item.type === "image")?.src} alt="" />
+                <img src={product.media.find((item) => item.type === "image")?.src} alt="" loading="lazy" decoding="async" />
                 <span><small>{product.tag}</small><strong>{product.name}</strong></span>
                 <CaretRight size={17} />
               </button>
@@ -787,12 +787,13 @@ function Products() {
           <div className="product-gallery">
             <div className="product-media-frame">
               {activeMedia.type === "image" ? (
-                <img src={activeMedia.src} alt={activeMedia.alt} />
+                <img src={activeMedia.src} alt={activeMedia.alt} loading="lazy" decoding="async" />
               ) : (
                 <div className="video-slide">
                   <iframe
                     src={`https://www.youtube-nocookie.com/embed/${activeMedia.id}?rel=0`}
                     title={`${selected.name}: ${activeMedia.title}`}
+                    loading="lazy"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
                   />
@@ -819,7 +820,7 @@ function Products() {
                   aria-label={item.type === "image" ? `Ver ${item.label}` : `Reproducir ${item.title}`}
                   aria-pressed={index === mediaIndex}
                 >
-                  {item.type === "image" ? <img src={item.src} alt="" /> : <span className="video-thumb"><PlayCircle size={24} weight="fill" /><small>{item.duration}</small></span>}
+                  {item.type === "image" ? <img src={item.src} alt="" loading="lazy" decoding="async" /> : <span className="video-thumb"><PlayCircle size={24} weight="fill" /><small>{item.duration}</small></span>}
                   <span>{item.label}</span>
                 </button>
               ))}
@@ -842,7 +843,7 @@ function Products() {
               <div><dt>Cómo funciona</dt><dd>{selected.system}</dd></div>
             </dl>
             <div className="product-detail-actions">
-              <a className="button" href="#contacto">Cotizar {selected.name}</a>
+              <button type="button" className="button" onClick={() => openAdvisorFor(`Cotización: ${selected.name}`)}>Cotizar {selected.name}</button>
               <a className="text-button" href="#recomendador">¿No sabes si es para ti? Pregúntale a Hommy <ArrowRight size={16} /></a>
             </div>
           </div>
@@ -854,7 +855,7 @@ function Products() {
   );
 }
 
-function Wallpaper() {
+function Wallpaper({ openAdvisorFor }) {
   const details = [
     { n: "01", title: "Escala", copy: "Un patrón pequeño, medio o amplio cambia por completo la proporción visual del muro." },
     { n: "02", title: "Textura", copy: "Mate, lino, relieve o brillo reaccionan distinto cuando la luz entra de frente o de lado." },
@@ -874,10 +875,10 @@ function Wallpaper() {
             </article>
           ))}
         </div>
-        <a className="text-button" href="#contacto">Quiero ver opciones para mi pared <ArrowRight size={16} /></a>
+        <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel tapiz")}>Quiero ver opciones para mi pared <ArrowRight size={16} /></button>
       </div>
       <figure className="wallpaper-editorial">
-        <img src="/assets/wallpaper-room.jpg" alt="Ambiente HomeEasy con papel tapiz instalado" />
+        <img src="/assets/wallpaper-room.jpg" alt="Ambiente HomeEasy con papel tapiz instalado" loading="lazy" decoding="async" />
         <figcaption>
           <span>LA ELECCIÓN SE HACE EN CONTEXTO</span>
           <strong>La pared debe conversar con la luz y con lo que ya existe en la habitación.</strong>
@@ -898,7 +899,7 @@ function Automation() {
   const MomentIcon = current.icon;
   return (
     <section className={`automation moment-${moment}`} id="automatizacion">
-      <div className="automation-image"><img src="/assets/homeeasy-hero-room.jpg" alt="Persianas HomeEasy en un espacio automatizado" /><div /></div>
+      <div className="automation-image"><img src="/assets/homeeasy-hero-room.jpg" alt="Persianas HomeEasy en un espacio automatizado" loading="lazy" decoding="async" /><div /></div>
       <div className="automation-copy">
         <p className="eyebrow">AUTOMATIZACIÓN</p>
         <h2>Automatizar sirve cuando te evita repetir lo mismo todos los días.</h2>
@@ -971,7 +972,7 @@ function Footer({ openAdvisor }) {
   );
 }
 
-function AdvisorModal({ open, onClose }) {
+function AdvisorModal({ open, onClose, context }) {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
 
@@ -1032,9 +1033,10 @@ function AdvisorModal({ open, onClose }) {
       `Nombre: ${name}`,
       `Mi WhatsApp: ${phone}`,
       `Espacio: ${space}`,
+      context ? `Interés: ${context}` : null,
       "",
       "Quiero enviarles una foto de la ventana para que me orienten.",
-    ].join("\n");
+    ].filter((line) => line !== null).join("\n");
     window.location.assign(whatsappUrl(message));
   };
 
@@ -1046,6 +1048,7 @@ function AdvisorModal({ open, onClose }) {
         <p className="eyebrow rose">ASESORÍA POR WHATSAPP</p>
         <h2 id="advisor-title">Hablemos de tu espacio.</h2>
         <p id="advisor-description">Cuéntanos lo básico y prepararemos tu mensaje para WhatsApp. Tú decides cuándo enviarlo.</p>
+        {context && <div className="advisor-context"><span>CONSULTA</span><strong>{context}</strong></div>}
         <form onSubmit={continueOnWhatsApp}>
           <label>Nombre<input required name="name" autoComplete="name" placeholder="Tu nombre" /></label>
           <label>Tu WhatsApp<input required name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="300 000 0000" /></label>
@@ -1060,7 +1063,15 @@ function AdvisorModal({ open, onClose }) {
 
 export function App() {
   const [advisorOpen, setAdvisorOpen] = useState(false);
-  const openAdvisor = useCallback(() => setAdvisorOpen(true), []);
+  const [advisorContext, setAdvisorContext] = useState("");
+  const openAdvisor = useCallback(() => {
+    setAdvisorContext("");
+    setAdvisorOpen(true);
+  }, []);
+  const openAdvisorFor = useCallback((context) => {
+    setAdvisorContext(context);
+    setAdvisorOpen(true);
+  }, []);
   const closeAdvisor = useCallback(() => setAdvisorOpen(false), []);
   return (
     <>
@@ -1069,14 +1080,14 @@ export function App() {
         <HomeEasyHero openAdvisor={openAdvisor} />
         <Benefits />
         <Recommender />
-        <Products />
-        <Wallpaper />
+        <Products openAdvisorFor={openAdvisorFor} />
+        <Wallpaper openAdvisorFor={openAdvisorFor} />
         <Automation />
         <Process />
       </main>
       <Footer openAdvisor={openAdvisor} />
       <a className="floating-whatsapp" href={whatsappUrl("Hola HomeEasy, quiero una asesoría para mi espacio.")} target="_blank" rel="noreferrer" aria-label="Escribir a HomeEasy por WhatsApp"><WhatsappLogo size={26} weight="fill" /></a>
-      <AdvisorModal open={advisorOpen} onClose={closeAdvisor} />
+      <AdvisorModal open={advisorOpen} onClose={closeAdvisor} context={advisorContext} />
     </>
   );
 }

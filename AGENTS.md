@@ -40,3 +40,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Process/service content should explain how HomeEasy actually works rather than use a decorative connected-circle timeline. Prefer specific service steps and editorial cards.
 - Automation examples should describe believable daily moments and user benefits; avoid arbitrary clock times unless they are user-set examples with clear context.
 - Brand rose is `#B2566C` across the main UI unless a documented variant is intentionally required.
+
+## Repository maintenance
+
+- Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.
