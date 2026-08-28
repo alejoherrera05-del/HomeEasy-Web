@@ -42,8 +42,15 @@ test("the component declares every required aligned layer", () => {
     "shoulder-rotor-official-v4.png",
     "tablet-contact-edge.png",
   ]) assert.match(assets, new RegExp(file.replace(".", "\\.")));
-  assert.match(guide, /preloadRig\(\)/);
-  assert.match(guide, /setRigStatus\("fallback"\)/);
+  assert.match(guide, /preloadHommyLayers\(/);
+  assert.match(guide, /HOMMY_CRITICAL_LAYERS/);
+  assert.match(guide, /setRigStatus\(result\.status\)/);
+  assert.match(assets, /HOMMY_CRITICAL_LAYERS[\s\S]*?"pointingHand"/);
+});
+
+test("unmount invalidates active motion before cancellation and ignores late completion", () => {
+  assert.match(guide, /mountedRef\.current\s*&&\s*activeMotion\.current\s*===\s*motion/);
+  assert.match(guide, /mountedRef\.current\s*=\s*false;[\s\S]*?const motion = activeMotion\.current;[\s\S]*?activeMotion\.current\s*=\s*null;[\s\S]*?motion\?\.cancel\(\)/);
 });
 
 test("the motion looks first, taps once, and returns every layer to idle", () => {
@@ -90,10 +97,10 @@ test("the fixed torso and articulated elbow eliminate socket and colour jumps", 
   assert.match(animation, /animatePart\(parts\.shoulderRotor/);
   assert.match(animation, /animatePart\(parts\.elbowRotor/);
   assert.doesNotMatch(animation.slice(animation.indexOf("animatePart(parts.forearm"), animation.indexOf("    ]),", animation.indexOf("animatePart(parts.forearm"))), /opacity/);
-  assert.match(animation, /animatePart\(parts\.hand,[\s\S]*?opacity:\s*1,\s*offset:\s*0\.395[\s\S]*?opacity:\s*0,\s*offset:\s*0\.396/);
-  assert.match(animation, /animatePart\(parts\.transitionHand,[\s\S]*?opacity:\s*0,\s*offset:\s*0\.395[\s\S]*?opacity:\s*1,\s*offset:\s*0\.396[\s\S]*?opacity:\s*0,\s*offset:\s*0\.476/);
-  assert.match(animation, /animatePart\(parts\.bridgeHand,[\s\S]*?opacity:\s*0,\s*offset:\s*0\.475[\s\S]*?opacity:\s*1,\s*offset:\s*0\.476[\s\S]*?opacity:\s*0,\s*offset:\s*0\.556/);
-  assert.match(animation, /animatePart\(parts\.pointingHand,[\s\S]*?opacity:\s*0,\s*offset:\s*0\.555[\s\S]*?opacity:\s*1,\s*offset:\s*0\.556/);
+  assert.match(animation, /animatePart\([^[]*parts\.hand[^[]*,\s*\[[\s\S]*?opacity:\s*1,\s*offset:\s*0\.395[\s\S]*?opacity:\s*0,\s*offset:\s*0\.396/);
+  assert.match(animation, /animatePart\([^[]*parts\.transitionHand[^[]*,\s*\[[\s\S]*?opacity:\s*0,\s*offset:\s*0\.395[\s\S]*?opacity:\s*1,\s*offset:\s*0\.396[\s\S]*?opacity:\s*0,\s*offset:\s*0\.476/);
+  assert.match(animation, /animatePart\([^[]*parts\.bridgeHand[^[]*,\s*\[[\s\S]*?opacity:\s*0,\s*offset:\s*0\.475[\s\S]*?opacity:\s*1,\s*offset:\s*0\.476[\s\S]*?opacity:\s*0,\s*offset:\s*0\.556/);
+  assert.match(animation, /animatePart\([^[]*parts\.pointingHand[^[]*,\s*\[[\s\S]*?opacity:\s*0,\s*offset:\s*0\.555[\s\S]*?opacity:\s*1,\s*offset:\s*0\.556/);
   assert.doesNotMatch(guide, /hommy-rig-elbow-cap/);
   assert.doesNotMatch(assets, /elbowCap|elbow-cap-fixed/);
   assert.match(guide, /hommy-rig-shoulder-rotor/);
@@ -107,12 +114,15 @@ test("the arm is a permanent articulated chain with no opacity gaps or detached 
   assert.match(guide, /hommy-rig-upper-arm[\s\S]*?hommy-rig-shoulder-rotor[\s\S]*?hommy-rig-elbow-rotor[\s\S]*?hommy-rig-forearm[\s\S]*?hommy-rig-hand[\s\S]*?hommy-rig-transition-hand/);
   assert.match(assets, /shoulder:[\s\S]*?elbow:[\s\S]*?wrist:[\s\S]*?pointingWrist:/);
   for (const part of ["upperArm", "shoulderRotor", "elbowRotor", "forearm", "hand", "transitionHand", "bridgeHand", "pointingHand"]) {
-    const start = animation.indexOf(`animatePart(parts.${part}`);
+    const optionalHand = new Set(["transitionHand", "bridgeHand", "pointingHand"]).has(part);
+    const start = animation.indexOf(optionalHand
+      ? `animatePart(canSwapHands ? parts.${part}`
+      : `animatePart(parts.${part}`);
     const end = animation.indexOf("    ]),", start);
     const keyframes = animation.slice(start, end);
     assert.ok(start >= 0 && end > start);
     assert.doesNotMatch(keyframes, /opacity|translate|scale/);
-    if (!new Set(["transitionHand", "bridgeHand", "pointingHand"]).has(part)) {
+    if (!optionalHand) {
       assert.match(keyframes, /rotate\(0deg\).*offset:\s*0/);
       assert.match(keyframes, /rotate\(0deg\).*offset:\s*1/);
     }
@@ -126,7 +136,7 @@ test("the elbow visibly bends and the fingertip performs hover, press, and relea
   assert.match(forearmKeyframes, /rotate\(-48deg\).*offset:\s*0\.64/);
   assert.doesNotMatch(`${guide}\n${styles}`, /elbow-cap-fixed|hommy-rig-elbow-cap/);
 
-  const pointerStart = animation.indexOf("animatePart(parts.pointingHand");
+  const pointerStart = animation.indexOf("animatePart(canSwapHands ? parts.pointingHand");
   const pointerEnd = animation.indexOf("    ]),", pointerStart);
   const pointerKeyframes = animation.slice(pointerStart, pointerEnd);
   assert.match(pointerKeyframes, /rotate\(96deg\).*offset:\s*0\.6/);
