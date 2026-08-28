@@ -31,7 +31,7 @@ export const HERO_STAGES = [
     id: "ambient",
     label: "Luz ambiente",
     copy: "Con la persiana cerrada, la luz interior toma protagonismo y el ambiente se vuelve más íntimo.",
-    progress: 0.96,
+    progress: 0.88,
   },
 ];
 
@@ -86,21 +86,21 @@ export const HERO_SCENE = {
     haloMax: 0.92,
   },
   timeline: {
-    introEnd: 0.08,
+    introEnd: 0.12,
     descentEnd: 0.44,
     privacyEnd: 0.74,
-    lampEnd: 0.92,
+    lampEnd: 0.88,
     restEnd: 1,
   },
   stageThresholds: {
-    filteredAt: 0.16,
+    filteredAt: 0.18,
     privacyAt: 0.58,
     ambientAt: 0.82,
   },
   scroll: {
     desktopVh: 3.5,
     tabletVh: 3,
-    mobileVh: 2.4,
+    mobileVh: 3,
     scrub: 0.35,
   },
 };

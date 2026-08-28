@@ -2,12 +2,17 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
 import test from "node:test";
+import {
+  getHommyInteractionTiming,
+  scheduleHommyAnswer,
+} from "../src/components/hommyInteraction.js";
 
 const app = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
 const guide = await readFile(new URL("../src/components/HommyLayered.jsx", import.meta.url), "utf8");
 const assets = await readFile(new URL("../src/components/hommyAssets.js", import.meta.url), "utf8");
 const animation = await readFile(new URL("../src/components/hommyAnimation.js", import.meta.url), "utf8");
 const styles = await readFile(new URL("../src/components/hommy-layered.css", import.meta.url), "utf8");
+const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
 const packageJson = await readFile(new URL("../package.json", import.meta.url), "utf8");
 
 test("the fallback is the new immutable official PNG", async () => {
@@ -162,8 +167,72 @@ test("answers save first, lock rapid clicks, and allow the same answer after goi
   assert.ok(saveIndex > lockIndex);
   assert.ok(triggerIndex > saveIndex);
   assert.doesNotMatch(app, /answers\[current\.key\] === value\) return/);
-  assert.match(app, /setStep\(\(currentStep\) => currentStep \+ 1\);[\s\S]*?}, 480\)/);
+  assert.match(app, /scheduleHommyAnswer\(\{/);
+  assert.match(app, /setStep\(\(currentStep\) => currentStep \+ 1\)/);
+  assert.match(app, /disabled=\{answerPending\}/);
+  assert.match(app, /aria-pressed=\{answers\[current\.key\] === choice\.value\}/);
+  assert.match(app, /const goBack = \(\) => \{\s*if \(interactionLocked\.current\) return;/);
   assert.doesNotMatch(app, /setInterval\(/);
+});
+
+test("mobile answer scheduling cannot unlock before the official rig returns to idle", () => {
+  const timing = getHommyInteractionTiming({ reducedMotion: false, mobile: true });
+  assert.deepEqual(timing, {
+    reactionDuration: 1680,
+    answerDwell: 1120,
+    interactionDuration: 1680,
+  });
+  const scheduled = [];
+  const events = [];
+  scheduleHommyAnswer({
+    isFinalAnswer: false,
+    timing,
+    onAdvance: () => events.push("advance"),
+    onUnlock: () => events.push("unlock"),
+    onReactionComplete: () => events.push("complete"),
+    schedule: (callback, delay) => scheduled.push({ callback, delay }),
+  });
+  assert.deepEqual(scheduled.map(({ delay }) => delay), [1120, 1680]);
+  scheduled[0].callback();
+  assert.deepEqual(events, ["advance"]);
+  scheduled[1].callback();
+  assert.deepEqual(events, ["advance", "unlock", "complete"]);
+});
+
+test("desktop timing stays unchanged and reduced motion finishes in 240 ms", () => {
+  assert.deepEqual(getHommyInteractionTiming({ reducedMotion: false, mobile: false }), {
+    reactionDuration: 1100,
+    answerDwell: 480,
+    interactionDuration: 480,
+  });
+  const reduced = getHommyInteractionTiming({ reducedMotion: true, mobile: true });
+  assert.deepEqual(reduced, {
+    reactionDuration: 240,
+    answerDwell: 240,
+    interactionDuration: 240,
+  });
+  const scheduled = [];
+  const events = [];
+  scheduleHommyAnswer({
+    isFinalAnswer: true,
+    timing: reduced,
+    onAdvance: () => events.push("advance"),
+    onUnlock: () => events.push("unlock"),
+    onReactionComplete: () => events.push("complete"),
+    schedule: (callback, delay) => scheduled.push({ callback, delay }),
+  });
+  assert.deepEqual(scheduled.map(({ delay }) => delay), [240]);
+  scheduled[0].callback();
+  assert.deepEqual(events, ["advance", "unlock", "complete"]);
+});
+
+test("mobile keeps the official Hommy rig visible as a sticky adviser", () => {
+  assert.match(visualStyles, /@media \(max-width: 760px\)[\s\S]*?\.recommender-card\s*\{[\s\S]*?overflow:\s*visible/);
+  assert.match(visualStyles, /\.hommy-test-guide\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*70px/);
+  assert.match(visualStyles, /\.hommy-character\s*\{[\s\S]*?aspect-ratio:\s*1/);
+  assert.match(visualStyles, /\.choice-grid button strong\s*\{\s*font-size:\s*16px/);
+  assert.doesNotMatch(app, /hommy-test-guide[^>]*role="img"/);
+  assert.match(app, /role="status" aria-live="polite" aria-atomic="true"/);
 });
 
 test("the real rig is enabled and every production layer exists", async () => {

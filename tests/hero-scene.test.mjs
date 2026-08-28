@@ -22,6 +22,30 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.match(source, /onUpdate:\s*\(self\)\s*=>\s*publishProgress\(animation\.progress\(\), self\.progress, self\)/);
   assert.match(source, /onRefresh:[\s\S]*?animation\.pause\(\)\.progress\(self\.progress\);[\s\S]*?publishProgress\(self\.progress, self\.progress, self\)/);
   assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
+  assert.match(source, /start:\s*0/);
+});
+
+test("mobile scroll has a calm opening and a perceptible ambient dwell", () => {
+  const initialViewportHeight = 742;
+  const mobileDistance = initialViewportHeight * HERO_SCENE.scroll.mobileVh;
+  assert.equal(HERO_SCENE.scroll.mobileVh, 3);
+  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 260);
+  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 400);
+  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 260);
+  assert.equal(HERO_STAGES.at(-1).progress, HERO_SCENE.timeline.lampEnd);
+});
+
+test("timeline milestones remain ordered and expose stable boundary states", () => {
+  const { introEnd, descentEnd, privacyEnd, lampEnd, restEnd } = HERO_SCENE.timeline;
+  assert.ok(0 < introEnd);
+  assert.ok(introEnd < descentEnd);
+  assert.ok(descentEnd < privacyEnd);
+  assert.ok(privacyEnd < lampEnd);
+  assert.ok(lampEnd < restEnd);
+  assert.equal(getSceneState(introEnd - 0.0001).descendProgress, 0);
+  assert.ok(getSceneState(introEnd + 0.0001).descendProgress > 0);
+  assert.equal(getSceneState(lampEnd).lampProgress, 1);
+  assert.equal(getSceneState(lampEnd).stage, 3);
 });
 
 test("the four milestones map to the required physical states", () => {
@@ -79,8 +103,8 @@ test("front and back fabric share one immutable pitch", () => {
 
 test("stage labels change only after each physical state is visually established", () => {
   assert.equal(HERO_STAGES.length, 4);
-  assert.equal(getStageIndex(0.1599), 0);
-  assert.equal(getStageIndex(0.16), 1);
+  assert.equal(getStageIndex(0.1799), 0);
+  assert.equal(getStageIndex(0.18), 1);
   assert.equal(getStageIndex(0.5799), 1);
   assert.equal(getStageIndex(0.58), 2);
   assert.equal(getStageIndex(0.8199), 2);
@@ -89,10 +113,12 @@ test("stage labels change only after each physical state is visually established
 
 test("each stage control lands inside its own visual state", () => {
   HERO_STAGES.forEach((stage, index) => {
+    const state = getSceneState(stage.progress);
     assert.equal(
-      getStageIndex(stage.progress),
+      state.stage,
       index,
       `${stage.label} must not land on an adjacent stage boundary`,
     );
+    if (stage.id === "ambient") assert.equal(state.lampProgress, 1);
   });
 });

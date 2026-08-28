@@ -55,6 +55,14 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 - On iPhone Safari, the hero must remain visually solid while the browser bars expand or contract. Height-only `visualViewport` changes during an active scroll must not recalculate the pin distance, stretch the document, reset the scene state or make the blind flicker.
 - Progress, visible scene, active light control and accessible stage label must stay synchronized after refresh, rotation and exact terminal progress.
+- The first scroll gesture must feel anchored. Keep the hero pinned from the document origin and give mobile enough native scroll distance plus an opening plateau so Safari's toolbar contraction does not read as a scene jump.
+- The completed ambient-light state must remain visible for a meaningful final portion of the native scroll range on desktop and mobile. Create this dwell inside the reversible timeline; never trap input, cancel touch events, force a timeout, or use scroll-jacking.
+
+## Mobile Hommy recommender — user feedback 2026-08-28
+
+- On phones, Hommy's official `idle -> tapTablet -> idle` reaction and the active question must coexist in the viewport. Keep Hommy as a compact sticky adviser within the recommender while the document itself scrolls; do not add a nested scroller, fixed overlay, game-show chrome or answers placed over the character.
+- A selected answer must remain visibly selected until the tablet-touch moment is readable, then advance predictably to the next question. Keep the official rig mounted and preserve its complete return to idle; reduced motion uses only the short accessible feedback duration.
+- Mobile answers must preserve native button semantics, at least 44 px targets, a non-color selected state, readable label/detail sizes, duplicate-tap protection, an announced Hommy status and predictable focus on the next question.
 
 ## Approved next-round visual scope — user direction
 

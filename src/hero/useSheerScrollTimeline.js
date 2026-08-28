@@ -156,7 +156,10 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           trigger: sectionRef.current,
           pin: pinRef.current,
           animation,
-          start: "top top",
+          // The hero is the first document section. A numeric origin keeps the
+          // pin active from the initial pixel instead of crossing its boundary
+          // during Safari's first toolbar-collapsing gesture.
+          start: 0,
           end: () => `+=${getScrollDistance()}`,
           scrub: HERO_SCENE.scroll.scrub,
           anticipatePin: 1,

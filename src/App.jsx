@@ -11,7 +11,9 @@ import {
 } from "@phosphor-icons/react";
 import { HomeEasyHero } from "./hero/HomeEasyHero.jsx";
 import HommyLayered from "./components/HommyLayered.jsx";
+import { getHommyInteractionTiming, scheduleHommyAnswer } from "./components/hommyInteraction.js";
 import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
+import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
@@ -491,8 +493,8 @@ const hommyReplies = {
 
 function HommyTestGuide({ state, message, reaction }) {
   return (
-    <div className={`hommy-test-guide is-${state}`} role="img" aria-label={`Hommy dice: ${message}`}>
-      <span className="visually-hidden" role="status" aria-live="polite">Hommy: {message}</span>
+    <div className={`hommy-test-guide is-${state}`}>
+      <span className="visually-hidden" role="status" aria-live="polite" aria-atomic="true">Hommy: {message}</span>
       <div className="hommy-motion-stage" aria-hidden="true">
         <div className="hommy-character">
           <HommyLayered reaction={reaction} />
@@ -510,10 +512,13 @@ function Recommender() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(emptyRecommenderAnswers);
   const [done, setDone] = useState(false);
+  const [answerPending, setAnswerPending] = useState(false);
   const [hommyState, setHommyState] = useState("listening");
   const [hommyMessage, setHommyMessage] = useState(HOMMY_INITIAL_MESSAGE);
   const [hommyReaction, setHommyReaction] = useState({ sequence: 0, type: "write", progress: 0 });
   const resultRef = useRef(null);
+  const questionHeadingRef = useRef(null);
+  const pendingQuestionFocus = useRef(false);
   const hommyMotionTimers = useRef([]);
   const interactionLocked = useRef(false);
   const reactionSequence = useRef(0);
@@ -529,8 +534,29 @@ function Recommender() {
   const reasons = done ? recommendationReasons(primary, answers) : [];
 
   useEffect(() => {
-    if (done) resultRef.current?.focus();
+    if (!done || !resultRef.current) return;
+    resultRef.current.focus({ preventScroll: true });
+    if (window.innerWidth <= 760) {
+      resultRef.current.scrollIntoView({
+        behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
+        block: "start",
+      });
+    }
   }, [done]);
+
+  useEffect(() => {
+    if (done || !pendingQuestionFocus.current) return;
+    pendingQuestionFocus.current = false;
+    const heading = questionHeadingRef.current;
+    if (!heading) return;
+    heading.focus({ preventScroll: true });
+    if (window.innerWidth <= 760) {
+      heading.scrollIntoView({
+        behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+  }, [done, step]);
 
   useEffect(() => {
     if (step !== safeStep) setStep(safeStep);
@@ -553,9 +579,7 @@ function Recommender() {
     reactionBusyUntil.current = 0;
   };
 
-  const requestHommyReaction = (type, progressValue) => {
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const duration = reducedMotion ? 240 : 1100;
+  const requestHommyReaction = (type, progressValue, duration) => {
     const emit = (reaction) => {
       reactionSequence.current += 1;
       setHommyReaction({ ...reaction, sequence: reactionSequence.current });
@@ -580,28 +604,34 @@ function Recommender() {
     }, Math.max(0, reactionBusyUntil.current - now));
   };
 
-  const acknowledgeAnswer = (isFinalAnswer, reply) => {
+  const acknowledgeAnswer = (isFinalAnswer, reply, timing) => {
     clearHommyMotion();
     setHommyState("noting");
     setHommyMessage(reply);
-    if (isFinalAnswer) {
-      hommyMotionTimers.current.push(setTimeout(() => {
+    hommyMotionTimers.current.push(...scheduleHommyAnswer({
+      isFinalAnswer,
+      timing,
+      onAdvance: () => {
+        if (!isFinalAnswer) {
+          pendingQuestionFocus.current = true;
+          setStep((currentStep) => currentStep + 1);
+          return;
+        }
         setHommyState("thinking");
         setHommyMessage(HOMMY_THINKING_MESSAGE);
         setDone(true);
+      },
+      onUnlock: () => {
+        if (!isFinalAnswer) setHommyState("listening");
+        setAnswerPending(false);
         interactionLocked.current = false;
-      }, 480));
-      hommyMotionTimers.current.push(setTimeout(() => {
+      },
+      onReactionComplete: () => {
+        if (!isFinalAnswer) return;
         setHommyState("complete");
         setHommyMessage(HOMMY_COMPLETE_MESSAGE);
-      }, 1100));
-    } else {
-      hommyMotionTimers.current.push(setTimeout(() => {
-        setHommyState("listening");
-        setStep((currentStep) => currentStep + 1);
-        interactionLocked.current = false;
-      }, 480));
-    }
+      },
+    }));
   };
 
   const choose = (value) => {
@@ -611,16 +641,22 @@ function Recommender() {
     if (current.key === "opening" && value !== "sliding") next.passage = "";
     if (current.key === "need" && value !== "privacy") next.privacyMode = "";
     setAnswers(next);
+    setAnswerPending(true);
     const nextFlow = getRecommenderFlow(next);
     const isFinalAnswer = safeStep === nextFlow.length - 1;
     const reply = hommyReplies[current.key]?.[value] ?? "Perfecto, lo tendré en cuenta.";
-    requestHommyReaction(isFinalAnswer ? "success" : "write", Math.min(1, (safeStep + 1) / nextFlow.length));
-    acknowledgeAnswer(isFinalAnswer, reply);
+    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    const timing = getHommyInteractionTiming({ reducedMotion, mobile: window.innerWidth <= 760 });
+    requestHommyReaction(isFinalAnswer ? "success" : "write", Math.min(1, (safeStep + 1) / nextFlow.length), timing.reactionDuration);
+    acknowledgeAnswer(isFinalAnswer, reply, timing);
   };
   const goBack = () => {
+    if (interactionLocked.current) return;
     clearHommyMotion();
     cancelPendingReaction();
     interactionLocked.current = false;
+    pendingQuestionFocus.current = false;
+    setAnswerPending(false);
     setHommyState("listening");
     setHommyMessage("Claro, revisemos la respuesta anterior.");
     if (done) setDone(false);
@@ -630,6 +666,8 @@ function Recommender() {
     clearHommyMotion();
     cancelPendingReaction();
     interactionLocked.current = false;
+    pendingQuestionFocus.current = false;
+    setAnswerPending(false);
     setStep(0);
     setAnswers(emptyRecommenderAnswers());
     setDone(false);
@@ -652,20 +690,28 @@ function Recommender() {
       </div>
       <div className="recommender-card">
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
-        <div className="question-panel">
+        <div className="question-panel" aria-busy={answerPending}>
           <div className="quiz-progress" aria-hidden="true"><span style={{ "--progress": progress / 100 }} /></div>
           {!done ? <div className="question-step" key={current.key}>
             <div className="question-top"><span>{current.eyebrow}</span><small>{step + 1} de {questionFlow.length}</small></div>
-            <h3>{current.title}</h3>
-            <div className="choice-grid">
+            <h3 id={`recommender-question-${current.key}`} ref={questionHeadingRef} tabIndex="-1">{current.title}</h3>
+            <div className="choice-grid" role="group" aria-labelledby={`recommender-question-${current.key}`}>
               {current.choices.map((choice) => (
-                <button key={choice.value} onClick={() => choose(choice.value)} className={answers[current.key] === choice.value ? "selected" : ""}>
-                  <span><strong>{choice.label}</strong><small>{choice.detail}</small></span><CaretRight size={18} />
+                <button
+                  type="button"
+                  key={choice.value}
+                  onClick={() => choose(choice.value)}
+                  className={answers[current.key] === choice.value ? "selected" : ""}
+                  aria-pressed={answers[current.key] === choice.value}
+                  disabled={answerPending}
+                >
+                  <span><strong>{choice.label}</strong><small>{choice.detail}</small></span>
+                  {answers[current.key] === choice.value ? <CheckCircle size={19} weight="fill" /> : <CaretRight size={18} />}
                 </button>
               ))}
             </div>
             <div className="question-nav">
-              {step > 0 && <button type="button" className="text-button" onClick={goBack}><ArrowLeft size={15} /> Anterior</button>}
+              {step > 0 && <button type="button" className="text-button" onClick={goBack} disabled={answerPending}><ArrowLeft size={15} /> Anterior</button>}
               <span>Menos de 2 minutos</span>
             </div>
           </div> : <div className="recommendation-result" ref={resultRef} tabIndex="-1" aria-live="polite">
