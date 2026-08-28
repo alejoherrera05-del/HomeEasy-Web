@@ -1,5 +1,15 @@
 # HomeEasy Web Instructions
 
+## Multi-agent delivery model
+
+The current project thread acts as `HOMEEASY — PROJECT LEAD / ORCHESTRATOR`. It coordinates scope, assigns independent reviews, consolidates findings, and prevents contradictory changes. A single agent must never design, implement, and grant final approval to its own work.
+
+Use the repository skills under `.agents/skills/` for independent design/UX, iPhone/Safari, brand/content, local SEO, and release-gate work. The frontend implementer receives approved problems, implements only that scope, runs tests/build, renders the result, and provides complete 1440 px and 390 px evidence. Design, iPhone/Safari, content/SEO, and release review must be performed independently as applicable.
+
+No visual implementation is ready for merge or production until the rendered result has passed the independent design and technical gates. Safari/iPhone claims require physical-device evidence; otherwise record `Requiere validación física en Safari/iPhone`. The release gate may reject a change even when tests and build pass.
+
+Do not work in or modify `alejoherrera05-del/Homeeasy`; this project is exclusively `alejoherrera05-del/HomeEasy-Web`.
+
 Run the local server yourself and open the preview in the browser available to this environment. Do not give the user server-start instructions when you can run it.
 
 Before making substantial visual changes, use the Product Design plugin's `get-context` skill when the visual source is unclear or no longer matches the current goal. When the user gives durable website-specific design feedback, preferences, or decisions, record them in `AGENTS.md`.
@@ -40,6 +50,19 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Process/service content should explain how HomeEasy actually works rather than use a decorative connected-circle timeline. Prefer ordered editorial rows, typography and spacing over a repeated grid of decorative cards.
 - The standalone automation section is intentionally omitted from the current public-site narrative. Do not restore it simply to add content length; only reintroduce automation if there is a concrete product story or customer need worth showing.
 - Brand rose is `#B2566C` across the main UI unless a documented variant is intentionally required.
+
+## Approved next-round visual scope — user direction
+
+These items are approved scope constraints for the next implementation round, but they do not authorize an unreviewed redesign or production push.
+
+- Improve the desktop ambient-light face effect for hero Hommy. Preserve the approved full character, pose, identity, geometry and colors. If a CSS overlay cannot produce a premium result, a tightly cropped second face/screen state may be created for ambient light and swapped in a controlled way. It may brighten eyes, mouth and appropriate luminous expression details, but must not restyle or regenerate the whole character or look like a global filter.
+- Remove accidental vertical emptiness. Audit section gaps, padding, min-heights and transitions between hero, recommender, catalogue, wallpaper, process and contact. Keep intentional editorial breathing room; remove large bands that do not add hierarchy or meaning.
+- Redesign `Cómo trabajamos` with stronger art direction while retaining the six exact customer steps. It may use a real/editorial image, asymmetric composition, a highlighted `Visita sin costo`, useful step content and a clear CTA. Do not reduce it to a cold grid, decorative timeline or generic text boxes.
+- The current contact/closing visual treatment is rejected and must be redesigned. The new close must visibly prioritize HomeEasy, Popayán, the physical address, WhatsApp, Instagram and Facebook, with clear icons for WhatsApp, Instagram, Facebook and location. It must expose `Cotizar proyecto`, `Agendar visita sin costo` and `Hablar por WhatsApp` as distinct actions and may use official triangles or one purposeful supporting image.
+- Rewrite late-page copy only where needed so it is human, concrete, commercially intentional and specific to HomeEasy. Every line must help the visitor understand, trust, advance, contact or quote; reject administrative, interchangeable or AI-sounding filler.
+- Use photography or visual product resources when they add meaning and integrate with the established premium editorial system. Never add images, panels or decoration merely to fill space.
+- Strengthen brand recall and local presence, especially at the close: HomeEasy is in Popayán, advises, quotes, schedules a free visit and installs.
+- After implementation, render the full experience at 1440 px and 390 px, compare before/after, and have independent Design, iPhone/Safari and Release agents review hero, process and contact. Do not approve if the result remains empty, generic, weak or visually unresolved.
 
 ## Repository maintenance
 

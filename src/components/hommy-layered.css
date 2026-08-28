@@ -22,6 +22,32 @@
   isolation: isolate;
 }
 
+.hommy-layered::after {
+  content: "";
+  position: absolute;
+  z-index: 7;
+  left: 40%;
+  top: 25%;
+  width: 20%;
+  height: 16%;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse, rgba(255, 231, 167, .32), transparent 70%);
+}
+
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="reduced-motion"]::after,
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="accessible-fallback"]::after,
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="partial-waapi"]::after {
+  animation: hommy-accessible-feedback 240ms ease-out both;
+}
+
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="reduced-motion"] .hommy-rig-head-gaze,
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="accessible-fallback"] .hommy-rig-head-gaze,
+.hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="partial-waapi"] .hommy-rig-head-gaze {
+  opacity: 1;
+}
+
 .hommy-official-fallback,
 .hommy-rig-layer {
   display: block;
@@ -124,7 +150,16 @@
   59%, 100% { opacity: 0; }
 }
 
+@keyframes hommy-accessible-feedback {
+  0%, 100% { opacity: 0; }
+  35%, 72% { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .hommy-layered[data-hommy-motion="tapTablet"][data-hommy-feedback="reduced-motion"]::after {
+    animation-duration: 240ms !important;
+  }
+  .hommy-rig-head-blink { animation: none; }
   .hommy-rig-head,
   .hommy-rig-upper-arm,
   .hommy-rig-shoulder-rotor,

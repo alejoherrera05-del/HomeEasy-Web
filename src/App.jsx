@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { HomeEasyHero } from "./hero/HomeEasyHero.jsx";
 import HommyLayered from "./components/HommyLayered.jsx";
+import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
@@ -491,6 +492,7 @@ const hommyReplies = {
 function HommyTestGuide({ state, message, reaction }) {
   return (
     <div className={`hommy-test-guide is-${state}`} role="img" aria-label={`Hommy dice: ${message}`}>
+      <span className="visually-hidden" role="status" aria-live="polite">Hommy: {message}</span>
       <div className="hommy-motion-stage" aria-hidden="true">
         <div className="hommy-character">
           <HommyLayered reaction={reaction} />
@@ -1025,6 +1027,7 @@ export function App() {
       <Footer openAdvisorFor={openAdvisorFor} />
       {/* WhatsApp remains available through clear consultation CTAs; no floating button over the product experience. */}
       <AdvisorModal open={advisorOpen} onClose={closeAdvisor} context={advisorContext} />
+      <MotionDebugPanel />
     </>
   );
 }

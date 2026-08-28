@@ -8,19 +8,50 @@ const moveEase = "cubic-bezier(.77,0,.175,1)";
 const touchEase = "cubic-bezier(.33,1,.68,1)";
 const returnEase = "cubic-bezier(.23,1,.32,1)";
 
-function animatePart(element, keyframes, duration = HOMMY_TAP_DURATION) {
-  if (!element) return null;
-  return element.animate(keyframes, { duration, fill: "none" });
+export function supportsWebAnimations(element) {
+  return Boolean(element && typeof element.animate === "function");
 }
 
-export function playHommyTapTablet(parts, reducedMotion = false) {
-  if (reducedMotion) {
-    return {
-      animations: [],
-      finished: Promise.resolve([]),
-      cancel: () => undefined,
-    };
+function animatePart(element, keyframes, duration = HOMMY_TAP_DURATION) {
+  if (!element) return null;
+  if (!supportsWebAnimations(element)) {
+    animatePart.lastError = "Web Animations API no disponible";
+    return null;
   }
+  try {
+    return element.animate(keyframes, { duration, fill: "none" });
+  } catch (error) {
+    animatePart.lastError = error instanceof Error ? error.message : String(error);
+    return null;
+  }
+}
+
+function createTimedFeedbackMotion(mode, error = null, duration = 240) {
+  let timer;
+  let resolveFinished;
+  const finished = new Promise((resolve) => {
+    resolveFinished = resolve;
+    timer = setTimeout(resolve, duration);
+  });
+  return {
+    animations: [],
+    mode,
+    error,
+    finished,
+    cancel: () => {
+      clearTimeout(timer);
+      resolveFinished?.();
+    },
+  };
+}
+
+export function playHommyTapTablet(parts, reducedMotion = false, onError = () => undefined) {
+  if (reducedMotion) {
+    return createTimedFeedbackMotion("reduced-motion");
+  }
+
+  animatePart.lastError = null;
+  const canSwapHands = Boolean(parts.transitionHand && parts.bridgeHand && parts.pointingHand);
 
   const headKeyframes = [
     { transform: "rotate(0deg)", offset: 0 },
@@ -105,7 +136,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { transform: "rotate(0deg)", offset: 0.98, easing: returnEase },
       { transform: "rotate(0deg)", offset: 1 },
     ]),
-    animatePart(parts.hand, [
+    animatePart(canSwapHands ? parts.hand : null, [
       { opacity: 1, offset: 0 },
       { opacity: 1, offset: 0.395 },
       { opacity: 0, offset: 0.396 },
@@ -113,7 +144,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { opacity: 1, offset: 0.855 },
       { opacity: 1, offset: 1 },
     ]),
-    animatePart(parts.transitionHand, [
+    animatePart(canSwapHands ? parts.transitionHand : null, [
       { transform: "rotate(84deg)", offset: 0 },
       { transform: "rotate(84deg)", offset: 0.396 },
       { transform: "rotate(84deg)", offset: 0.475, easing: moveEase },
@@ -122,7 +153,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { transform: "rotate(84deg)", offset: 0.855, easing: returnEase },
       { transform: "rotate(84deg)", offset: 1 },
     ]),
-    animatePart(parts.transitionHand, [
+    animatePart(canSwapHands ? parts.transitionHand : null, [
       { opacity: 0, offset: 0 },
       { opacity: 0, offset: 0.395 },
       { opacity: 1, offset: 0.396 },
@@ -134,7 +165,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { opacity: 0, offset: 0.855 },
       { opacity: 0, offset: 1 },
     ]),
-    animatePart(parts.bridgeHand, [
+    animatePart(canSwapHands ? parts.bridgeHand : null, [
       { transform: "rotate(84deg)", offset: 0 },
       { transform: "rotate(84deg)", offset: 0.476 },
       { transform: "rotate(84deg)", offset: 0.505, easing: moveEase },
@@ -146,7 +177,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { transform: "rotate(84deg)", offset: 0.825, easing: returnEase },
       { transform: "rotate(84deg)", offset: 1 },
     ]),
-    animatePart(parts.bridgeHand, [
+    animatePart(canSwapHands ? parts.bridgeHand : null, [
       { opacity: 0, offset: 0 },
       { opacity: 0, offset: 0.475 },
       { opacity: 1, offset: 0.476 },
@@ -158,7 +189,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { opacity: 0, offset: 0.826 },
       { opacity: 0, offset: 1 },
     ]),
-    animatePart(parts.pointingHand, [
+    animatePart(canSwapHands ? parts.pointingHand : null, [
       { transform: "rotate(92deg)", offset: 0 },
       { transform: "rotate(92deg)", offset: 0.555 },
       { transform: "rotate(92deg)", offset: 0.556, easing: arriveEase },
@@ -169,7 +200,7 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
       { transform: "rotate(92deg)", offset: 0.745, easing: touchEase },
       { transform: "rotate(92deg)", offset: 1 },
     ]),
-    animatePart(parts.pointingHand, [
+    animatePart(canSwapHands ? parts.pointingHand : null, [
       { opacity: 0, offset: 0 },
       { opacity: 0, offset: 0.555 },
       { opacity: 1, offset: 0.556 },
@@ -179,9 +210,21 @@ export function playHommyTapTablet(parts, reducedMotion = false) {
     ]),
   ].filter(Boolean);
 
+  const error = animatePart.lastError;
+  if (error) onError(error);
+  if (!animations.length) return createTimedFeedbackMotion("accessible-fallback", error);
+
   return {
     animations,
+    mode: error ? "partial-waapi" : "waapi",
+    error,
     finished: Promise.allSettled(animations.map((animation) => animation.finished)),
-    cancel: () => animations.forEach((animation) => animation.cancel()),
+    cancel: () => animations.forEach((animation) => {
+      try {
+        animation.cancel();
+      } catch (cancelError) {
+        onError(cancelError instanceof Error ? cancelError.message : String(cancelError));
+      }
+    }),
   };
 }
