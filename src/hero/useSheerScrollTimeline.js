@@ -2,20 +2,28 @@ import { useCallback, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HERO_SCENE, clamp01, getStageIndex } from "./heroScene.config.js";
+import { publishMotionDebug } from "../motionDebug.js";
+import {
+  attachViewportRefreshHandlers,
+  getViewportHeight,
+  getViewportMode,
+  listenForMediaQueryChange,
+  REDUCED_MOTION_QUERY,
+} from "../motionSupport.js";
 
 if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 
 const PROGRESS_EVENT = "homeeasy:hero-progress";
 const SET_PROGRESS_EVENT = "homeeasy:hero-set-progress";
 
-function getScrollDistance() {
+export function getScrollDistance(view = window) {
   const { desktopVh, tabletVh, mobileVh } = HERO_SCENE.scroll;
-  const multiplier = window.innerWidth <= 760
+  const multiplier = view.innerWidth <= 760
     ? mobileVh
-    : window.innerWidth <= 1050
+    : view.innerWidth <= 1050
       ? tabletVh
       : desktopVh;
-  return window.innerHeight * multiplier;
+  return getViewportHeight(view) * multiplier;
 }
 
 export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeGlowRef, onStageChange }) {
@@ -52,6 +60,16 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
       if (import.meta.env.DEV) {
         window.dispatchEvent(new CustomEvent(PROGRESS_EVENT, { detail: { progress, stage } }));
       }
+      publishMotionDebug("hero", {
+        scrollTriggerAvailable: typeof ScrollTrigger?.create === "function",
+        scrollTriggerCreated: Boolean(triggerRef.current),
+        start: triggerRef.current?.start ?? "n/a",
+        end: triggerRef.current?.end ?? "n/a",
+        scrollProgress: Number((triggerRef.current?.progress ?? progress).toFixed(4)),
+        stage,
+        timelineProgress: Number(progress.toFixed(4)),
+        viewportMode: getViewportMode(),
+      });
     };
 
     const context = gsap.context(() => {
@@ -128,17 +146,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
         animation.progress(clamp01(Number(value)));
       };
 
-      const media = gsap.matchMedia();
-      media.add({
-        motion: "(prefers-reduced-motion: no-preference)",
-        reduced: "(prefers-reduced-motion: reduce)",
-      }, (matchContext) => {
-        reducedMotionRef.current = matchContext.conditions.reduced;
-        if (matchContext.conditions.reduced) {
-          animation.progress(0);
-          return undefined;
-        }
-
+      const createScrollTrigger = () => {
         const trigger = ScrollTrigger.create({
           trigger: sectionRef.current,
           pin: pinRef.current,
@@ -148,17 +156,56 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           scrub: HERO_SCENE.scroll.scrub,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          onUpdate: (self) => publishMotionDebug("hero", {
+            scrollProgress: Number(self.progress.toFixed(4)),
+            timelineProgress: Number(animation.progress().toFixed(4)),
+          }),
           onRefresh: (self) => {
             scene.root.dataset.scrollStart = String(self.start);
             scene.root.dataset.scrollEnd = String(self.end);
+            publishMotionDebug("hero", {
+              scrollTriggerCreated: true,
+              start: self.start,
+              end: self.end,
+              lastRefresh: new Date().toISOString(),
+              viewportMode: getViewportMode(),
+            });
           },
         });
         triggerRef.current = trigger;
-        return () => {
-          triggerRef.current = null;
-          trigger.kill();
-        };
-      });
+        publishProgress(animation.progress());
+      };
+
+      const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+      const applyMotionPreference = () => {
+        const currentProgress = animation.progress();
+        triggerRef.current?.kill();
+        triggerRef.current = null;
+        reducedMotionRef.current = mediaQuery.matches;
+        if (!mediaQuery.matches) createScrollTrigger();
+        else {
+          animation.progress(currentProgress);
+          publishMotionDebug("hero", {
+            scrollTriggerCreated: false,
+            start: "n/a",
+            end: "n/a",
+            scrollProgress: Number(currentProgress.toFixed(4)),
+          });
+        }
+      };
+      const removeMotionPreferenceListener = listenForMediaQueryChange(mediaQuery, applyMotionPreference);
+      applyMotionPreference();
+
+      const refreshHero = () => {
+        sectionRef.current?.style.setProperty("--hero-viewport-height", `${getViewportHeight()}px`);
+        if (triggerRef.current) triggerRef.current.refresh();
+        else publishMotionDebug("hero", {
+          lastRefresh: new Date().toISOString(),
+          viewportMode: getViewportMode(),
+        });
+      };
+      const removeViewportRefreshHandlers = attachViewportRefreshHandlers(refreshHero);
+      refreshHero();
 
       const handleDebugProgress = (event) => {
         setDebugProgress(event.detail);
@@ -167,7 +214,10 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
 
       return () => {
         window.removeEventListener(SET_PROGRESS_EVENT, handleDebugProgress);
-        media.revert();
+        removeMotionPreferenceListener();
+        removeViewportRefreshHandlers();
+        triggerRef.current?.kill();
+        triggerRef.current = null;
       };
     }, sectionRef);
 
