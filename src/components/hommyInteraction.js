@@ -3,7 +3,7 @@ import { HOMMY_TAP_DURATION } from "./hommyAnimation.js";
 export const HOMMY_REDUCED_FEEDBACK_DURATION = 240;
 export const HOMMY_DESKTOP_ANSWER_DWELL = 480;
 export const HOMMY_DESKTOP_REACTION_WINDOW = 1100;
-export const HOMMY_MOBILE_ANSWER_DWELL = Math.round(HOMMY_TAP_DURATION * (2 / 3));
+export const HOMMY_MOBILE_ANSWER_DWELL = 760;
 
 export function getHommyInteractionTiming({ reducedMotion, mobile }) {
   if (reducedMotion) {

@@ -10,7 +10,8 @@
     "test:hero": "node --test tests/hero-scene.test.mjs",
     "test:hommy": "node --test tests/hommy-layered-integration.test.mjs",
     "test:motion": "node --test tests/motion-hardening.test.mjs",
-    "test": "pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion",
+    "test:catalog": "node --test tests/catalog-mobile.test.mjs",
+    "test": "pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion && pnpm run test:catalog",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {

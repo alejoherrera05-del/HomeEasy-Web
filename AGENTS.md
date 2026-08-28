@@ -77,6 +77,18 @@ These items are approved scope constraints for the next implementation round, bu
 - Strengthen brand recall and local presence, especially at the close: HomeEasy is in Popayán, advises, quotes, schedules a free visit and installs.
 - After implementation, render the full experience at 1440 px and 390 px, compare before/after, and have independent Design, iPhone/Safari and Release agents review hero, process and contact. Do not approve if the result remains empty, generic, weak or visually unresolved.
 
+## Hero → Hommy → catálogo mobile phase — physical iPhone feedback 2026-08-28
+
+- This phase is limited to the hero handoff, the Hommy recommender and the mobile catalogue. Do not alter wallpaper, process, footer, SEO, the approved hero Hommy asset or core HomeEasy identity while delivering it.
+- The hero must keep its four reversible physical states but should not occupy an excessive number of screens. The final 8–10% is a calm handoff: the stage navigation becomes lighter and recedes while a restrained Hommy recommender cue begins to appear. Do not add another complex ScrollTrigger, input lock or theatrical transition.
+- On phones, Hommy is the recommender's protagonist in a roughly 300–330 px sticky stage contained strictly within the recommender. Keep face, torso, tablet and articulated tapping arm readable, and place the live message as a discreet overlay instead of shrinking the character beside a large text block.
+- After an answer, keep the selected choice and Hommy's response readable for about 650–800 ms before moving to the next question. The complete official rig reaction may finish after the question advances, but rapid taps remain locked until the rig returns safely to idle.
+- The recommender introduction should be compact and direct; it must not consume a large mobile viewport before the first question. Use concrete language such as “Hommy te ayuda a elegir” and let the stage plus question carry the experience.
+- Mobile catalogue navigation has one horizontal row only: the need filters. Hide the second family scroller and replace it with a simple selected-system control showing the product name, its position (for example `1 de 12`) and previous/next arrows. Opening the name or “Cambiar sistema” reveals a simple native-style list or bottom sheet without a new UI library.
+- Mobile galleries keep the primary image large. Thumbnails are approximately 90–105 px wide, horizontally scroll with snap, use labels of at least 12 px, and make video items visibly distinct from photos.
+- Mobile catalogue text minimums for this phase are: filters 13.5–14 px, metadata 12–13 px, thumbnail labels at least 12 px, body 15–16 px, titles 36–42 px and buttons at least 14 px.
+- Validate complete renders at 1440 px and 390 px. Physical Safari/iPhone approval remains separate and must be recorded as required until the user validates the deployed preview.
+
 ## Repository maintenance
 
 - Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.

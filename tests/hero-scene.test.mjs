@@ -28,11 +28,22 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
 test("mobile scroll has a calm opening and a perceptible ambient dwell", () => {
   const initialViewportHeight = 742;
   const mobileDistance = initialViewportHeight * HERO_SCENE.scroll.mobileVh;
-  assert.equal(HERO_SCENE.scroll.mobileVh, 3);
-  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 260);
-  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 400);
-  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 260);
+  assert.equal(HERO_SCENE.scroll.desktopVh, 2.9);
+  assert.equal(HERO_SCENE.scroll.mobileVh, 2.1);
+  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 180);
+  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 275);
+  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 180);
   assert.equal(HERO_STAGES.at(-1).progress, HERO_SCENE.timeline.lampEnd);
+});
+
+test("the single hero timeline owns the restrained final handoff", async () => {
+  const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
+  const { navFadeStart, navFadeEnd } = HERO_SCENE.handoff;
+  assert.ok(HERO_SCENE.timeline.lampEnd <= navFadeStart);
+  assert.ok(navFadeStart < navFadeEnd);
+  assert.ok(navFadeEnd <= 1);
+  assert.match(source, /animation\.to\(stageTrack,[\s\S]*?autoAlpha:\s*0[\s\S]*?HERO_SCENE\.handoff\.navFadeStart/);
+  assert.equal((source.match(/ScrollTrigger\.create\(/g) ?? []).length, 1);
 });
 
 test("timeline milestones remain ordered and expose stable boundary states", () => {

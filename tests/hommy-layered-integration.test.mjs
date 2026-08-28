@@ -179,7 +179,7 @@ test("mobile answer scheduling cannot unlock before the official rig returns to 
   const timing = getHommyInteractionTiming({ reducedMotion: false, mobile: true });
   assert.deepEqual(timing, {
     reactionDuration: 1680,
-    answerDwell: 1120,
+    answerDwell: 760,
     interactionDuration: 1680,
   });
   const scheduled = [];
@@ -192,7 +192,7 @@ test("mobile answer scheduling cannot unlock before the official rig returns to 
     onReactionComplete: () => events.push("complete"),
     schedule: (callback, delay) => scheduled.push({ callback, delay }),
   });
-  assert.deepEqual(scheduled.map(({ delay }) => delay), [1120, 1680]);
+  assert.deepEqual(scheduled.map(({ delay }) => delay), [760, 1680]);
   scheduled[0].callback();
   assert.deepEqual(events, ["advance"]);
   scheduled[1].callback();
@@ -231,6 +231,8 @@ test("mobile keeps the official Hommy rig visible as a sticky adviser", () => {
   assert.match(visualStyles, /\.hommy-test-guide\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*70px/);
   assert.match(visualStyles, /\.hommy-character\s*\{[\s\S]*?aspect-ratio:\s*1/);
   assert.match(visualStyles, /\.choice-grid button strong\s*\{\s*font-size:\s*16px/);
+  assert.match(visualStyles, /--hommy-stage-h:\s*clamp\(300px,\s*39svh,\s*330px\)/);
+  assert.match(visualStyles, /scroll-margin-top:\s*calc\(70px \+ var\(--hommy-stage-h\) \+ 16px\)/);
   assert.doesNotMatch(app, /hommy-test-guide[^>]*role="img"/);
   assert.match(app, /role="status" aria-live="polite" aria-atomic="true"/);
 });

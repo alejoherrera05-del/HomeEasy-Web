@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import { HomeEasyHero } from "./hero/HomeEasyHero.jsx";
 import HommyLayered from "./components/HommyLayered.jsx";
+import { getAdjacentProductId } from "./components/catalogNavigation.js";
 import { getHommyInteractionTiming, scheduleHommyAnswer } from "./components/hommyInteraction.js";
 import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
@@ -509,6 +510,8 @@ function HommyTestGuide({ state, message, reaction }) {
 }
 
 function Recommender() {
+  const recommenderRef = useRef(null);
+  const [handoffVisible, setHandoffVisible] = useState(false);
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(emptyRecommenderAnswers);
   const [done, setDone] = useState(false);
@@ -532,6 +535,21 @@ function Recommender() {
   const primary = recommendations[0];
   const alternatives = recommendations.slice(1, 3);
   const reasons = done ? recommendationReasons(primary, answers) : [];
+
+  useEffect(() => {
+    const section = recommenderRef.current;
+    if (!section) return undefined;
+    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    if (reducedMotion || typeof window.IntersectionObserver !== "function") {
+      setHandoffVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      setHandoffVisible(entry.isIntersecting);
+    }, { rootMargin: "0px 0px -24px", threshold: 0.02 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!done || !resultRef.current) return;
@@ -682,11 +700,15 @@ function Recommender() {
   const progress = done ? 100 : ((step + 1) / questionFlow.length) * 100;
 
   return (
-    <section className="recommender section-shell" id="recomendador">
+    <section
+      className={`recommender section-shell ${handoffVisible ? "is-handoff-visible" : ""}`}
+      id="recomendador"
+      ref={recommenderRef}
+    >
       <div className="editorial-heading recommender-heading">
         <span className="section-label">Encuentra tu sistema</span>
-        <h2>Cuéntale a Hommy cómo es tu ventana y qué necesitas.</h2>
-        <p>En menos de 2 minutos compara apertura, tamaño, luz y privacidad para mostrarte las opciones que mejor encajan.</p>
+        <h2>Hommy te ayuda a elegir.</h2>
+        <p>Responde unas preguntas sobre tu ventana y te mostrará los sistemas que mejor encajan.</p>
       </div>
       <div className="recommender-card">
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
@@ -743,6 +765,8 @@ function Products({ openAdvisorFor }) {
   const [filter, setFilter] = useState("todos");
   const [selectedId, setSelectedId] = useState(products[0].id);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const productPickerRef = useRef(null);
+  const productPickerTriggerRef = useRef(null);
   useEffect(() => {
     const selectRecommendedProduct = (event) => {
       if (!products.some((product) => product.id === event.detail)) return;
@@ -755,6 +779,9 @@ function Products({ openAdvisorFor }) {
   }, []);
   const visibleProducts = filter === "todos" ? products : products.filter((product) => product.filters.includes(filter));
   const selected = products.find((product) => product.id === selectedId) || products[0];
+  const selectedVisibleIndex = Math.max(0, visibleProducts.findIndex((product) => product.id === selected.id));
+  const previousVisibleProduct = visibleProducts[(selectedVisibleIndex - 1 + visibleProducts.length) % visibleProducts.length];
+  const nextVisibleProduct = visibleProducts[(selectedVisibleIndex + 1) % visibleProducts.length];
   const chooseProduct = (id) => {
     setSelectedId(id);
     setMediaIndex(0);
@@ -766,6 +793,29 @@ function Products({ openAdvisorFor }) {
   };
   const changeMedia = (direction) => {
     setMediaIndex((current) => (current + direction + selected.media.length) % selected.media.length);
+  };
+  const moveProduct = (direction) => {
+    if (visibleProducts.length < 2) return;
+    const nextId = getAdjacentProductId(visibleProducts, selected.id, direction);
+    if (nextId) chooseProduct(nextId);
+  };
+  const openProductPicker = (event) => {
+    productPickerTriggerRef.current = event.currentTarget;
+    const dialog = productPickerRef.current;
+    if (typeof dialog?.showModal === "function") dialog.showModal();
+    else dialog?.setAttribute("open", "");
+  };
+  const closeProductPicker = () => {
+    const dialog = productPickerRef.current;
+    if (typeof dialog?.close === "function") dialog.close();
+    else {
+      dialog?.removeAttribute("open");
+      productPickerTriggerRef.current?.focus();
+    }
+  };
+  const chooseProductFromPicker = (id) => {
+    chooseProduct(id);
+    closeProductPicker();
   };
   const activeMedia = selected.media[mediaIndex];
   const photoCount = selected.media.filter((item) => item.type === "image").length;
@@ -780,9 +830,69 @@ function Products({ openAdvisorFor }) {
 
       <div className="product-filters" role="group" aria-label="Filtrar productos por necesidad">
         {filters.map(([value, label]) => (
-          <button key={value} className={filter === value ? "active" : ""} onClick={() => chooseFilter(value)}>{label}</button>
+          <button type="button" key={value} className={filter === value ? "active" : ""} onClick={() => chooseFilter(value)} aria-pressed={filter === value}>{label}</button>
         ))}
       </div>
+
+      <div className="catalog-mobile-selector" aria-label="Sistema seleccionado">
+        <button
+          type="button"
+          className="catalog-mobile-current"
+          onClick={openProductPicker}
+          aria-haspopup="dialog"
+          aria-controls="catalog-product-picker"
+        >
+          <span>{selected.tag}</span>
+          <strong>{selected.name}</strong>
+        </button>
+        <div className="catalog-mobile-position">
+          <span role="status" aria-live="polite" aria-atomic="true"><span className="visually-hidden">{selected.name}, </span>{selectedVisibleIndex + 1} de {visibleProducts.length}</span>
+          <div>
+            <button type="button" onClick={() => moveProduct(-1)} disabled={visibleProducts.length < 2} aria-label={`Sistema anterior: ${previousVisibleProduct?.name ?? selected.name}`}><ArrowLeft size={19} /></button>
+            <button type="button" onClick={() => moveProduct(1)} disabled={visibleProducts.length < 2} aria-label={`Sistema siguiente: ${nextVisibleProduct?.name ?? selected.name}`}><ArrowRight size={19} /></button>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="catalog-mobile-change"
+          onClick={openProductPicker}
+          aria-haspopup="dialog"
+          aria-controls="catalog-product-picker"
+        >
+          <List size={17} /> Cambiar sistema
+        </button>
+      </div>
+
+      <dialog
+        className="catalog-product-picker"
+        id="catalog-product-picker"
+        ref={productPickerRef}
+        aria-labelledby="catalog-product-picker-title"
+        onClose={() => productPickerTriggerRef.current?.focus()}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeProductPicker();
+        }}
+      >
+        <div className="catalog-product-picker-sheet">
+          <header>
+            <div><span>Familias disponibles</span><h3 id="catalog-product-picker-title">Elige un sistema</h3></div>
+            <button type="button" onClick={closeProductPicker} aria-label="Cerrar selector de sistemas"><X size={22} /></button>
+          </header>
+          <div className="catalog-product-picker-list">
+            {visibleProducts.map((product) => (
+              <button
+                type="button"
+                key={product.id}
+                onClick={() => chooseProductFromPicker(product.id)}
+                aria-current={selected.id === product.id ? "true" : undefined}
+              >
+                <span><small>{product.tag}</small><strong>{product.name}</strong></span>
+                {selected.id === product.id ? <CheckCircle size={21} weight="fill" /> : <CaretRight size={18} />}
+              </button>
+            ))}
+          </div>
+        </div>
+      </dialog>
 
       <div className="catalog-layout">
         <aside className="catalog-list" aria-label="Familias de producto">
@@ -803,7 +913,7 @@ function Products({ openAdvisorFor }) {
           </div>
         </aside>
 
-        <article className="product-explorer" aria-live="polite">
+        <article className="product-explorer">
           <div className="product-gallery">
             <div className="product-media-frame">
               {activeMedia.type === "image" ? (

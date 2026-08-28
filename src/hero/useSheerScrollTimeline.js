@@ -41,6 +41,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
     const scene = sceneRef.current;
     const hommyEyeGlow = hommyEyeGlowRef?.current;
     const eyeGlowTarget = hommyEyeGlow ?? { opacity: 0 };
+    const stageTrack = pinRef.current.querySelector(".stage-track");
     const windows = scene.windows;
     if (windows.length !== HERO_SCENE.windows.length) return undefined;
 
@@ -88,6 +89,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
       gsap.set(scene.roomDim, { opacity: 0 });
       gsap.set([scene.lampCore, scene.lampHalo], { opacity: 0 });
       if (hommyEyeGlow) gsap.set(hommyEyeGlow, { opacity: 0 });
+      if (stageTrack) gsap.set(stageTrack, { autoAlpha: 1, y: 0 });
 
       const animation = gsap.timeline({
         paused: true,
@@ -141,6 +143,14 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           value: 1,
           duration: timeline.restEnd - timeline.lampEnd,
         }, timeline.lampEnd);
+
+      if (stageTrack) {
+        animation.to(stageTrack, {
+          autoAlpha: 0,
+          y: 8,
+          duration: HERO_SCENE.handoff.navFadeEnd - HERO_SCENE.handoff.navFadeStart,
+        }, HERO_SCENE.handoff.navFadeStart);
+      }
 
       timelineRef.current = animation;
       publishProgress(0);

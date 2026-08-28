@@ -92,15 +92,19 @@ export const HERO_SCENE = {
     lampEnd: 0.88,
     restEnd: 1,
   },
+  handoff: {
+    navFadeStart: 0.9,
+    navFadeEnd: 0.98,
+  },
   stageThresholds: {
     filteredAt: 0.18,
     privacyAt: 0.58,
     ambientAt: 0.82,
   },
   scroll: {
-    desktopVh: 3.5,
+    desktopVh: 2.9,
     tabletVh: 3,
-    mobileVh: 3,
+    mobileVh: 2.1,
     scrub: 0.35,
   },
 };
