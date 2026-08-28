@@ -8,6 +8,7 @@ import {
   attachViewportRefreshHandlers,
   getViewportHeight,
   getViewportMode,
+  isTouchViewport,
   listenForMediaQueryChange,
 } from "../src/motionSupport.js";
 
@@ -191,4 +192,75 @@ test("hero refresh handlers debounce Safari viewport events and clean up", () =>
   cleanup();
   assert.equal(listeners.size, 0);
   assert.equal(visualListeners.size, 0);
+});
+
+test("touch viewport detection does not confuse a narrow desktop window with mobile Safari", () => {
+  assert.equal(isTouchViewport({ matchMedia: () => ({ matches: true }) }), true);
+  assert.equal(isTouchViewport({ matchMedia: () => ({ matches: false }) }), false);
+  assert.equal(isTouchViewport({ navigator: { maxTouchPoints: 5 } }), true);
+  assert.equal(isTouchViewport({ navigator: { maxTouchPoints: 0 } }), false);
+});
+
+test("hero can ignore Safari toolbar height-only resizes without changing page length", () => {
+  const listeners = new Map();
+  const visualListeners = new Map();
+  const scheduled = [];
+  const view = {
+    innerWidth: 440,
+    matchMedia() { return { matches: true }; },
+    visualViewport: {
+      width: 440,
+      height: 742,
+      addEventListener(name, listener) { visualListeners.set(name, listener); },
+      removeEventListener(name, listener) { if (visualListeners.get(name) === listener) visualListeners.delete(name); },
+    },
+    addEventListener(name, listener) { listeners.set(name, listener); },
+    removeEventListener(name, listener) { if (listeners.get(name) === listener) listeners.delete(name); },
+    setTimeout(callback) { scheduled.push(callback); return scheduled.length; },
+    clearTimeout(id) { scheduled[id - 1] = null; },
+  };
+  let refreshes = 0;
+  const cleanup = attachViewportRefreshHandlers(() => { refreshes += 1; }, {
+    view,
+    delay: 50,
+    ignoreHeightOnlyResize: true,
+  });
+
+  view.visualViewport.height = 850;
+  visualListeners.get("resize")({ type: "resize" });
+  listeners.get("resize")({ type: "resize" });
+  assert.equal(scheduled.filter(Boolean).length, 0);
+
+  view.innerWidth = 832;
+  view.visualViewport.width = 832;
+  visualListeners.get("resize")({ type: "resize" });
+  scheduled.filter(Boolean).at(-1)();
+  assert.equal(refreshes, 1);
+
+  cleanup();
+});
+
+test("a narrow non-touch desktop still refreshes after a height-only resize", () => {
+  const listeners = new Map();
+  const scheduled = [];
+  const view = {
+    innerWidth: 900,
+    visualViewport: { width: 900 },
+    matchMedia() { return { matches: false }; },
+    addEventListener(name, listener) { listeners.set(name, listener); },
+    removeEventListener() {},
+    setTimeout(callback) { scheduled.push(callback); return scheduled.length; },
+    clearTimeout(id) { scheduled[id - 1] = null; },
+  };
+  let refreshes = 0;
+  const cleanup = attachViewportRefreshHandlers(() => { refreshes += 1; }, {
+    view,
+    delay: 50,
+    ignoreHeightOnlyResize: true,
+  });
+
+  listeners.get("resize")({ type: "resize" });
+  scheduled.filter(Boolean).at(-1)();
+  assert.equal(refreshes, 1);
+  cleanup();
 });

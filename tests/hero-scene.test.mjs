@@ -1,11 +1,28 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   HERO_SCENE,
   HERO_STAGES,
   getSceneState,
   getStageIndex,
+  getHeroProgressSnapshot,
 } from "../src/hero/heroScene.config.js";
+
+test("terminal progress stays atomically synchronized after a refresh", () => {
+  assert.deepEqual(getHeroProgressSnapshot(1, 1), {
+    scrollProgress: 1,
+    timelineProgress: 1,
+    stage: 3,
+  });
+});
+
+test("ScrollTrigger refresh and update publish complete progress snapshots", async () => {
+  const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
+  assert.match(source, /onUpdate:\s*\(self\)\s*=>\s*publishProgress\(animation\.progress\(\), self\.progress, self\)/);
+  assert.match(source, /onRefresh:[\s\S]*?animation\.pause\(\)\.progress\(self\.progress\);[\s\S]*?publishProgress\(self\.progress, self\.progress, self\)/);
+  assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
+});
 
 test("the four milestones map to the required physical states", () => {
   assert.deepEqual(getSceneState(0), {

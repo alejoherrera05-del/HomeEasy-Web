@@ -120,6 +120,16 @@ export function getStageIndex(progress) {
   return 3;
 }
 
+export function getHeroProgressSnapshot(timelineProgress, scrollProgress = timelineProgress) {
+  const timeline = clamp01(Number(timelineProgress) || 0);
+  const scroll = clamp01(Number(scrollProgress) || 0);
+  return {
+    scrollProgress: Number(scroll.toFixed(4)),
+    timelineProgress: Number(timeline.toFixed(4)),
+    stage: getStageIndex(timeline),
+  };
+}
+
 export function getSceneState(progress) {
   const value = clamp01(progress);
   const { introEnd, descentEnd, privacyEnd, lampEnd } = HERO_SCENE.timeline;
