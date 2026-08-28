@@ -22,6 +22,22 @@ export const HOMMY_LAYERS = {
   tabletForeground: "/assets/hommy-rig/tablet-contact-edge.png",
 };
 
+export const HOMMY_CRITICAL_LAYERS = [
+  "body",
+  "torso",
+  "head",
+  "shoulderSocket",
+  "upperArm",
+  "elbowRotor",
+  "forearm",
+  "hand",
+  "pointingHand",
+  "tabletForeground",
+];
+
+export const HOMMY_OPTIONAL_LAYERS = Object.keys(HOMMY_LAYERS)
+  .filter((name) => !HOMMY_CRITICAL_LAYERS.includes(name));
+
 export const HOMMY_PIVOTS = {
   head: "50% 43.5%",
   shoulder: "28.3% 54.1%",
