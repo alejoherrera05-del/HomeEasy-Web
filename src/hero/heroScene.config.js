@@ -19,19 +19,19 @@ export const HERO_STAGES = [
     id: "filtered",
     label: "Luz filtrada",
     copy: "Las franjas empiezan a filtrar el sol sin cerrar la relación con el exterior.",
-    progress: 0.3,
+    progress: 0.42,
   },
   {
     id: "privacy",
     label: "Privacidad",
     copy: "Las franjas opacas cubren la vista desde afuera mientras el espacio conserva claridad.",
-    progress: 0.68,
+    progress: 0.72,
   },
   {
     id: "ambient",
     label: "Luz ambiente",
     copy: "Con la persiana cerrada, la luz interior toma protagonismo y el ambiente se vuelve más íntimo.",
-    progress: 0.94,
+    progress: 0.96,
   },
 ];
 
@@ -79,22 +79,29 @@ export const HERO_SCENE = {
     haloRadiusY: 0.18,
   },
   lighting: {
-    roomDimMax: 0.18,
-    windowExposureMax: 0.22,
-    haloMax: 0.76,
+    privacyRoomDim: 0.16,
+    ambientRoomDim: 0.5,
+    privacyWindowExposure: 0.22,
+    ambientWindowExposure: 0.48,
+    haloMax: 0.92,
   },
   timeline: {
     introEnd: 0.08,
-    descentEnd: 0.48,
-    privacyEnd: 0.76,
+    descentEnd: 0.44,
+    privacyEnd: 0.74,
     lampEnd: 0.92,
     restEnd: 1,
+  },
+  stageThresholds: {
+    filteredAt: 0.16,
+    privacyAt: 0.58,
+    ambientAt: 0.82,
   },
   scroll: {
     desktopVh: 3.5,
     tabletVh: 3,
     mobileVh: 2.4,
-    scrub: 0.75,
+    scrub: 0.35,
   },
 };
 
@@ -106,10 +113,10 @@ export function rangeProgress(value, start, end) {
 }
 
 export function getStageIndex(progress) {
-  const { introEnd, descentEnd, privacyEnd } = HERO_SCENE.timeline;
-  if (progress < introEnd) return 0;
-  if (progress < descentEnd) return 1;
-  if (progress < privacyEnd) return 2;
+  const { filteredAt, privacyAt, ambientAt } = HERO_SCENE.stageThresholds;
+  if (progress < filteredAt) return 0;
+  if (progress < privacyAt) return 1;
+  if (progress < ambientAt) return 2;
   return 3;
 }
 

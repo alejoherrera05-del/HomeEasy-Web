@@ -61,3 +61,11 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - The wallpaper section uses a true same-room before/after pair. The camera, architecture, furniture and lighting must match; only the wall finish may change.
 - Contact is a warm, light editorial closing section with the visible WhatsApp number `+57 333 431 9374`, clear service facts and two explicit conversion paths: WhatsApp and quotation request.
 - Decorative brand monograms should be flat vector artwork. Never use glossy or 3D logo treatments as UI decoration.
+
+## Local brand and conversion requirements — 2026-08-27
+
+- HomeEasy is presented as a local Popayán business. Keep the public NAP consistent everywhere: Transversal 9 # 6N-26, Popayán, Cauca; WhatsApp +57 333 431 9374; Instagram and Facebook @homeeasypopayan.
+- The primary local search language is “persianas en Popayán” and “papel de colgadura en Popayán”. Use it naturally in the H1, metadata and closing contact context; never keyword-stuff product descriptions or image alt text.
+- The public service sequence has six customer-facing steps: asesoría, cotización, visita sin costo, medición, definición de sistema/material e instalación.
+- Wallpaper claims must remain grounded in official Pentagrama catalogues. The Conceptos catalogue supports the factual labels lavable, buena resistencia a la luz and fácil de retirar, plus roll sizes and case types; do not extrapolate unsupported performance claims.
+- Desktop and mobile hero layouts are separate compositions. The mobile hero must keep the Sheer Elegance action legible, Hommy grounded and all four light states reachable without clipping.

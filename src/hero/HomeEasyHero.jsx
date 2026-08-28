@@ -5,16 +5,18 @@ import { HeroStageIndicator } from "./HeroStageIndicator.jsx";
 import { HeroDebugPanel } from "./HeroDebugPanel.jsx";
 import { useSheerScrollTimeline } from "./useSheerScrollTimeline.js";
 
-export function HomeEasyHero({ openAdvisor }) {
+export function HomeEasyHero({ openAdvisorFor }) {
   const sectionRef = useRef(null);
   const pinRef = useRef(null);
   const sceneRef = useRef(null);
+  const hommyEyeGlowRef = useRef(null);
   const [stage, setStage] = useState(0);
   const updateStage = useCallback((nextStage) => setStage(nextStage), []);
   const { setProgress } = useSheerScrollTimeline({
     sectionRef,
     pinRef,
     sceneRef,
+    hommyEyeGlowRef,
     onStageChange: updateStage,
   });
 
@@ -24,23 +26,26 @@ export function HomeEasyHero({ openAdvisor }) {
         <SheerEleganceScene ref={sceneRef} />
 
         <div className="hero-content">
-          <h1>Persianas y papel de colgadura para <span>transformar la luz y el ambiente</span> de tu espacio.</h1>
-          <p className="hero-copy">Te asesoramos según tu ventana, la entrada de sol, el nivel de privacidad que buscas y el estilo del ambiente. Medimos, fabricamos e instalamos.</p>
+          <h1>Persianas y papel de colgadura <span>en Popayán</span></h1>
+          <p className="hero-copy">Asesoramos, cotizamos, agendamos visita sin costo y realizamos medición e instalación para tu proyecto.</p>
           <div className="hero-actions">
-            <button className="button" onClick={openAdvisor}>Cotizar proyecto</button>
-            <a className="button secondary" href="#productos">Ver sistemas</a>
+            <button className="button" onClick={() => openAdvisorFor("Cotización de proyecto")}>Cotizar proyecto</button>
+            <button className="button secondary" onClick={() => openAdvisorFor("Agendar visita sin costo")}>Agendar visita sin costo</button>
           </div>
         </div>
 
-        <img
-          className="hommy-hero"
-          src={HERO_SCENE.assets.hommy}
-          alt="Hommy, asesor virtual de HomeEasy, presentando las soluciones"
-          width="1024"
-          height="1280"
-          fetchPriority="high"
-          decoding="async"
-        />
+        <div className="hommy-hero-shell">
+          <img
+            className="hommy-hero"
+            src={HERO_SCENE.assets.hommy}
+            alt="Hommy, asesor de HomeEasy para persianas y papel de colgadura en Popayán"
+            width="1024"
+            height="1280"
+            fetchPriority="high"
+            decoding="async"
+          />
+          <span ref={hommyEyeGlowRef} className="hommy-eye-glow" aria-hidden="true" />
+        </div>
 
         <HeroStageIndicator stage={stage} onSelect={setProgress} />
         <HeroDebugPanel sceneRef={sceneRef} />

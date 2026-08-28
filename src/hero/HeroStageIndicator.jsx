@@ -7,7 +7,7 @@ export function HeroStageIndicator({ stage, onSelect }) {
         <button
           key={item.id}
           type="button"
-          className={index <= stage ? "active" : ""}
+          className={index === stage ? "active" : index < stage ? "complete" : ""}
           aria-pressed={index === stage}
           onClick={() => onSelect(item.progress)}
         >

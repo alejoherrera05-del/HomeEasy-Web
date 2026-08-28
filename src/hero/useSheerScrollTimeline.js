@@ -18,7 +18,7 @@ function getScrollDistance() {
   return window.innerHeight * multiplier;
 }
 
-export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, onStageChange }) {
+export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeGlowRef, onStageChange }) {
   const timelineRef = useRef(null);
   const triggerRef = useRef(null);
   const stageRef = useRef(0);
@@ -28,6 +28,8 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, onStageCh
     if (!sectionRef.current || !pinRef.current || !sceneRef.current) return undefined;
 
     const scene = sceneRef.current;
+    const hommyEyeGlow = hommyEyeGlowRef?.current;
+    const eyeGlowTarget = hommyEyeGlow ?? { opacity: 0 };
     const windows = scene.windows;
     if (windows.length !== HERO_SCENE.windows.length) return undefined;
 
@@ -62,6 +64,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, onStageCh
       gsap.set(exposures, { opacity: 0 });
       gsap.set(scene.roomDim, { opacity: 0 });
       gsap.set([scene.lampCore, scene.lampHalo], { opacity: 0 });
+      if (hommyEyeGlow) gsap.set(hommyEyeGlow, { opacity: 0 });
 
       const animation = gsap.timeline({
         paused: true,
@@ -84,19 +87,31 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, onStageCh
           duration: timeline.privacyEnd - timeline.descentEnd,
         }, timeline.descentEnd)
         .to(exposures, {
-          opacity: lighting.windowExposureMax,
+          opacity: lighting.privacyWindowExposure,
           duration: timeline.privacyEnd - timeline.descentEnd,
         }, timeline.descentEnd)
         .to(scene.roomDim, {
-          opacity: lighting.roomDimMax,
+          opacity: lighting.privacyRoomDim,
           duration: timeline.privacyEnd - timeline.descentEnd,
         }, timeline.descentEnd)
+        .to(exposures, {
+          opacity: lighting.ambientWindowExposure,
+          duration: timeline.lampEnd - timeline.privacyEnd,
+        }, timeline.privacyEnd)
+        .to(scene.roomDim, {
+          opacity: lighting.ambientRoomDim,
+          duration: timeline.lampEnd - timeline.privacyEnd,
+        }, timeline.privacyEnd)
         .to(scene.lampCore, {
           opacity: 1,
           duration: timeline.lampEnd - timeline.privacyEnd,
         }, timeline.privacyEnd)
         .to(scene.lampHalo, {
           opacity: lighting.haloMax,
+          duration: timeline.lampEnd - timeline.privacyEnd,
+        }, timeline.privacyEnd)
+        .to(eyeGlowTarget, {
+          opacity: 0.9,
           duration: timeline.lampEnd - timeline.privacyEnd,
         }, timeline.privacyEnd)
         .to(restMarker, {

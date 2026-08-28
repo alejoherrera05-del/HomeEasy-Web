@@ -226,7 +226,7 @@
 .sheer-scene[data-debug-isolate="lamp"] .room-dim-overlay { opacity: 0 !important; }
 
 .hero-sticky .hero-content,
-.hero-sticky .hommy-hero,
+.hero-sticky .hommy-hero-shell,
 .hero-sticky .stage-copy,
 .hero-sticky .stage-track,
 .hero-sticky .scroll-hint { position: absolute; }
@@ -295,16 +295,15 @@
 
 @media (max-width: 760px) {
   .hero-scroll { height: auto; min-height: 100svh; }
-  .hero-sticky { height: 100svh; min-height: 760px; }
+  .hero-sticky { height: 100svh; min-height: 0; }
   .sheer-scene-canvas { transform: translate3d(-55%, -50%, 0); }
-  .hommy-hero { right: 0; bottom: 88px; width: 55vw; max-height: 39vh; }
   .stage-track button { min-height: 31px; padding: 7px 2px 1px; font-size: 9px; }
   .hero-debug-panel { left: 10px; right: 10px; bottom: 68px; width: auto; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-scroll { height: auto; min-height: 100svh; }
-  .hero-sticky { position: relative !important; height: 100svh; min-height: 760px; transform: none !important; }
+  .hero-sticky { position: relative !important; height: 100svh; min-height: 0; transform: none !important; }
   .sheer-fabric-stack,
   .sheer-bottom-rail,
   .room-dim-overlay,

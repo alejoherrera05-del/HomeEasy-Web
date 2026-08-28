@@ -16,17 +16,17 @@ test("the four milestones map to the required physical states", () => {
     lampProgress: 0,
   });
 
-  assert.deepEqual(getSceneState(0.48), {
-    progress: 0.48,
-    stage: 2,
+  assert.deepEqual(getSceneState(0.44), {
+    progress: 0.44,
+    stage: 1,
     descendProgress: 1,
     closeProgress: 0,
     lampProgress: 0,
   });
 
-  assert.deepEqual(getSceneState(0.76), {
-    progress: 0.76,
-    stage: 3,
+  assert.deepEqual(getSceneState(0.74), {
+    progress: 0.74,
+    stage: 2,
     descendProgress: 1,
     closeProgress: 1,
     lampProgress: 0,
@@ -60,14 +60,14 @@ test("front and back fabric share one immutable pitch", () => {
   assert.equal(HERO_SCENE.fabric.overscanCycles, 1);
 });
 
-test("stage boundaries derive from the same timeline", () => {
+test("stage labels change only after each physical state is visually established", () => {
   assert.equal(HERO_STAGES.length, 4);
-  assert.equal(getStageIndex(0.0799), 0);
-  assert.equal(getStageIndex(0.08), 1);
-  assert.equal(getStageIndex(0.4799), 1);
-  assert.equal(getStageIndex(0.48), 2);
-  assert.equal(getStageIndex(0.7599), 2);
-  assert.equal(getStageIndex(0.76), 3);
+  assert.equal(getStageIndex(0.1599), 0);
+  assert.equal(getStageIndex(0.16), 1);
+  assert.equal(getStageIndex(0.5799), 1);
+  assert.equal(getStageIndex(0.58), 2);
+  assert.equal(getStageIndex(0.8199), 2);
+  assert.equal(getStageIndex(0.82), 3);
 });
 
 test("each stage control lands inside its own visual state", () => {

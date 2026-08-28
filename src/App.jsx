@@ -827,20 +827,15 @@ function Products({ openAdvisorFor }) {
 }
 
 function Wallpaper({ openAdvisorFor }) {
-  const details = [
-    { title: "Escala", copy: "Un patrón puede verse sutil en muestra y dominante en muro completo." },
-    { title: "Textura", copy: "Mate, lino, relieve o brillo reaccionan distinto con la luz del día." },
-    { title: "Integración", copy: "El papel se elige según el mobiliario, el color del piso y el carácter del espacio." },
-  ];
   return (
     <section className="wallpaper section-shell" id="papel-tapiz">
       <div className="wallpaper-heading">
         <div>
           <p className="eyebrow rose">ANTES Y DESPUÉS</p>
-          <h2>El papel de colgadura no solo viste un muro: cambia la percepción del espacio.</h2>
+          <h2>El papel de colgadura transforma el carácter del espacio.</h2>
         </div>
         <div className="wallpaper-lead">
-          <p>La elección correcta depende del diseño, la escala del patrón, el acabado y la luz que recibe el ambiente. Por eso no lo pensamos como un rollo aislado, sino como parte del conjunto: muro, piso, mobiliario e iluminación.</p>
+          <p>Con la referencia adecuada, el papel de colgadura aporta estilo, profundidad y personalidad al ambiente. En HomeEasy te ayudamos a elegir la opción ideal según tu espacio.</p>
           <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel de colgadura")}>Ver opciones de papel de colgadura <ArrowRight size={17} /></button>
         </div>
       </div>
@@ -854,11 +849,7 @@ function Wallpaper({ openAdvisorFor }) {
           <figcaption><span>DESPUÉS</span><strong>El patrón aporta textura, carácter y profundidad.</strong></figcaption>
         </figure>
       </div>
-      <div className="wallpaper-details">
-        {details.map((item) => (
-          <article key={item.title}><strong>{item.title}</strong><p>{item.copy}</p></article>
-        ))}
-      </div>
+      <p className="wallpaper-source-note"><strong>CATÁLOGO PENTAGRAMA</strong><span>Colección Conceptos: referencias lavables, con buena resistencia a la luz y fáciles de retirar. La referencia y cantidad se confirman para cada muro.</span></p>
     </section>
   );
 }
@@ -866,50 +857,56 @@ function Wallpaper({ openAdvisorFor }) {
 
 function Process() {
   const steps = [
-    { n: "01", title: "Entendemos tu espacio", copy: "Revisamos el tipo de ventana, la entrada de luz, la privacidad y cómo usas el ambiente." },
-    { n: "02", title: "Tomamos medidas", copy: "Confirmamos dimensiones y condiciones de instalación directamente en sitio." },
-    { n: "03", title: "Elegimos sistema y tejido", copy: "Definimos mecanismo, recogida, tejido y accionamiento según lo que necesitas controlar." },
-    { n: "04", title: "Instalamos y comprobamos", copy: "Dejamos el sistema instalado y revisamos recorrido, accionamiento y terminación." },
+    { n: "01", title: "Te asesoramos", copy: "Revisamos qué quieres resolver y las condiciones de tu espacio." },
+    { n: "02", title: "Cotizamos tu proyecto", copy: "Preparamos una propuesta clara según el sistema, material y alcance." },
+    { n: "03", title: "Agendamos visita sin costo", copy: "Coordinamos una visita para revisar el espacio personalmente." },
+    { n: "04", title: "Tomamos medidas", copy: "Validamos dimensiones, apertura, instalación y recorrido." },
+    { n: "05", title: "Definimos sistema y material", copy: "Confirmamos mecanismo, tejido, color y acabado." },
+    { n: "06", title: "Instalamos", copy: "Instalamos, probamos el funcionamiento y dejamos todo listo." },
   ];
   return (
-    <section className="process section-shell" id="proceso">
-      <div className="process-heading editorial-heading split-heading">
-        <div><h2>De la asesoría a la instalación, te acompañamos en todo el proceso.</h2></div>
-        <p>Primero entendemos lo que necesitas; después medimos, definimos la solución y dejamos todo instalado.</p>
-      </div>
-      <div className="process-list">
-        {steps.map(({ n, title, copy }) => (
-          <article key={n}>
-            <span>{n}</span>
-            <h3>{title}</h3>
-            <p>{copy}</p>
-          </article>
-        ))}
+    <section className="process" id="proceso">
+      <div className="process-inner section-shell">
+        <div className="process-heading editorial-heading split-heading">
+          <div><h2>Así convertimos una idea en un proyecto bien instalado.</h2></div>
+          <p>Te acompañamos desde la primera pregunta hasta la comprobación final del sistema en tu espacio.</p>
+        </div>
+        <div className="process-list">
+          {steps.map(({ n, title, copy }) => (
+            <article key={n}>
+              <span>{n}</span>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Footer({ openAdvisor }) {
+function Footer({ openAdvisorFor }) {
   return (
     <footer id="contacto">
       <img className="contact-mark" src="/assets/homeeasy-triangle-mark.svg" alt="" aria-hidden="true" />
       <div className="footer-cta">
         <div className="footer-cta-copy">
+          <p className="contact-location">HOMEEASY · POPAYÁN</p>
           <h2>Hablemos de tu proyecto</h2>
           <p>Si ya sabes qué necesitas, te cotizamos. Si todavía estás comparando opciones, te orientamos según el tipo de ventana, la luz que entra y el nivel de privacidad que buscas.</p>
           <div className="contact-actions">
             <a className="button" href={whatsappUrl("Hola HomeEasy, quiero hablar sobre mi proyecto.")} target="_blank" rel="noreferrer"><WhatsappLogo size={19} weight="fill" /> Hablar por WhatsApp</a>
-            <button type="button" className="button secondary" onClick={openAdvisor}>Solicitar cotización</button>
+            <button type="button" className="button secondary" onClick={() => openAdvisorFor("Agendar visita sin costo")}>Agendar visita sin costo</button>
           </div>
         </div>
-        <div className="contact-details" aria-label="Información de contacto y servicio">
-          <div><span>WHATSAPP</span><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a></div>
-          <p>Atención personalizada</p>
-          <p>Medición, fabricación e instalación</p>
-        </div>
+        <address className="contact-directory" aria-label="Información de contacto de HomeEasy Popayán">
+          <div className="contact-entry"><span>WHATSAPP</span><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a></div>
+          <div className="contact-entry"><span>DIRECCIÓN</span><a href="https://www.google.com/maps/search/?api=1&query=Transversal+9+%23+6N-26+Popay%C3%A1n+Colombia" target="_blank" rel="noreferrer">Transversal 9 # 6N-26, Popayán</a></div>
+          <div className="contact-entry"><span>REDES</span><div className="contact-socials"><a href="https://www.instagram.com/homeeasypopayan/" target="_blank" rel="noreferrer" aria-label="HomeEasy Popayán en Instagram">Instagram @homeeasypopayan</a><a href="https://www.facebook.com/homeeasypopayan/" target="_blank" rel="noreferrer" aria-label="HomeEasy Popayán en Facebook">Facebook @homeeasypopayan</a></div></div>
+          <div className="contact-entry"><span>SERVICIO</span><p>Atención personalizada · Medición, fabricación e instalación</p></div>
+        </address>
       </div>
-      <div className="footer-bottom"><Brand /><a href={whatsappUrl("Hola HomeEasy, quiero hacer una consulta.")} target="_blank" rel="noreferrer">{HOMEEASY_WHATSAPP_DISPLAY}</a><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
+      <div className="footer-bottom"><Brand /><p>Persianas y papel de colgadura en Popayán, Cauca.</p><small>© 2026 HomeEasy. Todos los derechos reservados.</small></div>
     </footer>
   );
 }
@@ -969,15 +966,16 @@ function AdvisorModal({ open, onClose, context }) {
     const name = String(formData.get("name") || "").trim();
     const phone = String(formData.get("phone") || "").trim();
     const space = String(formData.get("space") || "").trim();
+    const isVisit = context === "Agendar visita sin costo";
     const message = [
-      "Hola HomeEasy, quiero cotizar un proyecto de persianas.",
+      isVisit ? "Hola HomeEasy, quiero agendar una visita sin costo." : "Hola HomeEasy, quiero cotizar un proyecto de persianas.",
       "",
       `Nombre: ${name}`,
       `Mi WhatsApp: ${phone}`,
       `Espacio: ${space}`,
       context ? `Interés: ${context}` : null,
       "",
-      "Quisiera recibir asesoría y cotización para este espacio.",
+      isVisit ? "Quisiera coordinar la visita para este espacio." : "Quisiera recibir asesoría y cotización para este espacio.",
     ].filter((line) => line !== null).join("\n");
     window.location.assign(whatsappUrl(message));
   };
@@ -987,7 +985,7 @@ function AdvisorModal({ open, onClose, context }) {
     <div className="modal-backdrop" role="presentation" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <section ref={dialogRef} className="advisor-modal" role="dialog" aria-modal="true" aria-labelledby="advisor-title" aria-describedby="advisor-description" tabIndex="-1">
         <button className="modal-close" onClick={onClose} aria-label="Cerrar"><X size={22} /></button>
-        <h2 id="advisor-title">Solicita tu cotización.</h2>
+        <h2 id="advisor-title">{context === "Agendar visita sin costo" ? "Agenda tu visita sin costo." : "Solicita tu cotización."}</h2>
         <p id="advisor-description">Déjanos estos datos básicos y continuamos contigo por WhatsApp con un asesor de HomeEasy.</p>
         {context && <div className="advisor-context"><span>CONSULTA</span><strong>{context}</strong></div>}
         <form onSubmit={continueOnWhatsApp}>
@@ -1018,13 +1016,13 @@ export function App() {
     <>
       <Header openAdvisor={openAdvisor} />
       <main>
-        <HomeEasyHero openAdvisor={openAdvisor} />
+        <HomeEasyHero openAdvisorFor={openAdvisorFor} />
         <Recommender />
         <Products openAdvisorFor={openAdvisorFor} />
         <Wallpaper openAdvisorFor={openAdvisorFor} />
         <Process />
       </main>
-      <Footer openAdvisor={openAdvisor} />
+      <Footer openAdvisorFor={openAdvisorFor} />
       {/* WhatsApp remains available through clear consultation CTAs; no floating button over the product experience. */}
       <AdvisorModal open={advisorOpen} onClose={closeAdvisor} context={advisorContext} />
     </>

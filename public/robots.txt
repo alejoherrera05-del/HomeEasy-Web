@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alejoherrera05-del.github.io/HomeEasy-Web/sitemap.xml
