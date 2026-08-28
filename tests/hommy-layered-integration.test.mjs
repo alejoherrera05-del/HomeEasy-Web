@@ -5,6 +5,7 @@ import test from "node:test";
 import {
   getHommyInteractionTiming,
   scheduleHommyAnswer,
+  shouldScrollHommyTarget,
 } from "../src/components/hommyInteraction.js";
 
 const app = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
@@ -175,11 +176,11 @@ test("answers save first, lock rapid clicks, and allow the same answer after goi
   assert.doesNotMatch(app, /setInterval\(/);
 });
 
-test("mobile answer scheduling cannot unlock before the official rig returns to idle", () => {
+test("mobile answer scheduling reveals the next question only when it is unlocked", () => {
   const timing = getHommyInteractionTiming({ reducedMotion: false, mobile: true });
   assert.deepEqual(timing, {
     reactionDuration: 1680,
-    answerDwell: 760,
+    answerDwell: 1680,
     interactionDuration: 1680,
   });
   const scheduled = [];
@@ -192,10 +193,8 @@ test("mobile answer scheduling cannot unlock before the official rig returns to 
     onReactionComplete: () => events.push("complete"),
     schedule: (callback, delay) => scheduled.push({ callback, delay }),
   });
-  assert.deepEqual(scheduled.map(({ delay }) => delay), [760, 1680]);
+  assert.deepEqual(scheduled.map(({ delay }) => delay), [1680]);
   scheduled[0].callback();
-  assert.deepEqual(events, ["advance"]);
-  scheduled[1].callback();
   assert.deepEqual(events, ["advance", "unlock", "complete"]);
 });
 
@@ -224,6 +223,17 @@ test("desktop timing stays unchanged and reduced motion finishes in 240 ms", () 
   assert.deepEqual(scheduled.map(({ delay }) => delay), [240]);
   scheduled[0].callback();
   assert.deepEqual(events, ["advance", "unlock", "complete"]);
+});
+
+test("mobile question focus scrolls only when the target is outside the usable viewport", () => {
+  const viewport = { viewportTop: 0, viewportHeight: 844, stickyBottom: 400 };
+  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 430, targetBottom: 470 }), false);
+  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 380, targetBottom: 420 }), true);
+  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 820, targetBottom: 860 }), true);
+  assert.match(app, /scrollHommyTargetIntoViewIfNeeded/);
+  assert.match(app, /HOMMY_MOBILE_VIEWPORT_QUERY[\s\S]*?pointer:\s*coarse/);
+  assert.match(app, /block:\s*"nearest"/);
+  assert.doesNotMatch(app, /scrollIntoView\(\{[\s\S]{0,180}?block:\s*"start"/);
 });
 
 test("mobile keeps the official Hommy rig visible as a sticky adviser", () => {

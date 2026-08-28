@@ -12,13 +12,43 @@ import {
 import { HomeEasyHero } from "./hero/HomeEasyHero.jsx";
 import HommyLayered from "./components/HommyLayered.jsx";
 import { getAdjacentProductId } from "./components/catalogNavigation.js";
-import { getHommyInteractionTiming, scheduleHommyAnswer } from "./components/hommyInteraction.js";
+import {
+  getHommyInteractionTiming,
+  scheduleHommyAnswer,
+  shouldScrollHommyTarget,
+} from "./components/hommyInteraction.js";
 import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
+const HOMMY_MOBILE_VIEWPORT_QUERY = "(max-width: 760px), (max-width: 900px) and (max-height: 650px) and (hover: none) and (pointer: coarse)";
 const whatsappUrl = (message) => `https://wa.me/${HOMEEASY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+function scrollHommyTargetIntoViewIfNeeded(target) {
+  if (!target || !window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches) return;
+
+  const targetRect = target.getBoundingClientRect();
+  const visualViewport = window.visualViewport;
+  const viewportTop = visualViewport?.offsetTop ?? 0;
+  const viewportHeight = visualViewport?.height ?? window.innerHeight;
+  const stickyGuide = target.closest(".recommender-card")?.querySelector(".hommy-test-guide");
+  const stickyBottom = stickyGuide?.getBoundingClientRect().bottom ?? viewportTop + 70;
+
+  if (!shouldScrollHommyTarget({
+    targetTop: targetRect.top,
+    targetBottom: targetRect.bottom,
+    viewportTop,
+    viewportHeight,
+    stickyBottom,
+  })) return;
+
+  target.scrollIntoView({
+    behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
+    block: "nearest",
+    inline: "nearest",
+  });
+}
 
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({ type: "video", id, title, duration, label: "Video oficial" });
@@ -554,12 +584,7 @@ function Recommender() {
   useEffect(() => {
     if (!done || !resultRef.current) return;
     resultRef.current.focus({ preventScroll: true });
-    if (window.innerWidth <= 760) {
-      resultRef.current.scrollIntoView({
-        behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
-        block: "start",
-      });
-    }
+    scrollHommyTargetIntoViewIfNeeded(resultRef.current);
   }, [done]);
 
   useEffect(() => {
@@ -568,12 +593,7 @@ function Recommender() {
     const heading = questionHeadingRef.current;
     if (!heading) return;
     heading.focus({ preventScroll: true });
-    if (window.innerWidth <= 760) {
-      heading.scrollIntoView({
-        behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
-        block: "start",
-      });
-    }
+    scrollHommyTargetIntoViewIfNeeded(heading);
   }, [done, step]);
 
   useEffect(() => {
@@ -664,7 +684,10 @@ function Recommender() {
     const isFinalAnswer = safeStep === nextFlow.length - 1;
     const reply = hommyReplies[current.key]?.[value] ?? "Perfecto, lo tendré en cuenta.";
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-    const timing = getHommyInteractionTiming({ reducedMotion, mobile: window.innerWidth <= 760 });
+    const timing = getHommyInteractionTiming({
+      reducedMotion,
+      mobile: window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches,
+    });
     requestHommyReaction(isFinalAnswer ? "success" : "write", Math.min(1, (safeStep + 1) / nextFlow.length), timing.reactionDuration);
     acknowledgeAnswer(isFinalAnswer, reply, timing);
   };

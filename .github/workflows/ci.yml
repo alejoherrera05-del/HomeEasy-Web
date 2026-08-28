@@ -44,6 +44,9 @@ jobs:
       - name: Test iPhone and motion hardening
         run: pnpm run test:motion
 
+      - name: Test mobile catalog
+        run: pnpm run test:catalog
+
       - name: Build production site
         run: pnpm run build
 

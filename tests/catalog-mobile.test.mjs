@@ -5,6 +5,11 @@ import { getAdjacentProductId } from "../src/components/catalogNavigation.js";
 
 const app = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
 const styles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
+const ci = await readFile(new URL("../.github/workflows/ci.yml", import.meta.url), "utf8");
+
+test("the mobile catalogue suite is part of pull request CI", () => {
+  assert.match(ci, /name:\s*Test mobile catalog[\s\S]*?run:\s*pnpm run test:catalog/);
+});
 
 test("mobile product arrows wrap inside the active filtered set", () => {
   const items = [{ id: "one" }, { id: "two" }, { id: "three" }];
