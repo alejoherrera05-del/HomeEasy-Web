@@ -23,6 +23,28 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.match(source, /onRefresh:[\s\S]*?animation\.pause\(\)\.progress\(self\.progress\);[\s\S]*?publishProgress\(self\.progress, self\.progress, self\)/);
   assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
   assert.match(source, /start:\s*0/);
+  assert.match(source, /scrub:\s*HERO_SCENE\.scroll\.scrub/);
+  assert.ok(HERO_SCENE.scroll.scrub >= 0.75 && HERO_SCENE.scroll.scrub <= 1);
+});
+
+test("the blind reads as fabric without becoming blackout", async () => {
+  const styles = await readFile(new URL("../src/hero/heroScene.css", import.meta.url), "utf8");
+  assert.match(styles, /rgba\(184, 177, 168, \.88\)/);
+  assert.match(styles, /rgba\(250, 248, 244, \.06\)/);
+  assert.match(styles, /\.sheer-back-layer\s*\{\s*opacity:\s*\.84/);
+  assert.match(styles, /\.sheer-front-layer\s*\{\s*opacity:\s*\.7/);
+  assert.ok(HERO_SCENE.lighting.privacyWindowExposure <= 0.14);
+  assert.ok(HERO_SCENE.lighting.ambientWindowExposure <= 0.38);
+  assert.equal(HERO_SCENE.fabric.closedPhaseOffset, HERO_SCENE.fabric.bandPitch / 2);
+});
+
+test("Hommy LED uses the approved canvas as its responsive mask", async () => {
+  const component = await readFile(new URL("../src/hero/HomeEasyHero.jsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
+  assert.equal((component.match(/src=\{HERO_SCENE\.assets\.hommy\}/g) ?? []).length, 2);
+  assert.match(component, /hommy-hero hommy-face-led-overlay/);
+  assert.match(styles, /\.hommy-face-led-overlay\s*\{[\s\S]*?mask-image:\s*radial-gradient/);
+  assert.doesNotMatch(styles, /\.hommy-eye-glow\s*\{/);
 });
 
 test("mobile scroll has a calm opening and a perceptible ambient dwell", () => {

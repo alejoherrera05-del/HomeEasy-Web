@@ -241,8 +241,22 @@ test("mobile keeps the official Hommy rig visible as a sticky adviser", () => {
   assert.match(visualStyles, /\.hommy-test-guide\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*70px/);
   assert.match(visualStyles, /\.hommy-character\s*\{[\s\S]*?aspect-ratio:\s*1/);
   assert.match(visualStyles, /\.choice-grid button strong\s*\{\s*font-size:\s*16px/);
-  assert.match(visualStyles, /--hommy-stage-h:\s*clamp\(300px,\s*39svh,\s*330px\)/);
+  assert.match(visualStyles, /--hommy-stage-h:\s*clamp\(220px,\s*29svh,\s*250px\)/);
+  assert.match(visualStyles, /--hommy-stage-h:\s*220px/);
+  assert.match(visualStyles, /width:\s*clamp\(340px,\s*90vw,\s*360px\)/);
+  assert.match(visualStyles, /\.hommy-motion-status\s*\{[\s\S]*?z-index:\s*14/);
   assert.match(visualStyles, /scroll-margin-top:\s*calc\(70px \+ var\(--hommy-stage-h\) \+ 16px\)/);
+  const compactQuestionKeys = app.match(/const compactMobileQuestionKeys = new Set\(\[([\s\S]*?)\]\)/)?.[1] ?? "";
+  for (const key of ["space", "passage", "privacyMode", "style", "budget", "control"]) {
+    assert.match(compactQuestionKeys, new RegExp(`"${key}"`));
+  }
+  for (const key of ["opening", "size", "need"]) {
+    assert.doesNotMatch(compactQuestionKeys, new RegExp(`"${key}"`));
+  }
+  assert.match(app, /data-question=\{current\.key\}/);
+  assert.match(app, /choice-grid--compact-mobile/);
+  assert.match(visualStyles, /@media \(max-width: 359px\)[\s\S]*?choice-grid--compact-mobile\s*\{\s*grid-template-columns:\s*1fr/);
+  assert.match(visualStyles, /\.question-nav \.text-button,[\s\S]*?\.result-actions \.text-button\s*\{\s*min-height:\s*44px/);
   assert.doesNotMatch(app, /hommy-test-guide[^>]*role="img"/);
   assert.match(app, /role="status" aria-live="polite" aria-atomic="true"/);
 });

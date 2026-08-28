@@ -44,7 +44,16 @@ export function HomeEasyHero({ openAdvisorFor }) {
             fetchPriority="high"
             decoding="async"
           />
-          <span ref={hommyEyeGlowRef} className="hommy-eye-glow" aria-hidden="true" />
+          <img
+            ref={hommyEyeGlowRef}
+            className="hommy-hero hommy-face-led-overlay"
+            src={HERO_SCENE.assets.hommy}
+            alt=""
+            width="1024"
+            height="1280"
+            aria-hidden="true"
+            decoding="async"
+          />
         </div>
 
         <HeroStageIndicator stage={stage} onSelect={setProgress} />

@@ -80,9 +80,9 @@ export const HERO_SCENE = {
   },
   lighting: {
     privacyRoomDim: 0.16,
-    ambientRoomDim: 0.5,
-    privacyWindowExposure: 0.22,
-    ambientWindowExposure: 0.48,
+    ambientRoomDim: 0.46,
+    privacyWindowExposure: 0.12,
+    ambientWindowExposure: 0.36,
     haloMax: 0.92,
   },
   timeline: {
@@ -105,7 +105,7 @@ export const HERO_SCENE = {
     desktopVh: 2.9,
     tabletVh: 3,
     mobileVh: 2.1,
-    scrub: 0.35,
+    scrub: 0.8,
   },
 };
 

@@ -335,6 +335,15 @@ const recommenderQuestions = {
   },
 };
 
+const compactMobileQuestionKeys = new Set([
+  "space",
+  "passage",
+  "privacyMode",
+  "style",
+  "budget",
+  "control",
+]);
+
 function getRecommenderFlow(answers) {
   const keys = ["space", "opening"];
   if (answers.opening === "sliding") keys.push("passage");
@@ -561,6 +570,7 @@ function Recommender() {
   const questionFlow = useMemo(() => getRecommenderFlow(answers), [answers]);
   const safeStep = Math.min(step, questionFlow.length - 1);
   const current = questionFlow[safeStep];
+  const compactMobileChoices = compactMobileQuestionKeys.has(current.key);
   const recommendations = useMemo(() => scoreRecommendations(answers), [answers]);
   const primary = recommendations[0];
   const alternatives = recommendations.slice(1, 3);
@@ -737,10 +747,10 @@ function Recommender() {
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
         <div className="question-panel" aria-busy={answerPending}>
           <div className="quiz-progress" aria-hidden="true"><span style={{ "--progress": progress / 100 }} /></div>
-          {!done ? <div className="question-step" key={current.key}>
+          {!done ? <div className="question-step" key={current.key} data-question={current.key}>
             <div className="question-top"><span>{current.eyebrow}</span><small>{step + 1} de {questionFlow.length}</small></div>
             <h3 id={`recommender-question-${current.key}`} ref={questionHeadingRef} tabIndex="-1">{current.title}</h3>
-            <div className="choice-grid" role="group" aria-labelledby={`recommender-question-${current.key}`}>
+            <div className={`choice-grid${compactMobileChoices ? " choice-grid--compact-mobile" : ""}`} role="group" aria-labelledby={`recommender-question-${current.key}`}>
               {current.choices.map((choice) => (
                 <button
                   type="button"

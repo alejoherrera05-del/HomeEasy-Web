@@ -122,11 +122,13 @@
     repeating-linear-gradient(90deg, rgba(255,255,255,.10) 0 1px, rgba(98,89,80,.035) 1px 2px, transparent 2px 4px),
     repeating-linear-gradient(
       to bottom,
-      rgba(193, 187, 178, .74) 0,
-      rgba(199, 193, 184, .72) calc(var(--opaque-band) - 1px),
-      rgba(236, 233, 227, .28) calc(var(--opaque-band) + 1px),
-      rgba(245, 243, 238, .13) calc(var(--band-pitch) - 1px),
-      rgba(193, 187, 178, .74) var(--band-pitch)
+      rgba(184, 177, 168, .88) 0,
+      rgba(193, 186, 177, .84) calc(var(--opaque-band) - 2px),
+      rgba(119, 109, 100, .48) calc(var(--opaque-band) - 1px),
+      rgba(247, 244, 238, .12) calc(var(--opaque-band) + 1px),
+      rgba(250, 248, 244, .06) calc(var(--band-pitch) - 2px),
+      rgba(139, 129, 119, .24) calc(var(--band-pitch) - 1px),
+      rgba(184, 177, 168, .88) var(--band-pitch)
     );
   background-size: auto, 100% var(--band-pitch);
   background-position: 0 0;
@@ -136,8 +138,8 @@
   backface-visibility: hidden;
 }
 
-.sheer-back-layer { opacity: .72; }
-.sheer-front-layer { opacity: .58; }
+.sheer-back-layer { opacity: .84; }
+.sheer-front-layer { opacity: .7; }
 
 .sheer-headrail,
 .sheer-bottom-rail {
@@ -157,10 +159,11 @@
 
 .sheer-bottom-rail {
   top: 1px;
-  height: 9px;
+  height: 11px;
   border-radius: 1px;
-  background: linear-gradient(to bottom, #e8e3dc 0 20%, #b9b0a7 22% 72%, #746b63 75% 100%);
-  box-shadow: 0 3px 5px rgba(38, 33, 29, .22);
+  border-bottom: 1px solid rgba(58, 50, 45, .46);
+  background: linear-gradient(to bottom, #f0ebe4 0 16%, #b7aea4 20% 67%, #6f665e 72% 100%);
+  box-shadow: 0 4px 6px rgba(38, 33, 29, .3);
   will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
