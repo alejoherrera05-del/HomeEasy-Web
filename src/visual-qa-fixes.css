@@ -437,7 +437,7 @@ footer {
   }
 
   .sheer-scene-canvas {
-    width: max(100%, 130vh);
+    width: max(100%, 130svh);
     transform: translate3d(-57%, -50%, 0);
   }
 
@@ -455,6 +455,8 @@ footer {
     width: auto;
     gap: 5px;
     padding-inline: 8px;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .hero-sticky > .stage-track button {
@@ -534,8 +536,8 @@ footer {
   .hommy-hero-shell {
     right: -2vw;
     bottom: 38px;
-    width: min(68vw, calc(42dvh * .8));
-    max-height: 42dvh;
+    width: min(68vw, calc(42svh * .8));
+    max-height: 42svh;
   }
   .hero-sticky > .stage-track button { min-height: 38px; font-size: 8.5px; }
 }

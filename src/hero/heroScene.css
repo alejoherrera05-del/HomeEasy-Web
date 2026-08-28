@@ -33,6 +33,8 @@
   container-type: size;
   overflow: hidden;
   background: #d8d6d2;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .room-base-layer,
@@ -79,6 +81,7 @@
   isolation: isolate;
   background: transparent;
   --opaque-band: calc(var(--band-pitch) * .5);
+  contain: layout paint;
 }
 
 .sheer-fabric-viewport,
@@ -97,6 +100,7 @@
 .sheer-fabric-viewport {
   z-index: 2;
   overflow: hidden;
+  contain: paint;
 }
 
 .sheer-fabric-stack {
@@ -106,6 +110,9 @@
   top: calc(var(--band-pitch) * -1);
   height: calc(100% + var(--band-pitch) * 2);
   will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 
 .sheer-fabric {
@@ -125,6 +132,8 @@
   background-position: 0 0;
   background-repeat: repeat;
   background-blend-mode: soft-light, normal;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .sheer-back-layer { opacity: .72; }
@@ -153,6 +162,8 @@
   background: linear-gradient(to bottom, #e8e3dc 0 20%, #b9b0a7 22% 72%, #746b63 75% 100%);
   box-shadow: 0 3px 5px rgba(38, 33, 29, .22);
   will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .sheer-bottom-rail span {

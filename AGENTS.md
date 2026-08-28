@@ -51,6 +51,11 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - The standalone automation section is intentionally omitted from the current public-site narrative. Do not restore it simply to add content length; only reintroduce automation if there is a concrete product story or customer need worth showing.
 - Brand rose is `#B2566C` across the main UI unless a documented variant is intentionally required.
 
+## Mobile motion stability — user feedback 2026-08-28
+
+- On iPhone Safari, the hero must remain visually solid while the browser bars expand or contract. Height-only `visualViewport` changes during an active scroll must not recalculate the pin distance, stretch the document, reset the scene state or make the blind flicker.
+- Progress, visible scene, active light control and accessible stage label must stay synchronized after refresh, rotation and exact terminal progress.
+
 ## Approved next-round visual scope — user direction
 
 These items are approved scope constraints for the next implementation round, but they do not authorize an unreviewed redesign or production push.

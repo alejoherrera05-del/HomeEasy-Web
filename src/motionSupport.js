@@ -21,6 +21,12 @@ export function getViewportMode(view = typeof window !== "undefined" ? window : 
   return "desktop";
 }
 
+export function isTouchViewport(view = typeof window !== "undefined" ? window : undefined) {
+  const pointerQuery = view?.matchMedia?.("(hover: none) and (pointer: coarse)");
+  if (typeof pointerQuery?.matches === "boolean") return pointerQuery.matches;
+  return Number(view?.navigator?.maxTouchPoints) > 0;
+}
+
 export function listenForMediaQueryChange(query, listener) {
   if (!query || typeof listener !== "function") return () => undefined;
   if (typeof query.addEventListener === "function") {
@@ -53,16 +59,28 @@ export function createDebouncedCallback(callback, delay = 120, scheduler = globa
 export function attachViewportRefreshHandlers(refresh, {
   view = typeof window !== "undefined" ? window : undefined,
   delay = 120,
+  ignoreHeightOnlyResize = false,
 } = {}) {
   if (!view?.addEventListener || typeof refresh !== "function") return () => undefined;
   const debouncedRefresh = createDebouncedCallback(refresh, delay, view);
+  let lastWidth = getViewportWidth(view);
+  const requestRefresh = (event) => {
+    const currentWidth = getViewportWidth(view);
+    const isHeightOnlyResize = event?.type === "resize"
+      && Math.abs(currentWidth - lastWidth) < 1;
+
+    if (ignoreHeightOnlyResize && isTouchViewport(view) && isHeightOnlyResize) return;
+
+    lastWidth = currentWidth;
+    debouncedRefresh(event);
+  };
   const windowEvents = ["resize", "orientationchange", "pageshow", "load"];
-  windowEvents.forEach((eventName) => view.addEventListener(eventName, debouncedRefresh, { passive: true }));
-  view.visualViewport?.addEventListener?.("resize", debouncedRefresh, { passive: true });
+  windowEvents.forEach((eventName) => view.addEventListener(eventName, requestRefresh, { passive: true }));
+  view.visualViewport?.addEventListener?.("resize", requestRefresh, { passive: true });
 
   return () => {
     debouncedRefresh.cancel();
-    windowEvents.forEach((eventName) => view.removeEventListener(eventName, debouncedRefresh));
-    view.visualViewport?.removeEventListener?.("resize", debouncedRefresh);
+    windowEvents.forEach((eventName) => view.removeEventListener(eventName, requestRefresh));
+    view.visualViewport?.removeEventListener?.("resize", requestRefresh);
   };
 }

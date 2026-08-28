@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { HERO_SCENE, clamp01, getStageIndex } from "./heroScene.config.js";
+import { HERO_SCENE, clamp01, getHeroProgressSnapshot } from "./heroScene.config.js";
 import { publishMotionDebug } from "../motionDebug.js";
 import {
   attachViewportRefreshHandlers,
@@ -11,7 +11,10 @@ import {
   REDUCED_MOTION_QUERY,
 } from "../motionSupport.js";
 
-if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({ ignoreMobileResize: true });
+}
 
 const PROGRESS_EVENT = "homeeasy:hero-progress";
 const SET_PROGRESS_EVENT = "homeeasy:hero-set-progress";
@@ -48,9 +51,13 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
     const modules = windows.map((item) => item.module);
     const restMarker = { value: 0 };
 
-    const publishProgress = (value) => {
+    const publishProgress = (value, scrollValue, activeTrigger = triggerRef.current) => {
       const progress = clamp01(value);
-      const stage = getStageIndex(progress);
+      const snapshot = getHeroProgressSnapshot(
+        progress,
+        scrollValue ?? activeTrigger?.progress ?? progress,
+      );
+      const { stage } = snapshot;
       scene.root.dataset.progress = progress.toFixed(4);
       scene.root.dataset.stage = String(stage);
       if (stage !== stageRef.current) {
@@ -62,12 +69,10 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
       }
       publishMotionDebug("hero", {
         scrollTriggerAvailable: typeof ScrollTrigger?.create === "function",
-        scrollTriggerCreated: Boolean(triggerRef.current),
-        start: triggerRef.current?.start ?? "n/a",
-        end: triggerRef.current?.end ?? "n/a",
-        scrollProgress: Number((triggerRef.current?.progress ?? progress).toFixed(4)),
-        stage,
-        timelineProgress: Number(progress.toFixed(4)),
+        scrollTriggerCreated: Boolean(activeTrigger),
+        start: activeTrigger?.start ?? "n/a",
+        end: activeTrigger?.end ?? "n/a",
+        ...snapshot,
         viewportMode: getViewportMode(),
       });
     };
@@ -156,13 +161,12 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           scrub: HERO_SCENE.scroll.scrub,
           anticipatePin: 1,
           invalidateOnRefresh: true,
-          onUpdate: (self) => publishMotionDebug("hero", {
-            scrollProgress: Number(self.progress.toFixed(4)),
-            timelineProgress: Number(animation.progress().toFixed(4)),
-          }),
+          onUpdate: (self) => publishProgress(animation.progress(), self.progress, self),
           onRefresh: (self) => {
             scene.root.dataset.scrollStart = String(self.start);
             scene.root.dataset.scrollEnd = String(self.end);
+            animation.pause().progress(self.progress);
+            publishProgress(self.progress, self.progress, self);
             publishMotionDebug("hero", {
               scrollTriggerCreated: true,
               start: self.start,
@@ -173,7 +177,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           },
         });
         triggerRef.current = trigger;
-        publishProgress(animation.progress());
+        publishProgress(animation.progress(), trigger.progress, trigger);
       };
 
       const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
@@ -204,7 +208,9 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           viewportMode: getViewportMode(),
         });
       };
-      const removeViewportRefreshHandlers = attachViewportRefreshHandlers(refreshHero);
+      const removeViewportRefreshHandlers = attachViewportRefreshHandlers(refreshHero, {
+        ignoreHeightOnlyResize: true,
+      });
       refreshHero();
 
       const handleDebugProgress = (event) => {
