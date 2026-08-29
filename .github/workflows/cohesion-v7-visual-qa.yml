@@ -25,15 +25,17 @@ jobs:
       - name: Test and build
         run: |
           pnpm test
+          node scripts/prepare-process-image.mjs
           pnpm exec vite build --base=/
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
-          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 10000
+          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 40000
       - name: Capture real section screenshots
         run: |
           nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
           CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
           rm -rf /tmp/homeeasy-chrome
           nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-chrome about:blank > /tmp/chrome.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break; sleep .5; done
@@ -74,7 +76,7 @@ jobs:
                 screenWidth: width, screenHeight: height,
               });
               await send('Page.navigate', { url: 'http://127.0.0.1:4173/' });
-              await sleep(2500);
+              await sleep(2200);
               const result = await send('Runtime.evaluate', {
                 expression: `(() => {
                   document.documentElement.style.scrollBehavior='auto';
@@ -89,13 +91,15 @@ jobs:
                     h:document.body.scrollHeight,
                     imageComplete:processImage?.complete,
                     imageWidth:processImage?.naturalWidth || 0,
+                    imageHeight:processImage?.naturalHeight || 0,
                     top:node.getBoundingClientRect().top
                   };
                 })()`,
                 returnByValue: true,
               });
               console.log(file, result.result.value);
-              await sleep(700);
+              if (id === 'proceso' && (!result.result.value?.imageComplete || result.result.value?.imageWidth < 700)) process.exit(2);
+              await sleep(500);
               const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
               fs.writeFileSync(file, Buffer.from(shot.data, 'base64'));
             }
