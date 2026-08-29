@@ -29,41 +29,9 @@ jobs:
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
           test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 10000
-      - name: Add QA-only delayed scroll helper
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          path = Path('dist/client/index.html')
-          html = path.read_text()
-          helper = '''<script>
-          addEventListener('load', () => setTimeout(() => {
-            const id = new URLSearchParams(location.search).get('qa');
-            const node = id && document.getElementById(id);
-            if (!node) return;
-            document.documentElement.style.scrollBehavior = 'auto';
-            node.scrollIntoView({block:'start'});
-            scrollBy(0, -82);
-          }, 1400));
-          </script>'''
-          path.write_text(html.replace('</body>', helper + '</body>'))
-          PY
-      - name: Capture desktop and mobile with system Chrome
-        run: |
-          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
-          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
-          "$CHROME" --version
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=1440,900 --screenshot=qa-desktop-catalog.png 'http://127.0.0.1:4173/?qa=productos'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=1440,900 --screenshot=qa-desktop-wallpaper.png 'http://127.0.0.1:4173/?qa=papel-tapiz'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=1440,900 --screenshot=qa-desktop-process.png 'http://127.0.0.1:4173/?qa=proceso'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=1440,900 --screenshot=qa-desktop-contact.png 'http://127.0.0.1:4173/?qa=contacto'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=390,844 --screenshot=qa-mobile-catalog.png 'http://127.0.0.1:4173/?qa=productos'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=390,844 --screenshot=qa-mobile-wallpaper.png 'http://127.0.0.1:4173/?qa=papel-tapiz'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=390,844 --screenshot=qa-mobile-process.png 'http://127.0.0.1:4173/?qa=proceso'
-          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=4500 --window-size=390,844 --screenshot=qa-mobile-contact.png 'http://127.0.0.1:4173/?qa=contacto'
-      - name: Upload screenshots
+      - name: Upload built site for visual QA
         uses: actions/upload-artifact@v4
         with:
-          name: cohesion-v7-screenshots
-          path: qa-*.png
+          name: cohesion-v7-build
+          path: dist/client
           retention-days: 1
