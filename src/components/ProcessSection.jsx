@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarCheck } from "@phosphor-icons/react";
+import { CalendarCheck } from "@phosphor-icons/react";
 
 const steps = [
   {
@@ -75,7 +75,6 @@ export function ProcessSection({ openAdvisorFor }) {
                 <h3>{title}</h3>
                 <p>{copy}</p>
               </div>
-              {highlight && <ArrowRight className="process-v3-highlight-arrow" size={20} aria-hidden="true" />}
             </article>
           ))}
         </div>
