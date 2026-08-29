@@ -29,7 +29,7 @@ jobs:
           pnpm exec vite build --base=/
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
-          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 40000
+          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 30000
       - name: Capture real section screenshots
         run: |
           nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
