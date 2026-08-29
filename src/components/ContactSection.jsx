@@ -47,12 +47,9 @@ export function ContactSection({ openAdvisorFor }) {
             <span>HOMEEASY · POPAYÁN</span>
           </div>
           <div className="contact-v4-heading-grid">
-            <h2>Ven a vernos. O vamos a tu espacio.</h2>
+            <h2>Ven a vernos. O vamos nosotros.</h2>
             <div>
-              <p>
-                Estamos en la Transversal 9 # 6N-26, Popayán. Si prefieres,
-                agendamos una visita sin costo para revisar tu ventana antes de cotizar.
-              </p>
+              <p>Estamos en Popayán y también visitamos tu espacio sin costo.</p>
               <div className="contact-v4-actions">
                 <button
                   type="button"
