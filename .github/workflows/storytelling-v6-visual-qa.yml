@@ -1,0 +1,68 @@
+name: Storytelling v6 visual QA
+
+on:
+  push:
+    branches: [feat/home-storytelling-v6-clean]
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test and build
+        run: |
+          pnpm test
+          pnpm exec vite build --base=/
+          test -s dist/client/assets/process-materials-approved.webp
+          file dist/client/assets/process-materials-approved.webp
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Capture desktop and mobile
+        run: |
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+            await page.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+            await page.locator('#proceso').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(1000);
+            await page.screenshot({ path: 'qa-desktop-process.png', fullPage: false });
+            await page.screenshot({ path: 'qa-desktop-full.png', fullPage: true });
+
+            const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+            await mobile.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+            await mobile.locator('#proceso').scrollIntoViewIfNeeded();
+            await mobile.waitForTimeout(1000);
+            await mobile.screenshot({ path: 'qa-mobile-process.png', fullPage: false });
+            await mobile.screenshot({ path: 'qa-mobile-full.png', fullPage: true });
+            await browser.close();
+          })();
+          NODE
+      - name: Upload QA screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: storytelling-v6-screenshots
+          path: |
+            qa-desktop-process.png
+            qa-desktop-full.png
+            qa-mobile-process.png
+            qa-mobile-full.png
+          retention-days: 1
