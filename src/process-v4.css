@@ -9,7 +9,7 @@
   position: relative;
   overflow: clip;
   color: #1f1d1b;
-  background: #f5f5f3;
+  background: #f7f7f5;
   border-top: 1px solid rgba(32, 29, 27, .10);
   border-bottom: 1px solid rgba(32, 29, 27, .10);
 }
@@ -50,19 +50,19 @@
 }
 
 .process-v4-heading-grid > div {
-  max-width: 540px;
+  max-width: 550px;
 }
 
 .process-v4-heading-grid > div > p {
   margin: 0;
   color: #625d59;
-  font-size: 17px;
-  line-height: 1.72;
+  font-size: 18px;
+  line-height: 1.7;
 }
 
 .process-v4-main-cta {
   margin-top: 28px;
-  min-height: 48px;
+  min-height: 50px;
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -99,17 +99,17 @@
 
 .process-v4-board figcaption span {
   color: var(--rose-dark);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 760;
   letter-spacing: .12em;
   white-space: nowrap;
 }
 
 .process-v4-board figcaption p {
-  max-width: 510px;
+  max-width: 520px;
   margin: 0;
   color: #69635f;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
@@ -118,8 +118,8 @@
 }
 
 .process-v4-rail article {
-  min-height: 142px;
-  padding: 24px 0 27px;
+  min-height: 152px;
+  padding: 25px 0 28px;
   display: grid;
   grid-template-columns: 42px 34px minmax(0, 1fr);
   gap: 14px;
@@ -128,7 +128,7 @@
 }
 
 .process-v4-number {
-  padding-top: 5px;
+  padding-top: 6px;
   color: #9c9691;
   font-size: 11px;
   font-weight: 720;
@@ -136,29 +136,29 @@
 }
 
 .process-v4-icon {
-  margin-top: 2px;
+  margin-top: 3px;
   color: var(--rose-dark);
 }
 
 .process-v4-step-copy h3 {
   margin: 0;
-  font-size: clamp(20px, 1.75vw, 26px);
-  line-height: 1.15;
+  font-size: clamp(22px, 1.85vw, 27px);
+  line-height: 1.14;
   letter-spacing: -.03em;
   font-weight: 590;
 }
 
 .process-v4-step-copy p {
-  max-width: 470px;
-  margin: 9px 0 0;
+  max-width: 480px;
+  margin: 10px 0 0;
   color: #68625e;
-  font-size: 14px;
-  line-height: 1.58;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .process-v4-proof {
-  margin-top: 22px;
-  padding: 17px 0 0;
+  margin-top: 24px;
+  padding: 18px 0 0;
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
   gap: 11px;
@@ -173,7 +173,7 @@
 
 .process-v4-proof p {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.55;
 }
 
@@ -210,7 +210,7 @@
 
   .process-v4-kicker {
     margin-bottom: 14px;
-    font-size: 9.5px;
+    font-size: 10px;
   }
 
   .process-v4-heading-grid {
@@ -226,7 +226,7 @@
 
   .process-v4-heading-grid > div > p {
     max-width: 36ch;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.62;
   }
 
@@ -258,18 +258,18 @@
   }
 
   .process-v4-board figcaption span {
-    font-size: 9px;
+    font-size: 10px;
     white-space: normal;
   }
 
   .process-v4-board figcaption p {
-    max-width: 34ch;
-    font-size: 12.5px;
+    max-width: 35ch;
+    font-size: 13.5px;
   }
 
   .process-v4-rail article {
     min-height: 0;
-    padding: 20px 0 22px;
+    padding: 21px 0 23px;
     grid-template-columns: 30px 30px minmax(0, 1fr);
     gap: 10px;
   }
@@ -279,22 +279,26 @@
   }
 
   .process-v4-icon {
-    width: 21px;
-    height: 21px;
+    width: 22px;
+    height: 22px;
   }
 
   .process-v4-step-copy h3 {
-    font-size: 20px;
+    font-size: 21.5px;
   }
 
   .process-v4-step-copy p {
-    margin-top: 7px;
-    font-size: 13px;
-    line-height: 1.52;
+    margin-top: 8px;
+    font-size: 14.5px;
+    line-height: 1.55;
   }
 
   .process-v4-proof {
     margin-top: 18px;
+  }
+
+  .process-v4-proof p {
+    font-size: 13.5px;
   }
 }
 
