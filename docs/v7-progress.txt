@@ -1,1 +1,0 @@
-Image repair and cohesion pass in progress.
