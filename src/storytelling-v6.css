@@ -1,0 +1,242 @@
+/* HomeEasy storytelling v6
+   One visual language across sections: stronger hooks, less visible copy, progressive reveal. */
+
+:root {
+  --story-title-size: clamp(48px, 5.15vw, 76px);
+  --story-title-line: .97;
+  --story-title-track: -.052em;
+  --story-copy: #68615d;
+}
+
+/* ONE HEADING LANGUAGE --------------------------------------------------- */
+:where(
+  .recommender-heading,
+  .catalog-entry-heading,
+  .wallpaper-heading,
+  .process-v5-intro,
+  .contact-v4-heading
+) h2 {
+  margin-top: 0;
+  font-size: var(--story-title-size) !important;
+  line-height: var(--story-title-line) !important;
+  letter-spacing: var(--story-title-track) !important;
+  font-weight: 510 !important;
+  text-wrap: balance;
+}
+
+:where(
+  .recommender-heading .section-label,
+  .catalog-entry-heading .section-label,
+  .wallpaper-heading .eyebrow,
+  .process-v5-kicker,
+  .contact-v4-brandline span
+) {
+  font-size: 10.5px !important;
+  font-weight: 760 !important;
+  letter-spacing: .13em !important;
+  text-transform: uppercase;
+}
+
+/* LESS EXPLANATION, MORE HIERARCHY ------------------------------------- */
+.recommender-heading > p,
+.catalog-entry-heading > p,
+.wallpaper-lead > p,
+.process-v5-intro-grid > div > p,
+.contact-v4-heading-grid > div > p {
+  color: var(--story-copy) !important;
+  font-size: 16px !important;
+  line-height: 1.58 !important;
+}
+
+.recommender-heading > p { max-width: 38ch !important; }
+.catalog-entry-heading > p { max-width: 35ch !important; }
+.wallpaper-lead > p { max-width: 38ch !important; }
+.process-v5-intro-grid > div > p { max-width: 34ch !important; }
+.contact-v4-heading-grid > div > p { max-width: 36ch !important; }
+
+/* Give every module a clear visual beginning instead of a dead gap. */
+.products.section-shell,
+.wallpaper.section-shell,
+.process-v5-shell {
+  scroll-margin-top: 86px;
+}
+
+.wallpaper.section-shell {
+  padding-top: clamp(82px, 7vw, 112px) !important;
+  padding-bottom: clamp(58px, 5vw, 76px) !important;
+}
+
+.process-v5-shell {
+  padding-top: clamp(76px, 6.5vw, 104px) !important;
+}
+
+/* PROCESS: keep the photo doing the persuasive work. */
+.process-v5-intro {
+  margin-bottom: clamp(42px, 4.5vw, 64px) !important;
+}
+
+.process-v5-visual img {
+  background: #e1ded9;
+}
+
+.process-v5-visual figcaption {
+  padding-top: 12px !important;
+}
+
+.process-v5-stories article {
+  padding: clamp(46px, 5.7vw, 82px) 0 !important;
+}
+
+.process-v5-stories h3 {
+  max-width: 10.5ch !important;
+  font-size: clamp(38px, 3.7vw, 56px) !important;
+  line-height: .98 !important;
+  letter-spacing: -.05em !important;
+}
+
+.process-v5-stories article > p:last-child {
+  max-width: 32ch !important;
+  margin-top: 16px !important;
+  font-size: 15.5px !important;
+  line-height: 1.55 !important;
+}
+
+.process-v5-closing {
+  padding-top: 28px !important;
+}
+
+/* WALLPAPER: image comparison is the story; copy supports it. */
+.wallpaper-heading {
+  margin-bottom: clamp(38px, 4vw, 58px) !important;
+}
+
+.wallpaper-comparison figure img {
+  transition: transform 800ms cubic-bezier(.2,.7,.2,1);
+}
+
+.wallpaper-comparison figure:hover img {
+  transform: scale(1.012);
+}
+
+/* CONTACT: keep action and location primary, explanations secondary. */
+.contact-v4-heading {
+  padding-bottom: clamp(46px, 5vw, 70px) !important;
+}
+
+/* PROGRESSIVE REVEAL ---------------------------------------------------- */
+.storytelling-ready .story-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 620ms cubic-bezier(.2,.75,.25,1),
+    transform 760ms cubic-bezier(.2,.75,.25,1);
+  will-change: opacity, transform;
+}
+
+.storytelling-ready .story-reveal.story-image-reveal {
+  transform: translateY(16px) scale(.988);
+  clip-path: inset(5% 0 0 0);
+  transition:
+    opacity 720ms cubic-bezier(.2,.75,.25,1),
+    transform 900ms cubic-bezier(.2,.75,.25,1),
+    clip-path 900ms cubic-bezier(.2,.75,.25,1);
+}
+
+.storytelling-ready .story-reveal.is-story-visible {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+.storytelling-ready .process-v5-stories article:nth-child(2) { transition-delay: 55ms; }
+.storytelling-ready .process-v5-stories article:nth-child(3) { transition-delay: 90ms; }
+
+@media (max-width: 760px) {
+  :root { --story-title-size: clamp(42px, 11.6vw, 54px); }
+
+  :where(
+    .recommender-heading,
+    .catalog-entry-heading,
+    .wallpaper-heading,
+    .process-v5-intro,
+    .contact-v4-heading
+  ) h2 {
+    line-height: .98 !important;
+    letter-spacing: -.048em !important;
+  }
+
+  /* Mobile users should reach the experience, not read an introduction to it. */
+  .recommender-heading > p {
+    display: none !important;
+  }
+
+  .catalog-entry-heading > p {
+    max-width: 31ch !important;
+    font-size: 15px !important;
+  }
+
+  .wallpaper-lead > p {
+    display: none !important;
+  }
+
+  .process-v5-intro-grid > div > p {
+    max-width: 31ch !important;
+    font-size: 15px !important;
+  }
+
+  .contact-v4-heading-grid > div > p {
+    max-width: 31ch !important;
+    font-size: 15px !important;
+  }
+
+  .wallpaper.section-shell {
+    padding-top: 64px !important;
+    padding-bottom: 44px !important;
+  }
+
+  .process-v5-shell {
+    padding-top: 60px !important;
+    padding-bottom: 68px !important;
+  }
+
+  .process-v5-intro {
+    margin-bottom: 26px !important;
+  }
+
+  .process-v5-editorial {
+    gap: 24px !important;
+  }
+
+  .process-v5-visual figcaption p {
+    font-size: 13px !important;
+  }
+
+  .process-v5-stories article {
+    padding: 34px 0 40px !important;
+  }
+
+  .process-v5-stories h3 {
+    max-width: 10ch !important;
+    font-size: clamp(34px, 9.5vw, 42px) !important;
+  }
+
+  .process-v5-stories article > p:last-child {
+    max-width: 30ch !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  .storytelling-ready .story-reveal {
+    transform: translateY(18px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storytelling-ready .story-reveal,
+  .storytelling-ready .story-reveal.story-image-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    transition: none !important;
+  }
+}
