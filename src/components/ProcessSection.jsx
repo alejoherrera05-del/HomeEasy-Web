@@ -11,20 +11,20 @@ const processSteps = [
   {
     n: "01",
     icon: CalendarCheck,
-    title: "Vemos tu espacio",
+    title: "Visitamos tu espacio",
     copy: "Agendamos una visita sin costo en Popayán para entender la ventana, la entrada de luz, la apertura y lo que realmente quieres controlar.",
   },
   {
     n: "02",
     icon: CubeTransparent,
-    title: "Lo visualizas antes de decidir",
-    copy: "Cuando el proyecto lo permite, usamos realidad mixta para revisar proporción y presencia de la persiana o cortina directamente sobre tu ventana.",
+    title: "La ves en tu ventana antes de fabricarla",
+    copy: "Cuando el proyecto lo permite, usamos realidad mixta para revisar proporción y presencia de la persiana o cortina directamente sobre tu propia ventana.",
   },
   {
     n: "03",
     icon: Swatches,
-    title: "Comparamos materiales reales",
-    copy: "Llevamos muestras de Sheer Elegance, velos, Screen y Blackout para comparar transparencia, textura y color con la luz real del ambiente.",
+    title: "Comparamos con muestras reales",
+    copy: "Llevamos Sheer Elegance, velos, Screen y Blackout para comparar transparencia, textura y color con la luz real del ambiente.",
   },
   {
     n: "04",
