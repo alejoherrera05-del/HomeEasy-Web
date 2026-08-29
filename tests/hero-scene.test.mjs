@@ -9,10 +9,28 @@ import {
   getHeroProgressSnapshot,
 } from "../src/hero/heroScene.config.js";
 import {
+  getHeroScrub,
+  getHeroTiming,
   getHeroPinStart,
   getScrollDistance,
   HERO_MOBILE_PRE_PIN,
 } from "../src/hero/useSheerScrollTimeline.js";
+
+const mobileView = (height = 742) => ({
+  innerWidth: 390,
+  innerHeight: height,
+  visualViewport: { width: 390, height },
+  matchMedia: () => ({ matches: true }),
+  navigator: { maxTouchPoints: 5 },
+});
+
+const desktopView = (height = 900) => ({
+  innerWidth: 1440,
+  innerHeight: height,
+  visualViewport: { width: 1440, height },
+  matchMedia: () => ({ matches: false }),
+  navigator: { maxTouchPoints: 0 },
+});
 
 test("terminal progress stays atomically synchronized after a refresh", () => {
   assert.deepEqual(getHeroProgressSnapshot(1, 1), {
@@ -28,21 +46,49 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.match(source, /onRefresh:[\s\S]*?animation\.pause\(\)\.progress\(self\.progress\);[\s\S]*?publishProgress\(self\.progress, self\.progress, self\)/);
   assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
   assert.match(source, /start:\s*\(\)\s*=>\s*getHeroPinStart\(\)/);
-  assert.match(source, /scrub:\s*HERO_SCENE\.scroll\.scrub/);
-  assert.ok(HERO_SCENE.scroll.scrub >= 0.75 && HERO_SCENE.scroll.scrub <= 1);
+  assert.match(source, /scrub:\s*getHeroScrub\(\)/);
+  assert.ok(getHeroScrub(desktopView()) >= 1 && getHeroScrub(desktopView()) <= 1.2);
+  assert.equal(getHeroScrub(mobileView()), 0.8);
+  assert.equal(HERO_SCENE.scroll.scrub, 0.8);
+});
+
+test("desktop uses a reversible ambient plateau before controls withdraw", () => {
+  const desktop = getHeroTiming(desktopView());
+  const mobile = getHeroTiming(mobileView());
+  const plateau = desktop.handoff.navFadeStart - desktop.timeline.lampEnd;
+
+  assert.ok(plateau >= 0.12 && plateau <= 0.16, `desktop plateau was ${plateau}`);
+  assert.ok(desktop.timeline.lampEnd < desktop.handoff.navFadeStart);
+  assert.ok(desktop.handoff.navFadeStart < desktop.handoff.navFadeEnd);
+  assert.ok(desktop.handoff.navFadeEnd <= desktop.timeline.restEnd);
+  assert.deepEqual(mobile, {
+    timeline: HERO_SCENE.timeline,
+    handoff: HERO_SCENE.handoff,
+  });
+});
+
+test("leaving the hero commits one exact terminal snapshot without intercepting input", async () => {
+  const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
+  const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
+  const onLeaveStart = source.indexOf("onLeave:");
+  assert.ok(onLeaveStart >= 0, "ScrollTrigger must synchronize its terminal state on leave");
+  const terminalHook = source.slice(onLeaveStart, onLeaveStart + 360);
+  const settleStart = source.indexOf("const settleEndpoint");
+  assert.ok(settleStart >= 0, "terminal synchronization should have one shared endpoint helper");
+  const settleEndpoint = source.slice(settleStart, settleStart + 360);
+
+  assert.match(terminalHook, /settleEndpoint\(self,\s*1,\s*true\)/);
+  assert.match(settleEndpoint, /animation\.pause\(\)\.progress\(endpoint\)/);
+  assert.match(settleEndpoint, /publishProgress\(endpoint,\s*endpoint,\s*self\)/);
+  assert.doesNotMatch(source, /addEventListener\(\s*["'`](?:wheel|touchmove)["'`]/);
+  assert.doesNotMatch(source, /(?:window|document|document\.documentElement|document\.body)\.scrollTop\s*=/);
+  assert.match(visualStyles, /:root\s*\{\s*scroll-behavior:\s*auto\s*;?\s*\}/);
 });
 
 test("mobile has a stable native pre-pin before the blind timeline begins", async () => {
   const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
   const heroStyles = await readFile(new URL("../src/hero/heroScene.css", import.meta.url), "utf8");
   const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
-  const mobileView = (height) => ({
-    innerWidth: 390,
-    innerHeight: height,
-    visualViewport: { width: 390, height },
-    matchMedia: () => ({ matches: true }),
-    navigator: { maxTouchPoints: 5 },
-  });
   assert.equal(HERO_MOBILE_PRE_PIN, 112);
   assert.ok(HERO_MOBILE_PRE_PIN >= 90 && HERO_MOBILE_PRE_PIN <= 140);
   assert.equal(getHeroPinStart(mobileView(742)), 112);
@@ -95,7 +141,7 @@ test("the single hero timeline owns the restrained final handoff", async () => {
   assert.ok(HERO_SCENE.timeline.lampEnd <= navFadeStart);
   assert.ok(navFadeStart < navFadeEnd);
   assert.ok(navFadeEnd <= 1);
-  assert.match(source, /animation\.to\(stageTrack,[\s\S]*?autoAlpha:\s*0[\s\S]*?HERO_SCENE\.handoff\.navFadeStart/);
+  assert.match(source, /animation\.to\(stageTrack,[\s\S]*?autoAlpha:\s*0[\s\S]*?duration:\s*handoff\.navFadeEnd\s*-\s*handoff\.navFadeStart[\s\S]*?handoff\.navFadeStart/);
   assert.equal((source.match(/ScrollTrigger\.create\(/g) ?? []).length, 1);
 });
 

@@ -92,8 +92,19 @@ export const HERO_SCENE = {
     lampEnd: 0.88,
     restEnd: 1,
   },
+  desktopTimeline: {
+    introEnd: 0.12,
+    descentEnd: 0.42,
+    privacyEnd: 0.64,
+    lampEnd: 0.78,
+    restEnd: 1,
+  },
   handoff: {
     navFadeStart: 0.9,
+    navFadeEnd: 0.98,
+  },
+  desktopHandoff: {
+    navFadeStart: 0.92,
     navFadeEnd: 0.98,
   },
   stageThresholds: {
@@ -106,6 +117,7 @@ export const HERO_SCENE = {
     tabletVh: 3,
     mobileVh: 2.1,
     scrub: 0.8,
+    desktopScrub: 1.1,
   },
 };
 

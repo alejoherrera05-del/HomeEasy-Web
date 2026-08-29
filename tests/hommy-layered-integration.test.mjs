@@ -15,6 +15,54 @@ const styles = await readFile(new URL("../src/components/hommy-layered.css", imp
 const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
 const packageJson = await readFile(new URL("../package.json", import.meta.url), "utf8");
 
+function extractCssBlock(source, header, startAt = 0) {
+  const headerIndex = source.indexOf(header, startAt);
+  assert.ok(headerIndex >= 0, `Missing CSS block: ${header}`);
+  const openIndex = source.indexOf("{", headerIndex);
+  assert.ok(openIndex >= 0, `Missing opening brace for: ${header}`);
+  let depth = 0;
+  for (let index = openIndex; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    if (source[index] === "}") depth -= 1;
+    if (depth === 0) return source.slice(openIndex + 1, index);
+  }
+  assert.fail(`Missing closing brace for: ${header}`);
+}
+
+function cssRule(source, selector) {
+  const rules = [...source.matchAll(/([^{}]+)\{([^{}]*)\}/g)]
+    .filter((match) => match[1].split(",").map((item) => item.trim()).includes(selector));
+  assert.ok(rules.length > 0, `Missing CSS rule: ${selector}`);
+  return rules.at(-1)[2];
+}
+
+function cssDeclaration(rule, property) {
+  const declaration = rule
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith(`${property}:`));
+  assert.ok(declaration, `Missing ${property} declaration`);
+  return declaration.slice(declaration.indexOf(":") + 1).trim();
+}
+
+function optionalCssDeclaration(rule, property) {
+  const declaration = rule
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith(`${property}:`));
+  return declaration?.slice(declaration.indexOf(":") + 1).trim() ?? null;
+}
+
+function firstNumber(value, unit) {
+  const match = value.match(new RegExp(`(-?\\d+(?:\\.\\d+)?)${unit}`));
+  assert.ok(match, `Expected a ${unit} value in: ${value}`);
+  return Number(match[1]);
+}
+
+function millisecondValues(value) {
+  return [...value.matchAll(/(-?\d+(?:\.\d+)?)ms/g)].map((match) => Number(match[1]));
+}
+
 test("the fallback is the new immutable official PNG", async () => {
   const bytes = await readFile(new URL("../public/assets/hommy/hommy-official.png", import.meta.url));
   assert.equal(createHash("sha256").update(bytes).digest("hex"), "3df14ad330c2ad7e31dfe4c04d70218c09b5c59a8d074281e78678d426beca63");
@@ -231,6 +279,64 @@ test("mobile question changes preserve focus without moving the document", () =>
   assert.match(answerFlowSource, /resultRef\.current\.focus\(\{ preventScroll: true \}\)/);
   assert.match(answerFlowSource, /heading\.focus\(\{ preventScroll: true \}\)/);
   assert.match(app, /HOMMY_MOBILE_VIEWPORT_QUERY[\s\S]*?pointer:\s*coarse/);
+});
+
+test("desktop Hommy enters editorially, supports hashes, and stays visible with reduced motion", () => {
+  const recommenderSource = app.slice(
+    app.indexOf("function Recommender()"),
+    app.indexOf("function Products("),
+  );
+  const handoffStart = visualStyles.indexOf("/* HERO → HOMMY");
+  const desktopMediaStart = visualStyles.indexOf("@media (min-width: 761px)", handoffStart);
+  assert.ok(handoffStart >= 0 && desktopMediaStart > handoffStart);
+  const desktopEntry = extractCssBlock(visualStyles, "@media (min-width: 761px)", handoffStart);
+  const heading = cssRule(desktopEntry, ".recommender-heading");
+  const card = cssRule(desktopEntry, ".recommender-card");
+  const visibleHeading = cssRule(desktopEntry, ".recommender.is-handoff-visible .recommender-heading");
+  const visibleCard = cssRule(desktopEntry, ".recommender.is-handoff-visible .recommender-card");
+
+  assert.equal(cssDeclaration(heading, "opacity"), "0");
+  assert.equal(cssDeclaration(card, "opacity"), "0");
+  const headingOffset = firstNumber(cssDeclaration(heading, "transform"), "px");
+  const cardOffset = firstNumber(cssDeclaration(card, "transform"), "px");
+  assert.ok(headingOffset >= 16 && headingOffset <= 20);
+  assert.ok(cardOffset >= 16 && cardOffset <= 20);
+  for (const rule of [heading, card]) {
+    const duration = firstNumber(cssDeclaration(rule, "transition"), "ms");
+    assert.ok(duration >= 420 && duration <= 560, `entry duration was ${duration}ms`);
+    assert.doesNotMatch(rule, /\bfilter\s*:|\bscale\(/);
+  }
+  const explicitDelay = optionalCssDeclaration(card, "transition-delay");
+  const cardTimes = millisecondValues(cssDeclaration(card, "transition"));
+  const cardDelay = explicitDelay
+    ? firstNumber(explicitDelay, "ms")
+    : cardTimes.find((value) => value >= 60 && value <= 100);
+  assert.ok(cardDelay >= 60 && cardDelay <= 100, `card transition delay was ${cardDelay}ms`);
+  assert.equal(cssDeclaration(visibleHeading, "opacity"), "1");
+  assert.equal(cssDeclaration(visibleHeading, "transform"), "translateY(0)");
+  assert.equal(cssDeclaration(visibleCard, "opacity"), "1");
+  assert.equal(cssDeclaration(visibleCard, "transform"), "translateY(0)");
+
+  assert.match(recommenderSource, /window\.location\.hash\s*===\s*["']#recomendador["']/);
+  assert.match(recommenderSource, /IntersectionObserver/);
+  assert.match(recommenderSource, /entry\.boundingClientRect\.top\s*>\s*0/);
+  assert.doesNotMatch(recommenderSource, /ScrollTrigger/);
+
+  const mobileEntry = extractCssBlock(visualStyles, "@media (max-width: 760px),", handoffStart);
+  const mobileHeading = cssRule(mobileEntry, ".recommender-heading");
+  const mobileCard = cssRule(mobileEntry, ".recommender-card");
+  assert.equal(firstNumber(cssDeclaration(mobileHeading, "transition"), "ms"), 320);
+  assert.equal(cssDeclaration(mobileCard, "opacity"), "1");
+  assert.equal(cssDeclaration(mobileCard, "transform"), "none");
+  assert.equal(cssDeclaration(mobileCard, "transition"), "none");
+
+  const reducedMotion = extractCssBlock(visualStyles, "@media (prefers-reduced-motion: reduce)");
+  for (const selector of [".recommender-heading", ".recommender-card"]) {
+    const rule = cssRule(reducedMotion, selector);
+    assert.equal(cssDeclaration(rule, "opacity"), "1");
+    assert.equal(cssDeclaration(rule, "transform"), "none");
+    assert.equal(cssDeclaration(rule, "transition"), "none");
+  }
 });
 
 test("mobile frames the complete official Hommy gesture in one non-sticky quiz scene", () => {

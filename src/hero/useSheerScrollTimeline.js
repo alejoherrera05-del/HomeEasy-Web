@@ -49,6 +49,18 @@ export function getScrollDistance(view = window, stableStageHeight = 0) {
   return viewportHeight * multiplier;
 }
 
+export function getHeroScrub(view = window) {
+  return usesStableMobileHeroViewport(view)
+    ? HERO_SCENE.scroll.scrub
+    : HERO_SCENE.scroll.desktopScrub;
+}
+
+export function getHeroTiming(view = window) {
+  return usesStableMobileHeroViewport(view)
+    ? { timeline: HERO_SCENE.timeline, handoff: HERO_SCENE.handoff }
+    : { timeline: HERO_SCENE.desktopTimeline, handoff: HERO_SCENE.desktopHandoff };
+}
+
 export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeGlowRef, onStageChange }) {
   const timelineRef = useRef(null);
   const triggerRef = useRef(null);
@@ -99,7 +111,8 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
     };
 
     const context = gsap.context(() => {
-      const { timeline, lighting, fabric } = HERO_SCENE;
+      const { lighting, fabric } = HERO_SCENE;
+      const { timeline, handoff } = getHeroTiming();
       const pitch = () => scene.canvas.getBoundingClientRect().height * (fabric.bandPitch / HERO_SCENE.canvas.height);
       const railTravel = (index) => Math.max(0, modules[index].clientHeight - rails[index].offsetHeight - 2);
 
@@ -168,8 +181,8 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
         animation.to(stageTrack, {
           autoAlpha: 0,
           y: 8,
-          duration: HERO_SCENE.handoff.navFadeEnd - HERO_SCENE.handoff.navFadeStart,
-        }, HERO_SCENE.handoff.navFadeStart);
+          duration: handoff.navFadeEnd - handoff.navFadeStart,
+        }, handoff.navFadeStart);
       }
 
       timelineRef.current = animation;
@@ -196,6 +209,11 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
 
       const createScrollTrigger = () => {
         const stableMobile = usesStableMobileHeroViewport();
+        const settleEndpoint = (self, endpoint, finishScrub = false) => {
+          if (finishScrub) self.getTween()?.progress(1);
+          animation.pause().progress(endpoint);
+          publishProgress(endpoint, endpoint, self);
+        };
         const trigger = ScrollTrigger.create({
           trigger: sectionRef.current,
           // Mobile uses one native sticky stage for both the pre-pin and the
@@ -208,10 +226,16 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           // the blind timeline, so one gesture produces one visual transition.
           start: () => getHeroPinStart(),
           end: () => `+=${getScrollDistance(window, pinRef.current?.clientHeight)}`,
-          scrub: HERO_SCENE.scroll.scrub,
+          scrub: getHeroScrub(),
           anticipatePin: stableMobile ? 0 : 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => publishProgress(animation.progress(), self.progress, self),
+          onLeave: (self) => settleEndpoint(self, 1, true),
+          onLeaveBack: (self) => settleEndpoint(self, 0, true),
+          onScrubComplete: (self) => {
+            if (self.progress >= 0.9999) settleEndpoint(self, 1);
+            else if (self.progress <= 0.0001) settleEndpoint(self, 0);
+          },
           onRefresh: (self) => {
             scene.root.dataset.scrollStart = String(self.start);
             scene.root.dataset.scrollEnd = String(self.end);

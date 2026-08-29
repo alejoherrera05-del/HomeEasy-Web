@@ -583,7 +583,9 @@ function HommyTestGuide({ state, message, reaction }) {
 
 function Recommender() {
   const recommenderRef = useRef(null);
-  const [handoffVisible, setHandoffVisible] = useState(false);
+  const [handoffVisible, setHandoffVisible] = useState(
+    () => typeof window !== "undefined" && window.location.hash === "#recomendador",
+  );
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState(emptyRecommenderAnswers);
   const [done, setDone] = useState(false);
@@ -612,12 +614,15 @@ function Recommender() {
     const section = recommenderRef.current;
     if (!section) return undefined;
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-    if (reducedMotion || typeof window.IntersectionObserver !== "function") {
+    const directEntry = window.location.hash === "#recomendador";
+    if (directEntry || reducedMotion || typeof window.IntersectionObserver !== "function") {
       setHandoffVisible(true);
       return undefined;
     }
     const observer = new IntersectionObserver(([entry]) => {
-      setHandoffVisible(entry.isIntersecting);
+      if (!entry.isIntersecting && entry.boundingClientRect.top > 0) return;
+      setHandoffVisible(true);
+      observer.disconnect();
     }, { rootMargin: "0px 0px -24px", threshold: 0.02 });
     observer.observe(section);
     return () => observer.disconnect();
@@ -832,8 +837,29 @@ function Products({ openAdvisorFor }) {
   const [filter, setFilter] = useState("todos");
   const [selectedId, setSelectedId] = useState(products[0].id);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const productsRef = useRef(null);
   const productPickerRef = useRef(null);
   const productPickerTriggerRef = useRef(null);
+  const [catalogHeadingVisible, setCatalogHeadingVisible] = useState(
+    () => typeof window !== "undefined" && window.location.hash === "#productos",
+  );
+  useEffect(() => {
+    const section = productsRef.current;
+    if (!section) return undefined;
+    const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    const directEntry = window.location.hash === "#productos";
+    if (directEntry || reducedMotion || typeof window.IntersectionObserver !== "function") {
+      setCatalogHeadingVisible(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting && entry.boundingClientRect.top > 0) return;
+      setCatalogHeadingVisible(true);
+      observer.disconnect();
+    }, { rootMargin: "0px 0px -48px", threshold: 0.04 });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => {
     const selectRecommendedProduct = (event) => {
       if (!products.some((product) => product.id === event.detail)) return;
@@ -889,8 +915,12 @@ function Products({ openAdvisorFor }) {
   const videoCount = selected.media.filter((item) => item.type === "video").length;
 
   return (
-    <section className="products section-shell" id="productos">
-      <div className="section-heading editorial-heading split-heading">
+    <section
+      className={`products section-shell ${catalogHeadingVisible ? "is-catalog-heading-visible" : ""}`}
+      id="productos"
+      ref={productsRef}
+    >
+      <div className="section-heading editorial-heading split-heading catalog-entry-heading">
         <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Explora las persianas según lo que necesitas controlar.</h2></div>
         <p>Compara luz, privacidad, tamaño, tejido y accionamiento para entender rápidamente qué sistema puede funcionar mejor.</p>
       </div>

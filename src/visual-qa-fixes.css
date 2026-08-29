@@ -682,6 +682,8 @@ footer {
 
 /* HERO → HOMMY handoff: the real recommender enters during the final hero
    range; the existing hero timeline dismisses the stage navigation. */
+:root { scroll-behavior: auto; }
+
 html,
 body {
   max-width: 100%;
@@ -700,6 +702,8 @@ body {
   margin-top: -23vh;
   padding-top: 96px;
 }
+
+.recommender { padding-block-end: 0; }
 
 .hero-scroll + .recommender::before {
   content: "";
@@ -721,6 +725,42 @@ body {
   transform: translateY(0);
 }
 
+@media (min-width: 761px) {
+  .recommender-heading {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 500ms cubic-bezier(.22, 1, .36, 1), transform 500ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+  .recommender-card {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 500ms cubic-bezier(.22, 1, .36, 1), transform 500ms cubic-bezier(.22, 1, .36, 1);
+    transition-delay: 80ms;
+  }
+
+  .recommender.is-handoff-visible .recommender-heading {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .recommender.is-handoff-visible .recommender-card {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.catalog-entry-heading {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 460ms cubic-bezier(.22, 1, .36, 1), transform 460ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.products.is-catalog-heading-visible .catalog-entry-heading {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .catalog-mobile-selector { display: none; }
 
 @media (max-width: 1050px) and (min-width: 761px) {
@@ -734,7 +774,11 @@ body {
     padding-top: 56px;
   }
 
-  .recommender-heading { margin-bottom: 20px; }
+  .recommender-heading {
+    margin-bottom: 20px;
+    transform: translateY(20px);
+    transition: opacity 320ms cubic-bezier(.22, 1, .36, 1), transform 320ms cubic-bezier(.22, 1, .36, 1);
+  }
   .recommender-heading .section-label { margin-bottom: 10px; }
   .recommender-heading h2 {
     margin-bottom: 10px;
@@ -750,8 +794,11 @@ body {
   .recommender-card {
     --hommy-stage-h: clamp(210px, 27svh, 224px);
     grid-template-rows: var(--hommy-stage-h) auto;
+    opacity: 1;
     overflow: hidden;
     overflow-anchor: none;
+    transform: none;
+    transition: none;
   }
   .hommy-test-guide {
     position: relative;
@@ -1093,9 +1140,12 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-scroll + .recommender { margin-top: 0; }
-  .recommender-heading {
+  .recommender-heading,
+  .recommender-card,
+  .catalog-entry-heading {
     opacity: 1;
     transform: none;
+    transition: none;
   }
   .question-step,
   .recommendation-result { animation: none !important; }
