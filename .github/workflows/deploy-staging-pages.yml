@@ -2,7 +2,7 @@ name: Deploy HomeEasy staging
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/art-direction-process-contact-final]
   workflow_dispatch:
 
 permissions:
