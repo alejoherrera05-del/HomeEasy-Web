@@ -1,0 +1,86 @@
+name: Cohesion v7 visual QA
+
+on:
+  push:
+    branches: [feat/home-cohesion-v7]
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test and build
+        run: |
+          pnpm test
+          pnpm exec vite build --base=/
+          test -s dist/client/assets/process-materials-final.webp
+          file dist/client/assets/process-materials-final.webp
+          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 10000
+      - name: Locate system Chrome
+        run: |
+          which google-chrome || which google-chrome-stable || which chromium || which chromium-browser
+          google-chrome --version || google-chrome-stable --version || chromium --version || chromium-browser --version
+      - name: Install Playwright library only
+        run: npm install --no-save playwright@1.55.0
+      - name: Capture desktop and mobile
+        run: |
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          node <<'NODE'
+          const { chromium } = require('playwright');
+          const fs = require('fs');
+          const candidates = ['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium','/usr/bin/chromium-browser'];
+          const executablePath = candidates.find(fs.existsSync);
+          if (!executablePath) throw new Error('System Chrome not found');
+          (async () => {
+            const browser = await chromium.launch({ headless: true, executablePath, args: ['--no-sandbox'] });
+
+            const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+            await desktop.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+            await desktop.locator('#productos').scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(700);
+            await desktop.screenshot({ path: 'qa-desktop-catalog-to-process.png', fullPage: false });
+            await desktop.locator('#proceso').scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(700);
+            await desktop.screenshot({ path: 'qa-desktop-process.png', fullPage: false });
+            await desktop.locator('#contacto').scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(500);
+            await desktop.screenshot({ path: 'qa-desktop-contact.png', fullPage: false });
+
+            const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+            await mobile.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
+            await mobile.locator('#productos').scrollIntoViewIfNeeded();
+            await mobile.waitForTimeout(700);
+            await mobile.screenshot({ path: 'qa-mobile-catalog.png', fullPage: false });
+            await mobile.locator('#papel-tapiz').scrollIntoViewIfNeeded();
+            await mobile.waitForTimeout(700);
+            await mobile.screenshot({ path: 'qa-mobile-wallpaper.png', fullPage: false });
+            await mobile.locator('#proceso').scrollIntoViewIfNeeded();
+            await mobile.waitForTimeout(700);
+            await mobile.screenshot({ path: 'qa-mobile-process.png', fullPage: false });
+            await mobile.locator('#contacto').scrollIntoViewIfNeeded();
+            await mobile.waitForTimeout(500);
+            await mobile.screenshot({ path: 'qa-mobile-contact.png', fullPage: false });
+
+            await browser.close();
+          })();
+          NODE
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: cohesion-v7-screenshots
+          path: qa-*.png
+          retention-days: 1
