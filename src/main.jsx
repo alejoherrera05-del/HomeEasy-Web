@@ -4,6 +4,7 @@ import { App } from "./App.jsx";
 import "./styles.css";
 import "./hero/heroScene.css";
 import "./visual-qa-fixes.css";
+import "./art-direction-v3.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
