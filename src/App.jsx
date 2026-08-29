@@ -17,6 +17,8 @@ import {
   scheduleHommyAnswer,
 } from "./components/hommyInteraction.js";
 import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
+import { ProcessSection } from "./components/ProcessSection.jsx";
+import { ContactSection } from "./components/ContactSection.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
@@ -1275,9 +1277,9 @@ export function App() {
         <Recommender />
         <Products openAdvisorFor={openAdvisorFor} />
         <Wallpaper openAdvisorFor={openAdvisorFor} />
-        <Process />
+        <ProcessSection openAdvisorFor={openAdvisorFor} />
       </main>
-      <Footer openAdvisorFor={openAdvisorFor} />
+      <ContactSection openAdvisorFor={openAdvisorFor} />
       {/* WhatsApp remains available through clear consultation CTAs; no floating button over the product experience. */}
       <AdvisorModal open={advisorOpen} onClose={closeAdvisor} context={advisorContext} />
       <MotionDebugPanel />
