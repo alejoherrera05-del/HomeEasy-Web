@@ -782,7 +782,7 @@ function Recommender() {
       <div className="editorial-heading recommender-heading">
         <span className="section-label">Encuentra tu sistema</span>
         <h2>Hommy te ayuda a elegir.</h2>
-        <p>Responde unas preguntas sobre tu ventana y te mostrará los sistemas que mejor encajan.</p>
+        <p>Cuéntale cómo es tu ventana. Hommy filtra las opciones por ti.</p>
       </div>
       <div className="recommender-card">
         <HommyTestGuide state={hommyState} message={hommyMessage} reaction={hommyReaction} />
@@ -923,8 +923,8 @@ function Products({ openAdvisorFor }) {
       ref={productsRef}
     >
       <div className="section-heading editorial-heading split-heading catalog-entry-heading">
-        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Explora las persianas según lo que necesitas controlar.</h2></div>
-        <p>Compara luz, privacidad, tamaño, tejido y accionamiento para entender rápidamente qué sistema puede funcionar mejor.</p>
+        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Encuentra la persiana por lo que quieres lograr.</h2></div>
+        <p>Empieza por luz, privacidad, oscuridad o tamaño.</p>
       </div>
 
       <div className="product-filters" role="group" aria-label="Filtrar productos por necesidad">
@@ -1089,10 +1089,10 @@ function Wallpaper({ openAdvisorFor }) {
       <div className="wallpaper-heading">
         <div>
           <p className="eyebrow rose">ANTES Y DESPUÉS</p>
-          <h2>El papel de colgadura transforma el carácter del espacio.</h2>
+          <h2>Una pared puede cambiar toda la habitación.</h2>
         </div>
         <div className="wallpaper-lead">
-          <p>Con la referencia adecuada, el papel de colgadura aporta estilo, profundidad y personalidad al ambiente. En HomeEasy te ayudamos a elegir la opción ideal según tu espacio.</p>
+          <p>Compara el antes y después. Elige textura, escala y tono con el espacio delante.</p>
           <button type="button" className="text-button" onClick={() => openAdvisorFor("Papel de colgadura")}>Ver opciones de papel de colgadura <ArrowRight size={17} /></button>
         </div>
       </div>
@@ -1106,7 +1106,7 @@ function Wallpaper({ openAdvisorFor }) {
           <figcaption><span>DESPUÉS</span><strong>El patrón aporta textura, carácter y profundidad.</strong></figcaption>
         </figure>
       </div>
-      <p className="wallpaper-source-note"><strong>CATÁLOGO PENTAGRAMA</strong><span>Colección Conceptos: referencias lavables, con buena resistencia a la luz y fáciles de retirar. La referencia y cantidad se confirman para cada muro.</span></p>
+      <p className="wallpaper-source-note"><strong>CATÁLOGO PENTAGRAMA</strong><span>La referencia y cantidad se confirman para cada muro.</span></p>
     </section>
   );
 }
