@@ -9,7 +9,7 @@ export function HeroStageIndicator({ stage, onSelect }) {
           type="button"
           className={index === stage ? "active" : index < stage ? "complete" : ""}
           aria-pressed={index === stage}
-          onClick={() => onSelect(item.progress)}
+          onClick={() => onSelect(index)}
         >
           {item.label}
         </button>

@@ -94,9 +94,11 @@ export const HERO_SCENE = {
   },
   desktopTimeline: {
     introEnd: 0.12,
-    descentEnd: 0.42,
-    privacyEnd: 0.64,
-    lampEnd: 0.78,
+    descentEnd: 0.38,
+    privacyEnd: 0.56,
+    // Finish the physical story early enough that the illuminated room can
+    // breathe through the last 30% of the native desktop scroll range.
+    lampEnd: 0.7,
     restEnd: 1,
   },
   handoff: {
@@ -112,6 +114,12 @@ export const HERO_SCENE = {
     privacyAt: 0.58,
     ambientAt: 0.82,
   },
+  desktopStageThresholds: {
+    filteredAt: 0.17,
+    privacyAt: 0.47,
+    ambientAt: 0.64,
+  },
+  desktopStageProgress: [0, 0.38, 0.56, 0.7],
   scroll: {
     desktopVh: 2.9,
     tabletVh: 3,
@@ -128,21 +136,25 @@ export function rangeProgress(value, start, end) {
   return clamp01((value - start) / (end - start));
 }
 
-export function getStageIndex(progress) {
-  const { filteredAt, privacyAt, ambientAt } = HERO_SCENE.stageThresholds;
+export function getStageIndex(progress, thresholds = HERO_SCENE.stageThresholds) {
+  const { filteredAt, privacyAt, ambientAt } = thresholds;
   if (progress < filteredAt) return 0;
   if (progress < privacyAt) return 1;
   if (progress < ambientAt) return 2;
   return 3;
 }
 
-export function getHeroProgressSnapshot(timelineProgress, scrollProgress = timelineProgress) {
+export function getHeroProgressSnapshot(
+  timelineProgress,
+  scrollProgress = timelineProgress,
+  thresholds = HERO_SCENE.stageThresholds,
+) {
   const timeline = clamp01(Number(timelineProgress) || 0);
   const scroll = clamp01(Number(scrollProgress) || 0);
   return {
     scrollProgress: Number(scroll.toFixed(4)),
     timelineProgress: Number(timeline.toFixed(4)),
-    stage: getStageIndex(timeline),
+    stage: getStageIndex(timeline, thresholds),
   };
 }
 

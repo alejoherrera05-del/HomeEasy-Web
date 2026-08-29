@@ -24,6 +24,23 @@
   letter-spacing: .11em;
 }
 
+/* Desktop fast-scroll checkpoint. The document remains a native, proximity
+   scroller; Hommy is the only hard stop, so a forceful wheel/trackpad gesture
+   cannot skip from the hero straight into the catalogue. The root padding
+   accounts for the 82px fixed header without double-offsetting the target. */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: 82px;
+  }
+
+  #recomendador {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    scroll-margin-top: 0;
+  }
+}
+
 /* Hero: a clear reading zone, a grounded ambassador and four distinct light states. */
 .hero-sticky::after {
   background: linear-gradient(90deg, rgba(244,241,237,.99) 0%, rgba(244,241,237,.97) 30%, rgba(244,241,237,.68) 45%, rgba(244,241,237,.10) 61%, transparent 72%);

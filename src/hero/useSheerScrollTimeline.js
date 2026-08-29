@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { HERO_SCENE, clamp01, getHeroProgressSnapshot } from "./heroScene.config.js";
+import { HERO_SCENE, HERO_STAGES, clamp01, getHeroProgressSnapshot } from "./heroScene.config.js";
 import { publishMotionDebug } from "../motionDebug.js";
 import {
   attachViewportRefreshHandlers,
@@ -61,6 +61,19 @@ export function getHeroTiming(view = window) {
     : { timeline: HERO_SCENE.desktopTimeline, handoff: HERO_SCENE.desktopHandoff };
 }
 
+export function getHeroStageThresholds(view = window) {
+  return usesStableMobileHeroViewport(view)
+    ? HERO_SCENE.stageThresholds
+    : HERO_SCENE.desktopStageThresholds;
+}
+
+export function getHeroStageProgress(stageIndex, view = window) {
+  const index = Math.max(0, Math.min(HERO_STAGES.length - 1, Number(stageIndex) || 0));
+  return usesStableMobileHeroViewport(view)
+    ? HERO_STAGES[index].progress
+    : HERO_SCENE.desktopStageProgress[index];
+}
+
 export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeGlowRef, onStageChange }) {
   const timelineRef = useRef(null);
   const triggerRef = useRef(null);
@@ -89,6 +102,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
       const snapshot = getHeroProgressSnapshot(
         progress,
         scrollValue ?? activeTrigger?.progress ?? progress,
+        getHeroStageThresholds(),
       );
       const { stage } = snapshot;
       scene.root.dataset.progress = progress.toFixed(4);
@@ -209,10 +223,18 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
 
       const createScrollTrigger = () => {
         const stableMobile = usesStableMobileHeroViewport();
-        const settleEndpoint = (self, endpoint, finishScrub = false) => {
-          if (finishScrub) self.getTween()?.progress(1);
+        const settleEndpoint = (self, endpoint) => {
           animation.pause().progress(endpoint);
           publishProgress(endpoint, endpoint, self);
+        };
+        const synchronizeLeaveEndpoint = (self, endpoint) => {
+          if (!stableMobile) return;
+
+          // Preserve the already-approved mobile release behavior. Desktop
+          // numeric scrub is intentionally left running and is synchronized by
+          // onScrubComplete, so a fast wheel gesture cannot create a hard cut.
+          self.getTween()?.progress(1);
+          settleEndpoint(self, endpoint);
         };
         const trigger = ScrollTrigger.create({
           trigger: sectionRef.current,
@@ -230,8 +252,8 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
           anticipatePin: stableMobile ? 0 : 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => publishProgress(animation.progress(), self.progress, self),
-          onLeave: (self) => settleEndpoint(self, 1, true),
-          onLeaveBack: (self) => settleEndpoint(self, 0, true),
+          onLeave: (self) => synchronizeLeaveEndpoint(self, 1),
+          onLeaveBack: (self) => synchronizeLeaveEndpoint(self, 0),
           onScrubComplete: (self) => {
             if (self.progress >= 0.9999) settleEndpoint(self, 1);
             else if (self.progress <= 0.0001) settleEndpoint(self, 0);
@@ -336,7 +358,11 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
     timelineRef.current?.progress(value);
   }, []);
 
-  return { setProgress };
+  const setStage = useCallback((stageIndex, options = {}) => {
+    setProgress(getHeroStageProgress(stageIndex), options);
+  }, [setProgress]);
+
+  return { setProgress, setStage };
 }
 
 export const heroProgressEvents = {

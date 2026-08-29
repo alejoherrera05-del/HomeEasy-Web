@@ -12,7 +12,7 @@ export function HomeEasyHero({ openAdvisorFor }) {
   const hommyEyeGlowRef = useRef(null);
   const [stage, setStage] = useState(0);
   const updateStage = useCallback((nextStage) => setStage(nextStage), []);
-  const { setProgress } = useSheerScrollTimeline({
+  const { setStage: setHeroStage } = useSheerScrollTimeline({
     sectionRef,
     pinRef,
     sceneRef,
@@ -56,7 +56,7 @@ export function HomeEasyHero({ openAdvisorFor }) {
           />
         </div>
 
-        <HeroStageIndicator stage={stage} onSelect={setProgress} />
+        <HeroStageIndicator stage={stage} onSelect={setHeroStage} />
         <HeroDebugPanel sceneRef={sceneRef} />
       </div>
     </section>

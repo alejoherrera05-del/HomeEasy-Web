@@ -9,6 +9,8 @@ import {
   getHeroProgressSnapshot,
 } from "../src/hero/heroScene.config.js";
 import {
+  getHeroStageProgress,
+  getHeroStageThresholds,
   getHeroScrub,
   getHeroTiming,
   getHeroPinStart,
@@ -32,6 +34,49 @@ const desktopView = (height = 900) => ({
   navigator: { maxTouchPoints: 0 },
 });
 
+function extractCssBlock(source, header, startAt = 0) {
+  const headerIndex = source.indexOf(header, startAt);
+  assert.ok(headerIndex >= 0, `Missing CSS block: ${header}`);
+  const openIndex = source.indexOf("{", headerIndex);
+  assert.ok(openIndex >= 0, `Missing opening brace for: ${header}`);
+  let depth = 0;
+  for (let index = openIndex; index < source.length; index += 1) {
+    if (source[index] === "{") depth += 1;
+    if (source[index] === "}") depth -= 1;
+    if (depth === 0) return source.slice(openIndex + 1, index);
+  }
+  assert.fail(`Missing closing brace for: ${header}`);
+}
+
+function cssRules(source) {
+  const withoutComments = source.replace(/\/\*[\s\S]*?\*\//g, "");
+  return [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)].map((match) => ({
+    selectors: match[1].split(",").map((item) => item.trim()),
+    declarations: match[2],
+  }));
+}
+
+function cssRule(source, selector) {
+  const rules = cssRules(source).filter((rule) => rule.selectors.includes(selector));
+  assert.ok(rules.length > 0, `Missing CSS rule: ${selector}`);
+  return rules.at(-1).declarations;
+}
+
+function optionalCssDeclaration(rule, property) {
+  const declaration = rule
+    .split(";")
+    .map((item) => item.trim())
+    .find((item) => item.startsWith(`${property}:`));
+  return declaration?.slice(declaration.indexOf(":") + 1).trim() ?? null;
+}
+
+function cssLengthPx(value) {
+  if (value == null || value === "0") return 0;
+  const match = value.match(/^(-?\d+(?:\.\d+)?)px$/);
+  assert.ok(match, `Expected a fixed px length, received: ${value}`);
+  return Number(match[1]);
+}
+
 test("terminal progress stays atomically synchronized after a refresh", () => {
   assert.deepEqual(getHeroProgressSnapshot(1, 1), {
     scrollProgress: 1,
@@ -52,12 +97,12 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.equal(HERO_SCENE.scroll.scrub, 0.8);
 });
 
-test("desktop uses a reversible ambient plateau before controls withdraw", () => {
+test("desktop holds the final ambient state for 28–32% while mobile timing stays approved", () => {
   const desktop = getHeroTiming(desktopView());
   const mobile = getHeroTiming(mobileView());
-  const plateau = desktop.handoff.navFadeStart - desktop.timeline.lampEnd;
+  const dwell = desktop.timeline.restEnd - desktop.timeline.lampEnd;
 
-  assert.ok(plateau >= 0.12 && plateau <= 0.16, `desktop plateau was ${plateau}`);
+  assert.ok(dwell >= 0.28 && dwell <= 0.32, `desktop ambient dwell was ${dwell}`);
   assert.ok(desktop.timeline.lampEnd < desktop.handoff.navFadeStart);
   assert.ok(desktop.handoff.navFadeStart < desktop.handoff.navFadeEnd);
   assert.ok(desktop.handoff.navFadeEnd <= desktop.timeline.restEnd);
@@ -67,22 +112,93 @@ test("desktop uses a reversible ambient plateau before controls withdraw", () =>
   });
 });
 
-test("leaving the hero commits one exact terminal snapshot without intercepting input", async () => {
+test("stage controls use the matching desktop profile without changing mobile targets", () => {
+  const desktopThresholds = getHeroStageThresholds(desktopView());
+
+  HERO_STAGES.forEach((stage, index) => {
+    assert.equal(getHeroStageProgress(index, mobileView()), stage.progress);
+    assert.equal(
+      getStageIndex(getHeroStageProgress(index, desktopView()), desktopThresholds),
+      index,
+    );
+  });
+  assert.deepEqual(HERO_SCENE.desktopStageProgress, [0, 0.38, 0.56, 0.7]);
+});
+
+test("numeric scrub settles naturally after leave without intercepting physical input", async () => {
   const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
+  const appSource = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
+  const supportSource = await readFile(new URL("../src/motionSupport.js", import.meta.url), "utf8");
   const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
   const onLeaveStart = source.indexOf("onLeave:");
-  assert.ok(onLeaveStart >= 0, "ScrollTrigger must synchronize its terminal state on leave");
-  const terminalHook = source.slice(onLeaveStart, onLeaveStart + 360);
-  const settleStart = source.indexOf("const settleEndpoint");
-  assert.ok(settleStart >= 0, "terminal synchronization should have one shared endpoint helper");
-  const settleEndpoint = source.slice(settleStart, settleStart + 360);
+  const onLeaveBackStart = source.indexOf("onLeaveBack:");
+  const onScrubCompleteStart = source.indexOf("onScrubComplete:");
+  assert.ok(onScrubCompleteStart >= 0, "terminal synchronization must wait for numeric scrub completion");
+  const onLeave = onLeaveStart >= 0
+    ? source.slice(onLeaveStart, onLeaveBackStart > onLeaveStart ? onLeaveBackStart : onScrubCompleteStart)
+    : "";
+  const onLeaveBack = onLeaveBackStart >= 0
+    ? source.slice(onLeaveBackStart, onScrubCompleteStart)
+    : "";
+  const onScrubComplete = source.slice(onScrubCompleteStart, onScrubCompleteStart + 360);
 
-  assert.match(terminalHook, /settleEndpoint\(self,\s*1,\s*true\)/);
-  assert.match(settleEndpoint, /animation\.pause\(\)\.progress\(endpoint\)/);
-  assert.match(settleEndpoint, /publishProgress\(endpoint,\s*endpoint,\s*self\)/);
-  assert.doesNotMatch(source, /addEventListener\(\s*["'`](?:wheel|touchmove)["'`]/);
+  for (const leaveHook of [onLeave, onLeaveBack]) {
+    assert.doesNotMatch(leaveHook, /settleEndpoint|\.progress\(\s*[01]\s*\)|getTween\(\)/);
+  }
+  const forcedTweenFinishes = source.match(/getTween\(\)\?\.progress\(1\)/g) ?? [];
+  if (forcedTweenFinishes.length > 0) {
+    const mobileSyncStart = source.indexOf("const synchronizeLeaveEndpoint");
+    assert.ok(mobileSyncStart >= 0, "only the approved mobile path may finish its scrub on leave");
+    const mobileSync = source.slice(mobileSyncStart, mobileSyncStart + 520);
+    assert.equal(forcedTweenFinishes.length, 1);
+    assert.match(mobileSync, /if \(!stableMobile\) return;[\s\S]*?getTween\(\)\?\.progress\(1\)/);
+  }
+  assert.match(onScrubComplete, /self\.progress\s*>=\s*0\.9999[\s\S]*?settleEndpoint\(self,\s*1\)/);
+  assert.match(onScrubComplete, /self\.progress\s*<=\s*0\.0001[\s\S]*?settleEndpoint\(self,\s*0\)/);
+
+  const interactionSource = `${source}\n${appSource}\n${supportSource}`;
+  assert.doesNotMatch(interactionSource, /addEventListener\(\s*["'`](?:wheel|touchmove)["'`]/);
   assert.doesNotMatch(source, /(?:window|document|document\.documentElement|document\.body)\.scrollTop\s*=/);
   assert.match(visualStyles, /:root\s*\{\s*scroll-behavior:\s*auto\s*;?\s*\}/);
+});
+
+test("desktop has one CSS-only Hommy checkpoint with exact header clearance", async () => {
+  const [baseStyles, heroStyles, visualStyles, hommyStyles] = await Promise.all([
+    readFile(new URL("../src/styles.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/hero/heroScene.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/hommy-layered.css", import.meta.url), "utf8"),
+  ]);
+  const desktopQuery = "@media (min-width: 761px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+  const desktopSnap = extractCssBlock(visualStyles, desktopQuery);
+  const rootRule = cssRule(desktopSnap, "html");
+  const recommenderRule = cssRule(desktopSnap, "#recomendador");
+
+  assert.equal(optionalCssDeclaration(rootRule, "scroll-snap-type"), "y proximity");
+  assert.equal(optionalCssDeclaration(recommenderRule, "scroll-snap-align"), "start");
+  assert.equal(optionalCssDeclaration(recommenderRule, "scroll-snap-stop"), "always");
+
+  const globalVisualStyles = visualStyles.slice(0, visualStyles.indexOf("@media"));
+  const headerHeight = cssLengthPx(optionalCssDeclaration(cssRule(globalVisualStyles, ".site-header"), "height"));
+  const scrollPadding = cssLengthPx(optionalCssDeclaration(rootRule, "scroll-padding-top"));
+  const scrollMargin = cssLengthPx(optionalCssDeclaration(recommenderRule, "scroll-margin-top"));
+  assert.equal(headerHeight, 82);
+  assert.equal(scrollPadding + scrollMargin, headerHeight);
+
+  const allStyles = [baseStyles, heroStyles, visualStyles, hommyStyles].join("\n");
+  const stopRules = cssRules(allStyles).filter(({ declarations }) => (
+    optionalCssDeclaration(declarations, "scroll-snap-stop") === "always"
+  ));
+  assert.equal(stopRules.length, 1);
+  assert.deepEqual(stopRules[0].selectors, ["#recomendador"]);
+  assert.equal((allStyles.match(/scroll-snap-type\s*:\s*y proximity/g) ?? []).length, 1);
+  assert.doesNotMatch(allStyles, /scroll-snap-type\s*:\s*y mandatory/);
+
+  // The only vertical snap rule is gated by desktop width and no-preference,
+  // so neither iPhone nor Reduced Motion can become a navigation trap.
+  assert.match(visualStyles, /@media \(min-width: 761px\) and \(hover: hover\) and \(pointer: fine\) and \(prefers-reduced-motion: no-preference\)/);
+  const reducedMotion = extractCssBlock(visualStyles, "@media (prefers-reduced-motion: reduce)");
+  assert.doesNotMatch(reducedMotion, /scroll-snap-stop\s*:\s*always|scroll-snap-type\s*:\s*y/);
 });
 
 test("mobile has a stable native pre-pin before the blind timeline begins", async () => {
