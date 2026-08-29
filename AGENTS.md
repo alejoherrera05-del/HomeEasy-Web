@@ -89,6 +89,18 @@ These items are approved scope constraints for the next implementation round, bu
 - Mobile catalogue text minimums for this phase are: filters 13.5–14 px, metadata 12–13 px, thumbnail labels at least 12 px, body 15–16 px, titles 36–42 px and buttons at least 14 px.
 - Validate complete renders at 1440 px and 390 px. Physical Safari/iPhone approval remains separate and must be recorded as required until the user validates the deployed preview.
 
+## PR #3 iPhone QA round — latest approved mobile direction 2026-08-28
+
+This section supersedes earlier mobile rules that required the hero pin at document origin or a sticky Hommy adviser. It is limited to the mobile hero/header and Hommy recommender; do not alter catalogue, wallpaper, process, contact or SEO.
+
+- Give Safari a native 90–140 CSS px pre-pin interval before the blind timeline begins. The scene stays visually stable at progress zero during that interval; the current scrub, `ignoreMobileResize` and the rule that ignores height-only visual viewport refreshes remain.
+- Size the mobile hero from `100svh`/the small viewport. Safari chrome height changes must not rewrite the stage height or scroll distance. Keep the mobile header in the same native sticky visual system as the hero rather than as an independent fixed overlay; after the hero it continues as normal sticky navigation.
+- The mobile recommender is one normal-flow quiz scene that aims to fit below the header in a typical small viewport. Hommy is no longer an independent sticky block and there is no nested scroller or global scroll lock.
+- Keep the official 1680 ms `idle -> tapTablet -> idle` rig and its layers unchanged. Frame the 200–225 px stage with enough zoom-out to show face, torso, moving arm, contact hand and all or almost all of the tablet; the tablet touch is more important than a large face.
+- Keep the selected question visible and locked through the complete gesture. Advance and unlock together when the rig returns to idle, then fade the next question into the same space without automatic `scrollIntoView`.
+- Mobile Hommy responses are compact, options with five or six choices use two columns where labels remain readable, and touch targets are at least 48 px. Preserve full accessible status/detail text and reduced-motion behavior.
+- Before merge, validate 390 px with expanded/contracted Safari chrome, first scroll from cold load, a six-option question, a frame sequence of the tablet touch and Reduce Motion on/off. Browser emulation is supporting evidence only; physical Safari approval remains required.
+
 ## Repository maintenance
 
 - Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.

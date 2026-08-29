@@ -15,7 +15,6 @@ import { getAdjacentProductId } from "./components/catalogNavigation.js";
 import {
   getHommyInteractionTiming,
   scheduleHommyAnswer,
-  shouldScrollHommyTarget,
 } from "./components/hommyInteraction.js";
 import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
@@ -24,31 +23,6 @@ const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
 const HOMMY_MOBILE_VIEWPORT_QUERY = "(max-width: 760px), (max-width: 900px) and (max-height: 650px) and (hover: none) and (pointer: coarse)";
 const whatsappUrl = (message) => `https://wa.me/${HOMEEASY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-function scrollHommyTargetIntoViewIfNeeded(target) {
-  if (!target || !window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches) return;
-
-  const targetRect = target.getBoundingClientRect();
-  const visualViewport = window.visualViewport;
-  const viewportTop = visualViewport?.offsetTop ?? 0;
-  const viewportHeight = visualViewport?.height ?? window.innerHeight;
-  const stickyGuide = target.closest(".recommender-card")?.querySelector(".hommy-test-guide");
-  const stickyBottom = stickyGuide?.getBoundingClientRect().bottom ?? viewportTop + 70;
-
-  if (!shouldScrollHommyTarget({
-    targetTop: targetRect.top,
-    targetBottom: targetRect.bottom,
-    viewportTop,
-    viewportHeight,
-    stickyBottom,
-  })) return;
-
-  target.scrollIntoView({
-    behavior: window.matchMedia(REDUCED_MOTION_QUERY).matches ? "auto" : "smooth",
-    block: "nearest",
-    inline: "nearest",
-  });
-}
 
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({ type: "video", id, title, duration, label: "Video oficial" });
@@ -335,15 +309,6 @@ const recommenderQuestions = {
   },
 };
 
-const compactMobileQuestionKeys = new Set([
-  "space",
-  "passage",
-  "privacyMode",
-  "style",
-  "budget",
-  "control",
-]);
-
 function getRecommenderFlow(answers) {
   const keys = ["space", "opening"];
   if (answers.opening === "sliding") keys.push("passage");
@@ -470,6 +435,14 @@ function Header({ openAdvisor }) {
 const HOMMY_INITIAL_MESSAGE = "Hola, soy Hommy. Vamos a encontrar algo que de verdad encaje contigo.";
 const HOMMY_THINKING_MESSAGE = "Dame un segundo… estoy cruzando todo lo que me contaste.";
 const HOMMY_COMPLETE_MESSAGE = "¡Ya lo tengo! Encontré una opción que encaja contigo.";
+const HOMMY_MOBILE_INITIAL_MESSAGE = "Soy Hommy. Elijamos juntos.";
+const HOMMY_MOBILE_THINKING_MESSAGE = "Estoy cruzando tus respuestas.";
+const HOMMY_MOBILE_COMPLETE_MESSAGE = "Listo. Encontré una opción para ti.";
+const getInitialHommyMessage = () => (
+  typeof window !== "undefined" && window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches
+    ? HOMMY_MOBILE_INITIAL_MESSAGE
+    : HOMMY_INITIAL_MESSAGE
+);
 
 const hommyReplies = {
   space: {
@@ -531,6 +504,66 @@ const hommyReplies = {
   },
 };
 
+const hommyMobileReplies = {
+  space: {
+    living: "Sala o comedor: luz y comodidad.",
+    bedroom: "Habitación: descanso y privacidad.",
+    work: "Oficina: menos reflejo al trabajar.",
+    wet: "Cocina o baño: limpieza y humedad.",
+    door: "Salida exterior: dejaremos libre el paso.",
+  },
+  opening: {
+    fixed: "Vidrio fijo: más libertad para elegir.",
+    sliding: "Corrediza: cuidaremos su recorrido.",
+    hinged: "Hoja abatible: respetaremos el giro.",
+    curve: "Curva o esquina: buscaremos compatibilidad.",
+    inclined: "Inclinada: seguiremos el ángulo.",
+    unknown: "Lo confirmamos en la visita.",
+  },
+  passage: {
+    yes: "Es una salida: el paso queda libre.",
+    no: "Solo ventana: tenemos más opciones.",
+  },
+  size: {
+    compact: "Pequeña: evitaremos cargar el espacio.",
+    medium: "Tamaño normal: hay varias opciones.",
+    large: "Ventanal grande: importa la estabilidad.",
+    floor: "Piso a techo: uso fácil y elegante.",
+    unknown: "La medida se confirma en la visita.",
+  },
+  need: {
+    "soft-light": "Luz intensa: la graduaremos.",
+    darkness: "Buscaremos oscuridad de verdad.",
+    privacy: "Privacidad sin sentirte expuesto.",
+    heat: "Controlaremos calor y reflejo.",
+    view: "Filtraremos sol sin perder la vista.",
+    "easy-clean": "Priorizaremos limpieza sencilla.",
+  },
+  privacyMode: {
+    light: "Privacidad con luz suave.",
+    flexible: "Vista o privacidad según el momento.",
+    opaque: "Cerraremos la vista por completo.",
+  },
+  style: {
+    minimal: "Limpio y discreto.",
+    textile: "Suave y cálido, como una cortina.",
+    decorative: "Textura y presencia en el espacio.",
+    technical: "Función y mantenimiento sencillo.",
+  },
+  budget: {
+    practical: "Resolveremos bien lo esencial.",
+    balanced: "Equilibrio entre diseño y uso.",
+    premium: "Más acabados y posibilidades.",
+    unknown: "Primero compararemos opciones.",
+  },
+  control: {
+    manual: "Manejo manual, sencillo y directo.",
+    motorized: "Comodidad con control o celular.",
+    compare: "Compararemos manual y motorizada.",
+    unknown: "Elegiremos el manejo más conveniente.",
+  },
+};
+
 function HommyTestGuide({ state, message, reaction }) {
   return (
     <div className={`hommy-test-guide is-${state}`}>
@@ -556,7 +589,7 @@ function Recommender() {
   const [done, setDone] = useState(false);
   const [answerPending, setAnswerPending] = useState(false);
   const [hommyState, setHommyState] = useState("listening");
-  const [hommyMessage, setHommyMessage] = useState(HOMMY_INITIAL_MESSAGE);
+  const [hommyMessage, setHommyMessage] = useState(getInitialHommyMessage);
   const [hommyReaction, setHommyReaction] = useState({ sequence: 0, type: "write", progress: 0 });
   const resultRef = useRef(null);
   const questionHeadingRef = useRef(null);
@@ -570,7 +603,6 @@ function Recommender() {
   const questionFlow = useMemo(() => getRecommenderFlow(answers), [answers]);
   const safeStep = Math.min(step, questionFlow.length - 1);
   const current = questionFlow[safeStep];
-  const compactMobileChoices = compactMobileQuestionKeys.has(current.key);
   const recommendations = useMemo(() => scoreRecommendations(answers), [answers]);
   const primary = recommendations[0];
   const alternatives = recommendations.slice(1, 3);
@@ -594,7 +626,6 @@ function Recommender() {
   useEffect(() => {
     if (!done || !resultRef.current) return;
     resultRef.current.focus({ preventScroll: true });
-    scrollHommyTargetIntoViewIfNeeded(resultRef.current);
   }, [done]);
 
   useEffect(() => {
@@ -603,7 +634,6 @@ function Recommender() {
     const heading = questionHeadingRef.current;
     if (!heading) return;
     heading.focus({ preventScroll: true });
-    scrollHommyTargetIntoViewIfNeeded(heading);
   }, [done, step]);
 
   useEffect(() => {
@@ -652,7 +682,7 @@ function Recommender() {
     }, Math.max(0, reactionBusyUntil.current - now));
   };
 
-  const acknowledgeAnswer = (isFinalAnswer, reply, timing) => {
+  const acknowledgeAnswer = (isFinalAnswer, reply, timing, mobile) => {
     clearHommyMotion();
     setHommyState("noting");
     setHommyMessage(reply);
@@ -666,7 +696,7 @@ function Recommender() {
           return;
         }
         setHommyState("thinking");
-        setHommyMessage(HOMMY_THINKING_MESSAGE);
+        setHommyMessage(mobile ? HOMMY_MOBILE_THINKING_MESSAGE : HOMMY_THINKING_MESSAGE);
         setDone(true);
       },
       onUnlock: () => {
@@ -677,7 +707,7 @@ function Recommender() {
       onReactionComplete: () => {
         if (!isFinalAnswer) return;
         setHommyState("complete");
-        setHommyMessage(HOMMY_COMPLETE_MESSAGE);
+        setHommyMessage(mobile ? HOMMY_MOBILE_COMPLETE_MESSAGE : HOMMY_COMPLETE_MESSAGE);
       },
     }));
   };
@@ -692,14 +722,16 @@ function Recommender() {
     setAnswerPending(true);
     const nextFlow = getRecommenderFlow(next);
     const isFinalAnswer = safeStep === nextFlow.length - 1;
-    const reply = hommyReplies[current.key]?.[value] ?? "Perfecto, lo tendré en cuenta.";
+    const mobile = window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches;
+    const reply = (mobile ? hommyMobileReplies : hommyReplies)[current.key]?.[value]
+      ?? "Perfecto, lo tendré en cuenta.";
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
     const timing = getHommyInteractionTiming({
       reducedMotion,
-      mobile: window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches,
+      mobile,
     });
     requestHommyReaction(isFinalAnswer ? "success" : "write", Math.min(1, (safeStep + 1) / nextFlow.length), timing.reactionDuration);
-    acknowledgeAnswer(isFinalAnswer, reply, timing);
+    acknowledgeAnswer(isFinalAnswer, reply, timing, mobile);
   };
   const goBack = () => {
     if (interactionLocked.current) return;
@@ -709,7 +741,9 @@ function Recommender() {
     pendingQuestionFocus.current = false;
     setAnswerPending(false);
     setHommyState("listening");
-    setHommyMessage("Claro, revisemos la respuesta anterior.");
+    setHommyMessage(window.matchMedia(HOMMY_MOBILE_VIEWPORT_QUERY).matches
+      ? "Claro. Revisemos la anterior."
+      : "Claro, revisemos la respuesta anterior.");
     if (done) setDone(false);
     else setStep((currentStep) => Math.max(0, currentStep - 1));
   };
@@ -723,7 +757,7 @@ function Recommender() {
     setAnswers(emptyRecommenderAnswers());
     setDone(false);
     setHommyState("listening");
-    setHommyMessage(HOMMY_INITIAL_MESSAGE);
+    setHommyMessage(getInitialHommyMessage());
     setHommyReaction({ sequence: 0, type: "write", progress: 0 });
   };
   const openProduct = (productId) => {
@@ -750,7 +784,7 @@ function Recommender() {
           {!done ? <div className="question-step" key={current.key} data-question={current.key}>
             <div className="question-top"><span>{current.eyebrow}</span><small>{step + 1} de {questionFlow.length}</small></div>
             <h3 id={`recommender-question-${current.key}`} ref={questionHeadingRef} tabIndex="-1">{current.title}</h3>
-            <div className={`choice-grid${compactMobileChoices ? " choice-grid--compact-mobile" : ""}`} role="group" aria-labelledby={`recommender-question-${current.key}`}>
+            <div className="choice-grid choice-grid--compact-mobile" role="group" aria-labelledby={`recommender-question-${current.key}`}>
               {current.choices.map((choice) => (
                 <button
                   type="button"

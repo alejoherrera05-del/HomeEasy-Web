@@ -5,7 +5,6 @@ import test from "node:test";
 import {
   getHommyInteractionTiming,
   scheduleHommyAnswer,
-  shouldScrollHommyTarget,
 } from "../src/components/hommyInteraction.js";
 
 const app = await readFile(new URL("../src/App.jsx", import.meta.url), "utf8");
@@ -225,40 +224,49 @@ test("desktop timing stays unchanged and reduced motion finishes in 240 ms", () 
   assert.deepEqual(events, ["advance", "unlock", "complete"]);
 });
 
-test("mobile question focus scrolls only when the target is outside the usable viewport", () => {
-  const viewport = { viewportTop: 0, viewportHeight: 844, stickyBottom: 400 };
-  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 430, targetBottom: 470 }), false);
-  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 380, targetBottom: 420 }), true);
-  assert.equal(shouldScrollHommyTarget({ ...viewport, targetTop: 820, targetBottom: 860 }), true);
-  assert.match(app, /scrollHommyTargetIntoViewIfNeeded/);
+test("mobile question changes preserve focus without moving the document", () => {
+  const recommenderStart = app.indexOf("function Recommender()");
+  const answerFlowSource = app.slice(recommenderStart, app.indexOf("const openProduct", recommenderStart));
+  assert.doesNotMatch(answerFlowSource, /scrollIntoView|scrollHommyTargetIntoViewIfNeeded|shouldScrollHommyTarget/);
+  assert.match(answerFlowSource, /resultRef\.current\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(answerFlowSource, /heading\.focus\(\{ preventScroll: true \}\)/);
   assert.match(app, /HOMMY_MOBILE_VIEWPORT_QUERY[\s\S]*?pointer:\s*coarse/);
-  assert.match(app, /block:\s*"nearest"/);
-  assert.doesNotMatch(app, /scrollIntoView\(\{[\s\S]{0,180}?block:\s*"start"/);
 });
 
-test("mobile keeps the official Hommy rig visible as a sticky adviser", () => {
-  assert.match(visualStyles, /@media \(max-width: 760px\)[\s\S]*?\.recommender-card\s*\{[\s\S]*?overflow:\s*visible/);
-  assert.match(visualStyles, /\.hommy-test-guide\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*70px/);
+test("mobile frames the complete official Hommy gesture in one non-sticky quiz scene", () => {
+  const mobileScene = visualStyles.slice(
+    visualStyles.indexOf("/* Mobile recommender foundation"),
+    visualStyles.indexOf(".product-filters", visualStyles.indexOf("/* HERO → HOMMY")),
+  );
+  assert.match(mobileScene, /\.recommender-card\s*\{[\s\S]*?overflow:\s*hidden/);
+  assert.match(mobileScene, /\.recommender-card\s*\{[\s\S]*?overflow-anchor:\s*none/);
+  assert.match(mobileScene, /\.hommy-test-guide\s*\{[\s\S]*?position:\s*relative;[\s\S]*?top:\s*auto/);
+  assert.doesNotMatch(mobileScene, /\.hommy-test-guide\s*\{[\s\S]{0,180}?position:\s*sticky/);
   assert.match(visualStyles, /\.hommy-character\s*\{[\s\S]*?aspect-ratio:\s*1/);
-  assert.match(visualStyles, /\.choice-grid button strong\s*\{\s*font-size:\s*16px/);
-  assert.match(visualStyles, /--hommy-stage-h:\s*clamp\(220px,\s*29svh,\s*250px\)/);
-  assert.match(visualStyles, /--hommy-stage-h:\s*220px/);
-  assert.match(visualStyles, /width:\s*clamp\(340px,\s*90vw,\s*360px\)/);
+  assert.match(visualStyles, /--hommy-stage-h:\s*clamp\(210px,\s*27svh,\s*224px\)/);
+  assert.match(visualStyles, /--hommy-stage-h:\s*200px/);
+  assert.match(visualStyles, /width:\s*clamp\(248px,\s*68vw,\s*270px\)/);
   assert.match(visualStyles, /\.hommy-motion-status\s*\{[\s\S]*?z-index:\s*14/);
-  assert.match(visualStyles, /scroll-margin-top:\s*calc\(70px \+ var\(--hommy-stage-h\) \+ 16px\)/);
-  const compactQuestionKeys = app.match(/const compactMobileQuestionKeys = new Set\(\[([\s\S]*?)\]\)/)?.[1] ?? "";
-  for (const key of ["space", "passage", "privacyMode", "style", "budget", "control"]) {
-    assert.match(compactQuestionKeys, new RegExp(`"${key}"`));
-  }
-  for (const key of ["opening", "size", "need"]) {
-    assert.doesNotMatch(compactQuestionKeys, new RegExp(`"${key}"`));
-  }
+  assert.match(visualStyles, /-webkit-line-clamp:\s*3/);
+  assert.doesNotMatch(mobileScene, /scroll-margin-top/);
   assert.match(app, /data-question=\{current\.key\}/);
-  assert.match(app, /choice-grid--compact-mobile/);
+  assert.match(app, /className="choice-grid choice-grid--compact-mobile"/);
+  assert.match(app, /const hommyMobileReplies = \{[\s\S]*?space:[\s\S]*?opening:[\s\S]*?passage:[\s\S]*?size:[\s\S]*?need:[\s\S]*?privacyMode:[\s\S]*?style:[\s\S]*?budget:[\s\S]*?control:/);
+  assert.match(app, /HOMMY_MOBILE_INITIAL_MESSAGE\s*=\s*"Soy Hommy\. Elijamos juntos\."/);
   assert.match(visualStyles, /@media \(max-width: 359px\)[\s\S]*?choice-grid--compact-mobile\s*\{\s*grid-template-columns:\s*1fr/);
   assert.match(visualStyles, /\.question-nav \.text-button,[\s\S]*?\.result-actions \.text-button\s*\{\s*min-height:\s*44px/);
+  assert.match(visualStyles, /\.choice-grid--compact-mobile > button\s*\{[\s\S]*?min-height:\s*56px/);
   assert.doesNotMatch(app, /hommy-test-guide[^>]*role="img"/);
   assert.match(app, /role="status" aria-live="polite" aria-atomic="true"/);
+});
+
+test("the next question fades into the same space without extending the lock", () => {
+  const keyframes = visualStyles.match(/@keyframes hommyQuestionSwapIn\s*\{([\s\S]*?)\n\}/)?.[1] ?? "";
+  assert.match(visualStyles, /\.question-step,[\s\S]*?\.recommendation-result\s*\{[\s\S]*?animation:\s*hommyQuestionSwapIn 190ms/);
+  assert.match(keyframes, /from\s*\{\s*opacity:\s*0/);
+  assert.match(keyframes, /to\s*\{\s*opacity:\s*1/);
+  assert.doesNotMatch(keyframes, /transform|height|translate/);
+  assert.match(visualStyles, /prefers-reduced-motion:\s*reduce[\s\S]*?\.question-step,[\s\S]*?animation:\s*none\s*!important/);
 });
 
 test("the real rig is enabled and every production layer exists", async () => {

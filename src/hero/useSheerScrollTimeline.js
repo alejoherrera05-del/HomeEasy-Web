@@ -7,6 +7,8 @@ import {
   attachViewportRefreshHandlers,
   getViewportHeight,
   getViewportMode,
+  getViewportWidth,
+  isTouchViewport,
   listenForMediaQueryChange,
   REDUCED_MOTION_QUERY,
 } from "../motionSupport.js";
@@ -18,15 +20,33 @@ if (typeof window !== "undefined") {
 
 const PROGRESS_EVENT = "homeeasy:hero-progress";
 const SET_PROGRESS_EVENT = "homeeasy:hero-set-progress";
+export const HERO_MOBILE_PRE_PIN = 112;
 
-export function getScrollDistance(view = window) {
+export function usesStableMobileHeroViewport(view = window) {
+  const width = getViewportWidth(view);
+  const height = getViewportHeight(view);
+  return width <= 760 || (width <= 900 && height <= 650 && isTouchViewport(view));
+}
+
+export function getHeroPinStart(view = window) {
+  return usesStableMobileHeroViewport(view) ? HERO_MOBILE_PRE_PIN : 0;
+}
+
+export function getScrollDistance(view = window, stableStageHeight = 0) {
   const { desktopVh, tabletVh, mobileVh } = HERO_SCENE.scroll;
-  const multiplier = view.innerWidth <= 760
+  const width = getViewportWidth(view);
+  const multiplier = width <= 760
     ? mobileVh
-    : view.innerWidth <= 1050
+    : width <= 1050
       ? tabletVh
       : desktopVh;
-  return getViewportHeight(view) * multiplier;
+  const stageHeight = Number(stableStageHeight);
+  const viewportHeight = usesStableMobileHeroViewport(view)
+    && Number.isFinite(stageHeight)
+    && stageHeight > 0
+    ? stageHeight
+    : getViewportHeight(view);
+  return viewportHeight * multiplier;
 }
 
 export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeGlowRef, onStageChange }) {
@@ -161,18 +181,35 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
         animation.progress(clamp01(Number(value)));
       };
 
+      const syncHeroViewportMetrics = () => {
+        if (usesStableMobileHeroViewport()) {
+          sectionRef.current?.style.removeProperty("--hero-viewport-height");
+          sectionRef.current?.style.setProperty(
+            "--hero-scroll-distance",
+            `${getScrollDistance(window, pinRef.current?.clientHeight)}px`,
+          );
+          return;
+        }
+        sectionRef.current?.style.removeProperty("--hero-scroll-distance");
+        sectionRef.current?.style.setProperty("--hero-viewport-height", `${getViewportHeight()}px`);
+      };
+
       const createScrollTrigger = () => {
+        const stableMobile = usesStableMobileHeroViewport();
         const trigger = ScrollTrigger.create({
           trigger: sectionRef.current,
-          pin: pinRef.current,
+          // Mobile uses one native sticky stage for both the pre-pin and the
+          // animated range. GSAP only owns progress there, avoiding the fragile
+          // sticky-to-fixed handoff that iOS Safari can visibly jump.
+          pin: stableMobile ? false : pinRef.current,
           animation,
-          // The hero is the first document section. A numeric origin keeps the
-          // pin active from the initial pixel instead of crossing its boundary
-          // during Safari's first toolbar-collapsing gesture.
-          start: 0,
-          end: () => `+=${getScrollDistance()}`,
+          // The mobile stage is natively sticky for a short, inert opening
+          // range. Safari can settle its chrome before GSAP starts the pin and
+          // the blind timeline, so one gesture produces one visual transition.
+          start: () => getHeroPinStart(),
+          end: () => `+=${getScrollDistance(window, pinRef.current?.clientHeight)}`,
           scrub: HERO_SCENE.scroll.scrub,
-          anticipatePin: 1,
+          anticipatePin: stableMobile ? 0 : 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => publishProgress(animation.progress(), self.progress, self),
           onRefresh: (self) => {
@@ -199,6 +236,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
         triggerRef.current?.kill();
         triggerRef.current = null;
         reducedMotionRef.current = mediaQuery.matches;
+        syncHeroViewportMetrics();
         if (!mediaQuery.matches) createScrollTrigger();
         else {
           animation.progress(currentProgress);
@@ -214,7 +252,7 @@ export function useSheerScrollTimeline({ sectionRef, pinRef, sceneRef, hommyEyeG
       applyMotionPreference();
 
       const refreshHero = () => {
-        sectionRef.current?.style.setProperty("--hero-viewport-height", `${getViewportHeight()}px`);
+        syncHeroViewportMetrics();
         if (triggerRef.current) triggerRef.current.refresh();
         else publishMotionDebug("hero", {
           lastRefresh: new Date().toISOString(),

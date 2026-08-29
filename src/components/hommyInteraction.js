@@ -50,28 +50,3 @@ export function scheduleHommyAnswer({
     .sort(([left], [right]) => left - right)
     .map(([delay, callbacks]) => schedule(() => callbacks.forEach((callback) => callback()), delay));
 }
-
-export function shouldScrollHommyTarget({
-  targetTop,
-  targetBottom,
-  viewportTop = 0,
-  viewportHeight,
-  stickyBottom = 0,
-  headerOffset = 70,
-  edgePadding = 16,
-}) {
-  if (![targetTop, targetBottom, viewportTop, viewportHeight, stickyBottom].every(Number.isFinite)) {
-    return false;
-  }
-  if (viewportHeight <= 0) return false;
-
-  const visibleTop = Math.max(viewportTop + headerOffset, stickyBottom + edgePadding);
-  const visibleBottom = viewportTop + viewportHeight - edgePadding;
-  const targetHeight = Math.max(0, targetBottom - targetTop);
-  const availableHeight = Math.max(0, visibleBottom - visibleTop);
-
-  if (targetHeight > availableHeight) {
-    return targetTop < visibleTop || targetTop > visibleBottom;
-  }
-  return targetTop < visibleTop || targetBottom > visibleBottom;
-}

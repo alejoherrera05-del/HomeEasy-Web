@@ -8,6 +8,11 @@ import {
   getStageIndex,
   getHeroProgressSnapshot,
 } from "../src/hero/heroScene.config.js";
+import {
+  getHeroPinStart,
+  getScrollDistance,
+  HERO_MOBILE_PRE_PIN,
+} from "../src/hero/useSheerScrollTimeline.js";
 
 test("terminal progress stays atomically synchronized after a refresh", () => {
   assert.deepEqual(getHeroProgressSnapshot(1, 1), {
@@ -22,9 +27,35 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.match(source, /onUpdate:\s*\(self\)\s*=>\s*publishProgress\(animation\.progress\(\), self\.progress, self\)/);
   assert.match(source, /onRefresh:[\s\S]*?animation\.pause\(\)\.progress\(self\.progress\);[\s\S]*?publishProgress\(self\.progress, self\.progress, self\)/);
   assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
-  assert.match(source, /start:\s*0/);
+  assert.match(source, /start:\s*\(\)\s*=>\s*getHeroPinStart\(\)/);
   assert.match(source, /scrub:\s*HERO_SCENE\.scroll\.scrub/);
   assert.ok(HERO_SCENE.scroll.scrub >= 0.75 && HERO_SCENE.scroll.scrub <= 1);
+});
+
+test("mobile has a stable native pre-pin before the blind timeline begins", async () => {
+  const source = await readFile(new URL("../src/hero/useSheerScrollTimeline.js", import.meta.url), "utf8");
+  const heroStyles = await readFile(new URL("../src/hero/heroScene.css", import.meta.url), "utf8");
+  const visualStyles = await readFile(new URL("../src/visual-qa-fixes.css", import.meta.url), "utf8");
+  const mobileView = (height) => ({
+    innerWidth: 390,
+    innerHeight: height,
+    visualViewport: { width: 390, height },
+    matchMedia: () => ({ matches: true }),
+    navigator: { maxTouchPoints: 5 },
+  });
+  assert.equal(HERO_MOBILE_PRE_PIN, 112);
+  assert.ok(HERO_MOBILE_PRE_PIN >= 90 && HERO_MOBILE_PRE_PIN <= 140);
+  assert.equal(getHeroPinStart(mobileView(742)), 112);
+  assert.equal(getHeroPinStart({ ...mobileView(742), innerWidth: 1200, visualViewport: { width: 1200, height: 742 } }), 0);
+  assert.equal(getScrollDistance(mobileView(742), 672), getScrollDistance(mobileView(650), 672));
+  assert.match(source, /removeProperty\("--hero-viewport-height"\)/);
+  assert.match(source, /pin:\s*stableMobile\s*\?\s*false\s*:\s*pinRef\.current/);
+  assert.match(source, /--hero-scroll-distance/);
+  assert.match(heroStyles, /min-height:\s*calc\(100svh \+ var\(--hero-scroll-distance, 0px\) \+ 112px\)/);
+  assert.match(heroStyles, /@media \(max-width: 760px\)[\s\S]*?\.hero-sticky\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0;[\s\S]*?height:\s*100svh/);
+  assert.match(visualStyles, /@media \(max-width: 760px\)[\s\S]*?\.site-header\s*\{[\s\S]*?position:\s*sticky;[\s\S]*?top:\s*0[\s\S]*?main\s*\{\s*margin-top:\s*-70px/);
+  assert.doesNotMatch(visualStyles, /\.hero-scroll,\s*\n\s*\.hero-sticky\s*\{[\s\S]{0,120}?min-height:\s*0/);
+  assert.match(heroStyles, /prefers-reduced-motion:\s*reduce[\s\S]*?\.hero-sticky\s*\{\s*position:\s*relative\s*!important/);
 });
 
 test("the blind reads as fabric without becoming blackout", async () => {
