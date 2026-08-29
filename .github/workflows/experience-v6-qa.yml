@@ -10,7 +10,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
@@ -30,9 +30,40 @@ jobs:
         run: |
           test -s dist/client/assets/process-materials-approved.jpg
           file dist/client/assets/process-materials-approved.jpg | grep -q 'JPEG image data'
+      - name: Install browser for visual QA
+        run: pnpm dlx playwright@1.55.0 install --with-deps chromium
+      - name: Serve production build
+        run: |
+          nohup python3 -m http.server 4173 --directory dist/client > /tmp/homeeasy-preview.log 2>&1 &
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/homeeasy-preview.log
+          exit 1
+      - name: Capture real browser screenshots
+        run: |
+          mkdir -p visual-qa
+          PW="pnpm dlx playwright@1.55.0 screenshot"
+          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#recomendador visual-qa/desktop-recommender.png
+          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#productos visual-qa/desktop-catalog.png
+          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#papel-tapiz visual-qa/desktop-wallpaper.png
+          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#proceso visual-qa/desktop-process.png
+          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#contacto visual-qa/desktop-contact.png
+          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#recomendador visual-qa/mobile-recommender.png
+          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#productos visual-qa/mobile-catalog.png
+          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#papel-tapiz visual-qa/mobile-wallpaper.png
+          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#proceso visual-qa/mobile-process.png
+          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#contacto visual-qa/mobile-contact.png
       - name: Upload QA build
         uses: actions/upload-artifact@v4
         with:
           name: homeeasy-experience-v6-qa
           path: dist/client
+          retention-days: 1
+      - name: Upload browser screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: homeeasy-experience-v6-screenshots
+          path: visual-qa
           retention-days: 1
