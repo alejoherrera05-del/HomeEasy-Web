@@ -1,0 +1,57 @@
+name: Apply HomeEasy art direction v3
+
+on:
+  push:
+    branches:
+      - feat/art-direction-process-contact-final
+    paths:
+      - .github/workflows/apply-art-direction-v3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wire new sections
+        run: python scripts/apply-art-direction-v3.py
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify
+        run: |
+          pnpm run test:hero
+          pnpm run test:hommy
+          pnpm run test:motion
+          pnpm run test:catalog
+          pnpm run build
+          pnpm run test:sites
+
+      - name: Commit art direction
+        run: |
+          rm scripts/apply-art-direction-v3.py
+          rm .github/workflows/apply-art-direction-v3.yml
+          git config user.name "alejoherrera05-del"
+          git config user.email "alejoherrera05@gmail.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Redesign HomeEasy process and contact experience"
+          git push origin feat/art-direction-process-contact-final
