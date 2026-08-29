@@ -1,0 +1,38 @@
+name: Experience v6 visual QA
+
+on:
+  push:
+    branches: [feat/experience-v6]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test and build
+        run: |
+          pnpm test
+          pnpm exec vite build --base=/
+      - name: Verify Safari-safe process photo
+        run: |
+          test -s dist/client/assets/process-materials-approved.jpg
+          file dist/client/assets/process-materials-approved.jpg | grep -q 'JPEG image data'
+      - name: Upload QA build
+        uses: actions/upload-artifact@v4
+        with:
+          name: homeeasy-experience-v6-qa
+          path: dist/client
+          retention-days: 1
