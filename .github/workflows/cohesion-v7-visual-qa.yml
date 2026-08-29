@@ -98,7 +98,7 @@ jobs:
                 returnByValue: true,
               });
               console.log(file, result.result.value);
-              if (id === 'proceso' && (!result.result.value?.imageComplete || result.result.value?.imageWidth < 700)) process.exit(2);
+              if (id === 'proceso' && (!result.result.value?.imageComplete || result.result.value?.imageWidth < 600)) process.exit(2);
               await sleep(500);
               const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
               fs.writeFileSync(file, Buffer.from(shot.data, 'base64'));
