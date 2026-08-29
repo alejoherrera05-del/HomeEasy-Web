@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "node scripts/prepare-process-image.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/prepare-process-image.mjs",
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:hero": "node --test tests/hero-scene.test.mjs",
