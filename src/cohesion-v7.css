@@ -1,0 +1,333 @@
+/* HomeEasy cohesion v7 — one grid, less copy, intentional vertical rhythm. */
+
+:root {
+  --he-shell: 1320px;
+  --he-gutter: 24px;
+}
+
+/* ONE HORIZONTAL GRID ---------------------------------------------------- */
+.recommender.section-shell,
+.wallpaper.section-shell,
+.process-v5-shell,
+.contact-v4-shell {
+  width: min(var(--he-shell), calc(100% - (var(--he-gutter) * 2))) !important;
+  margin-inline: auto !important;
+}
+
+.products .catalog-entry-heading,
+.products .product-filters {
+  width: min(var(--he-shell), 100%);
+  margin-inline: auto;
+}
+
+/* LESS TEXT -------------------------------------------------------------- */
+.recommender-heading > p,
+.catalog-entry-heading > p,
+.wallpaper-lead > p,
+.catalog-source,
+.wallpaper-source-note {
+  display: none !important;
+}
+
+/* ONE HEADING LANGUAGE --------------------------------------------------- */
+:where(
+  .recommender-heading,
+  .catalog-entry-heading,
+  .wallpaper-heading,
+  .process-v5-intro,
+  .contact-v4-heading
+) h2 {
+  margin: 0 !important;
+  font-size: clamp(48px, 5.1vw, 74px) !important;
+  line-height: .97 !important;
+  letter-spacing: -.052em !important;
+  font-weight: 510 !important;
+  text-wrap: balance;
+}
+
+.catalog-entry-heading h2,
+.wallpaper-heading h2,
+.process-v5-intro h2 {
+  max-width: 14ch !important;
+}
+
+/* COMPACT SECTION RHYTHM ------------------------------------------------- */
+.recommender.section-shell {
+  padding-top: clamp(64px, 5vw, 80px) !important;
+  padding-bottom: 30px !important;
+}
+
+.products.section-shell {
+  padding-top: 38px !important;
+  padding-bottom: 28px !important;
+}
+
+.catalog-entry-heading {
+  margin-bottom: 24px !important;
+}
+
+.wallpaper.section-shell {
+  padding-top: 34px !important;
+  padding-bottom: 34px !important;
+}
+
+.wallpaper-heading {
+  margin-bottom: 26px !important;
+  align-items: end !important;
+}
+
+.wallpaper-lead {
+  min-height: 0 !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: flex-end;
+}
+
+.wallpaper-comparison {
+  margin-top: 0 !important;
+}
+
+.process-v5-shell {
+  padding-top: 38px !important;
+  padding-bottom: 42px !important;
+}
+
+.process-v5-intro {
+  margin-bottom: 28px !important;
+}
+
+.process-v5-intro-grid {
+  grid-template-columns: minmax(0, 1.2fr) auto !important;
+  gap: 40px !important;
+  align-items: end !important;
+}
+
+.process-v5-intro h2 {
+  max-width: 12.5ch !important;
+}
+
+.process-v5-intro-action {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.process-v5-cta {
+  margin-top: 0 !important;
+  white-space: nowrap;
+}
+
+.process-v5-editorial {
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, .72fr) !important;
+  gap: clamp(38px, 4.5vw, 66px) !important;
+}
+
+/* The approved photo is a core visual, never a reveal target. */
+.process-v5-visual {
+  top: 92px !important;
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+.process-v5-visual img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: #e5e1dc;
+  opacity: 1 !important;
+}
+
+.process-v5-stories article {
+  padding: clamp(28px, 3vw, 42px) 0 !important;
+}
+
+.process-v5-story-kicker {
+  margin-bottom: 9px !important;
+}
+
+.process-v5-stories h3 {
+  max-width: 8.8ch !important;
+  font-size: clamp(34px, 3.1vw, 48px) !important;
+  line-height: .99 !important;
+}
+
+.process-v5-stories article > p:last-child {
+  max-width: 29ch !important;
+  margin-top: 11px !important;
+  font-size: 14.5px !important;
+  line-height: 1.48 !important;
+}
+
+/* CONTACT --------------------------------------------------------------- */
+.contact-v4-shell {
+  padding-top: 38px !important;
+}
+
+.contact-v4-heading {
+  padding-bottom: 38px !important;
+}
+
+.contact-v4-heading-grid {
+  grid-template-columns: minmax(0, 1.2fr) auto !important;
+  gap: 44px !important;
+  align-items: end !important;
+}
+
+.contact-v4-heading-grid > .contact-v4-actions {
+  max-width: none !important;
+  margin-top: 0 !important;
+  align-self: end;
+}
+
+.contact-v4-directory {
+  padding: 36px 0 40px !important;
+  gap: clamp(40px, 5vw, 72px) !important;
+}
+
+.contact-v4-location {
+  min-height: 0 !important;
+}
+
+.contact-v4-location strong {
+  font-size: clamp(30px, 2.7vw, 42px) !important;
+}
+
+.contact-v4-foot {
+  min-height: 68px !important;
+  grid-template-columns: 1fr auto !important;
+}
+
+/* Major moments reveal, not every sentence. */
+.storytelling-ready .process-v5-stories article,
+.storytelling-ready .wallpaper-comparison,
+.storytelling-ready .contact-v4-directory {
+  transition-duration: 480ms !important;
+}
+
+@media (max-width: 760px) {
+  :root { --he-gutter: 15px; }
+
+  :where(
+    .recommender-heading,
+    .catalog-entry-heading,
+    .wallpaper-heading,
+    .process-v5-intro,
+    .contact-v4-heading
+  ) h2 {
+    font-size: clamp(40px, 11vw, 52px) !important;
+    line-height: .98 !important;
+  }
+
+  .recommender.section-shell {
+    padding-top: 50px !important;
+    padding-bottom: 22px !important;
+  }
+
+  .products.section-shell {
+    padding-top: 30px !important;
+    padding-bottom: 24px !important;
+  }
+
+  .catalog-entry-heading {
+    margin-bottom: 18px !important;
+  }
+
+  .wallpaper.section-shell {
+    padding-top: 30px !important;
+    padding-bottom: 28px !important;
+  }
+
+  .wallpaper-heading {
+    margin-bottom: 20px !important;
+  }
+
+  .process-v5-shell {
+    padding-top: 32px !important;
+    padding-bottom: 38px !important;
+  }
+
+  .process-v5-intro {
+    margin-bottom: 20px !important;
+  }
+
+  .process-v5-intro-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .process-v5-intro h2 {
+    max-width: 9.5ch !important;
+  }
+
+  .process-v5-intro-action {
+    justify-content: stretch;
+  }
+
+  .process-v5-cta {
+    width: 100%;
+  }
+
+  .process-v5-editorial {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .process-v5-visual {
+    position: static !important;
+    margin-inline: 0 !important;
+  }
+
+  .process-v5-visual img {
+    width: 100% !important;
+    aspect-ratio: 4 / 3 !important;
+  }
+
+  .process-v5-stories article {
+    padding: 23px 0 26px !important;
+  }
+
+  .process-v5-stories h3 {
+    max-width: 9ch !important;
+    font-size: clamp(31px, 8.7vw, 38px) !important;
+  }
+
+  .process-v5-stories article > p:last-child {
+    max-width: 28ch !important;
+    font-size: 13.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  .contact-v4-shell {
+    padding-top: 34px !important;
+  }
+
+  .contact-v4-heading {
+    padding-bottom: 28px !important;
+  }
+
+  .contact-v4-heading-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  .contact-v4-heading h2 {
+    max-width: 8.5ch !important;
+  }
+
+  .contact-v4-heading-grid > .contact-v4-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .contact-v4-directory {
+    padding: 28px 0 32px !important;
+    gap: 22px !important;
+  }
+
+  .contact-v4-foot {
+    padding: 20px 0 22px !important;
+    min-height: 0 !important;
+  }
+}

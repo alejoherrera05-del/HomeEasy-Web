@@ -2,14 +2,11 @@ const REVEAL_SELECTORS = [
   ".recommender-heading",
   ".catalog-entry-heading",
   ".wallpaper-heading",
-  ".wallpaper-comparison figure",
+  ".wallpaper-comparison",
   ".process-v5-intro",
-  ".process-v5-visual",
   ".process-v5-stories article",
-  ".process-v5-closing",
   ".contact-v4-heading",
-  ".contact-v4-location",
-  ".contact-v4-channels",
+  ".contact-v4-directory",
 ];
 
 export function initStorytellingReveals() {
@@ -21,7 +18,7 @@ export function initStorytellingReveals() {
 
   targets.forEach((element) => {
     element.classList.add("story-reveal");
-    if (element.matches(".process-v5-visual, .wallpaper-comparison figure")) {
+    if (element.matches(".wallpaper-comparison")) {
       element.classList.add("story-image-reveal");
     }
   });
@@ -40,8 +37,8 @@ export function initStorytellingReveals() {
       observer.unobserve(entry.target);
     });
   }, {
-    rootMargin: "0px 0px -8%",
-    threshold: 0.08,
+    rootMargin: "0px 0px -6%",
+    threshold: 0.04,
   });
 
   targets.forEach((element) => observer.observe(element));
