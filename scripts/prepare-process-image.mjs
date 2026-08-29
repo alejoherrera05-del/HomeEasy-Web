@@ -2,11 +2,16 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
 const root = process.cwd();
-const source = resolve(root, "src/assets/process-image/final-800.b64");
+const partsDir = resolve(root, "src/assets/process-image");
 const output = resolve(root, "public/assets/process-materials-final.webp");
 
-const encoded = (await readFile(source, "utf8")).trim();
-const buffer = Buffer.from(encoded, "base64");
+const parts = [];
+for (let index = 1; index <= 8; index += 1) {
+  const name = `part${String(index).padStart(2, "0")}.b64`;
+  parts.push((await readFile(resolve(partsDir, name), "utf8")).trim());
+}
+
+const buffer = Buffer.from(parts.join(""), "base64");
 const webpMagic = buffer.subarray(0, 4).toString("ascii") === "RIFF"
   && buffer.subarray(8, 12).toString("ascii") === "WEBP";
 
