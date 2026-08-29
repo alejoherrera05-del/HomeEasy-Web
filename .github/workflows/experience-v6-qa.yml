@@ -10,7 +10,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 24
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v4
@@ -31,7 +31,9 @@ jobs:
           test -s dist/client/assets/process-materials-approved.jpg
           file dist/client/assets/process-materials-approved.jpg | grep -q 'JPEG image data'
       - name: Install browser for visual QA
-        run: pnpm dlx playwright@1.55.0 install --with-deps chromium
+        run: |
+          pnpm add -D --ignore-workspace-root-check --lockfile=false playwright@1.55.0
+          pnpm exec playwright install --with-deps chromium
       - name: Serve production build
         run: |
           nohup python3 -m http.server 4173 --directory dist/client > /tmp/homeeasy-preview.log 2>&1 &
@@ -44,17 +46,53 @@ jobs:
       - name: Capture real browser screenshots
         run: |
           mkdir -p visual-qa
-          PW="pnpm dlx playwright@1.55.0 screenshot"
-          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#recomendador visual-qa/desktop-recommender.png
-          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#productos visual-qa/desktop-catalog.png
-          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#papel-tapiz visual-qa/desktop-wallpaper.png
-          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#proceso visual-qa/desktop-process.png
-          $PW --viewport-size="1440,900" --wait-for-timeout=2500 http://127.0.0.1:4173/#contacto visual-qa/desktop-contact.png
-          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#recomendador visual-qa/mobile-recommender.png
-          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#productos visual-qa/mobile-catalog.png
-          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#papel-tapiz visual-qa/mobile-wallpaper.png
-          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#proceso visual-qa/mobile-process.png
-          $PW --viewport-size="390,844" --wait-for-timeout=2500 http://127.0.0.1:4173/#contacto visual-qa/mobile-contact.png
+          cat > visual-qa-capture.cjs <<'JS'
+          const { chromium } = require('playwright');
+
+          const sections = [
+            ['recommender', '#recomendador'],
+            ['catalog', '#productos'],
+            ['wallpaper', '#papel-tapiz'],
+            ['process', '#proceso'],
+            ['process-story', '#proceso .process-v5-editorial'],
+            ['contact', '#contacto'],
+          ];
+
+          async function capture(mode, viewport, contextOptions = {}) {
+            const browser = await chromium.launch({ headless: true });
+            const context = await browser.newContext({ viewport, ...contextOptions });
+            const page = await context.newPage();
+            await page.goto('http://127.0.0.1:4173/', { waitUntil: 'domcontentloaded' });
+            await page.waitForTimeout(1000);
+
+            for (const [name, selector] of sections) {
+              const loc = page.locator(selector).first();
+              await loc.waitFor({ state: 'attached' });
+              await loc.evaluate((el) => {
+                const top = el.getBoundingClientRect().top + window.scrollY - 86;
+                window.scrollTo({ top, behavior: 'instant' });
+              });
+              await page.waitForTimeout(900);
+              await page.screenshot({ path: `visual-qa/${mode}-${name}.png`, fullPage: false });
+            }
+
+            await browser.close();
+          }
+
+          (async () => {
+            await capture('desktop', { width: 1440, height: 900 });
+            await capture('mobile', { width: 390, height: 844 }, {
+              isMobile: true,
+              hasTouch: true,
+              deviceScaleFactor: 1,
+              userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1',
+            });
+          })().catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          JS
+          node visual-qa-capture.cjs
       - name: Upload QA build
         uses: actions/upload-artifact@v4
         with:
