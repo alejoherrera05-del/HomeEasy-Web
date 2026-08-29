@@ -2,21 +2,8 @@ import { ArrowRight } from "@phosphor-icons/react";
 import part00 from "../assets/process-v7/part00.txt?raw";
 import part01 from "../assets/process-v7/part01.txt?raw";
 import part02 from "../assets/process-v7/part02.txt?raw";
-import part03 from "../assets/process-v7/part03.txt?raw";
-import part04 from "../assets/process-v7/part04.txt?raw";
-import part05 from "../assets/process-v7/part05.txt?raw";
-import part06 from "../assets/process-v7/part06.txt?raw";
-import part07 from "../assets/process-v7/part07.txt?raw";
-import part08 from "../assets/process-v7/part08.txt?raw";
-import part09 from "../assets/process-v7/part09.txt?raw";
-import part10 from "../assets/process-v7/part10.txt?raw";
-import part11 from "../assets/process-v7/part11.txt?raw";
-import part12 from "../assets/process-v7/part12.txt?raw";
 
-const PROCESS_IMAGE = `data:image/jpeg;base64,${[
-  part00, part01, part02, part03, part04, part05, part06,
-  part07, part08, part09, part10, part11, part12,
-].join("")}`;
+const PROCESS_IMAGE = `data:image/jpeg;base64,${part00}${part01}${part02}`;
 
 const processStories = [
   {
