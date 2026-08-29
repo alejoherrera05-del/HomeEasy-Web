@@ -29,55 +29,20 @@ jobs:
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
           test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 10000
-      - name: Locate system Chrome
-        run: |
-          which google-chrome || which google-chrome-stable || which chromium || which chromium-browser
-          google-chrome --version || google-chrome-stable --version || chromium --version || chromium-browser --version
-      - name: Install Playwright library only
-        run: npm install --no-save playwright@1.55.0
-      - name: Capture desktop and mobile
+      - name: Capture desktop and mobile with system Chrome
         run: |
           nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
-          node <<'NODE'
-          const { chromium } = require('playwright');
-          const fs = require('fs');
-          const candidates = ['/usr/bin/google-chrome','/usr/bin/google-chrome-stable','/usr/bin/chromium','/usr/bin/chromium-browser'];
-          const executablePath = candidates.find(fs.existsSync);
-          if (!executablePath) throw new Error('System Chrome not found');
-          (async () => {
-            const browser = await chromium.launch({ headless: true, executablePath, args: ['--no-sandbox'] });
-
-            const desktop = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
-            await desktop.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
-            await desktop.locator('#productos').scrollIntoViewIfNeeded();
-            await desktop.waitForTimeout(700);
-            await desktop.screenshot({ path: 'qa-desktop-catalog-to-process.png', fullPage: false });
-            await desktop.locator('#proceso').scrollIntoViewIfNeeded();
-            await desktop.waitForTimeout(700);
-            await desktop.screenshot({ path: 'qa-desktop-process.png', fullPage: false });
-            await desktop.locator('#contacto').scrollIntoViewIfNeeded();
-            await desktop.waitForTimeout(500);
-            await desktop.screenshot({ path: 'qa-desktop-contact.png', fullPage: false });
-
-            const mobile = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
-            await mobile.goto('http://127.0.0.1:4173/', { waitUntil: 'networkidle' });
-            await mobile.locator('#productos').scrollIntoViewIfNeeded();
-            await mobile.waitForTimeout(700);
-            await mobile.screenshot({ path: 'qa-mobile-catalog.png', fullPage: false });
-            await mobile.locator('#papel-tapiz').scrollIntoViewIfNeeded();
-            await mobile.waitForTimeout(700);
-            await mobile.screenshot({ path: 'qa-mobile-wallpaper.png', fullPage: false });
-            await mobile.locator('#proceso').scrollIntoViewIfNeeded();
-            await mobile.waitForTimeout(700);
-            await mobile.screenshot({ path: 'qa-mobile-process.png', fullPage: false });
-            await mobile.locator('#contacto').scrollIntoViewIfNeeded();
-            await mobile.waitForTimeout(500);
-            await mobile.screenshot({ path: 'qa-mobile-contact.png', fullPage: false });
-
-            await browser.close();
-          })();
-          NODE
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          "$CHROME" --version
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,900 --screenshot=qa-desktop-catalog.png 'http://127.0.0.1:4173/#productos'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,900 --screenshot=qa-desktop-wallpaper.png 'http://127.0.0.1:4173/#papel-tapiz'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,900 --screenshot=qa-desktop-process.png 'http://127.0.0.1:4173/#proceso'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=1440,900 --screenshot=qa-desktop-contact.png 'http://127.0.0.1:4173/#contacto'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=390,844 --screenshot=qa-mobile-catalog.png 'http://127.0.0.1:4173/#productos'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=390,844 --screenshot=qa-mobile-wallpaper.png 'http://127.0.0.1:4173/#papel-tapiz'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=390,844 --screenshot=qa-mobile-process.png 'http://127.0.0.1:4173/#proceso'
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --virtual-time-budget=2500 --window-size=390,844 --screenshot=qa-mobile-contact.png 'http://127.0.0.1:4173/#contacto'
       - name: Upload screenshots
         uses: actions/upload-artifact@v4
         with:
