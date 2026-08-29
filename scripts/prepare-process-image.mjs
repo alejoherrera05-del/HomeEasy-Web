@@ -15,7 +15,7 @@ const buffer = Buffer.from(parts.join(""), "base64");
 const webpMagic = buffer.subarray(0, 4).toString("ascii") === "RIFF"
   && buffer.subarray(8, 12).toString("ascii") === "WEBP";
 
-if (!webpMagic || buffer.length < 40_000) {
+if (!webpMagic || buffer.length < 30_000) {
   throw new Error(`Invalid HomeEasy process image: ${buffer.length} bytes`);
 }
 
