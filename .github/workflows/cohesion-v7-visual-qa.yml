@@ -29,7 +29,7 @@ jobs:
           pnpm exec vite build --base=/
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
-          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 30000
+          test $(stat -c%s dist/client/assets/process-materials-final.webp) -eq 52028
       - name: Capture real section screenshots
         run: |
           nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-preview.log 2>&1 &
@@ -98,7 +98,7 @@ jobs:
                 returnByValue: true,
               });
               console.log(file, result.result.value);
-              if (id === 'proceso' && (!result.result.value?.imageComplete || result.result.value?.imageWidth < 600)) process.exit(2);
+              if (id === 'proceso' && (!result.result.value?.imageComplete || result.result.value?.imageWidth < 1000 || result.result.value?.imageHeight < 800)) process.exit(2);
               await sleep(500);
               const shot = await send('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false });
               fs.writeFileSync(file, Buffer.from(shot.data, 'base64'));
