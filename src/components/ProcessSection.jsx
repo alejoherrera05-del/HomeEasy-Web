@@ -1,82 +1,94 @@
-import { CalendarCheck } from "@phosphor-icons/react";
+import {
+  ArrowRight,
+  CalendarCheck,
+  CubeTransparent,
+  Ruler,
+  Swatches,
+  Wrench,
+} from "@phosphor-icons/react";
 
-const steps = [
+const processSteps = [
   {
     n: "01",
-    title: "Cuéntanos qué quieres resolver",
-    copy: "Luz, privacidad, calor, oscuridad, paso o simplemente cómo quieres que se vea el espacio.",
+    icon: CalendarCheck,
+    title: "Vemos tu espacio",
+    copy: "Agendamos una visita sin costo en Popayán para entender la ventana, la entrada de luz, la apertura y lo que realmente quieres controlar.",
   },
   {
     n: "02",
-    title: "Te orientamos antes de venderte nada",
-    copy: "Comparamos únicamente los sistemas y materiales que tienen sentido para esa ventana.",
+    icon: CubeTransparent,
+    title: "Lo visualizas antes de decidir",
+    copy: "Cuando el proyecto lo permite, usamos realidad mixta para revisar proporción y presencia de la persiana o cortina directamente sobre tu ventana.",
   },
   {
     n: "03",
-    title: "Agendamos visita sin costo",
-    copy: "Vamos a tu espacio en Popayán para revisar apertura, fijaciones y condiciones reales de instalación.",
-    highlight: true,
+    icon: Swatches,
+    title: "Comparamos materiales reales",
+    copy: "Llevamos muestras de Sheer Elegance, velos, Screen y Blackout para comparar transparencia, textura y color con la luz real del ambiente.",
   },
   {
     n: "04",
-    title: "Medimos",
-    copy: "Tomamos ancho, alto, recorrido y los puntos donde realmente debe quedar instalado el sistema.",
-  },
-  {
-    n: "05",
-    title: "Definimos y cotizamos",
-    copy: "Recibes una propuesta clara con sistema, material, accionamiento e instalación incluidos según tu proyecto.",
-  },
-  {
-    n: "06",
-    title: "Fabricamos e instalamos",
-    copy: "Montamos, probamos el recorrido y dejamos la persiana lista para usar.",
+    icon: Ruler,
+    title: "Medimos, fabricamos e instalamos",
+    copy: "Tomamos las medidas finales, definimos el sistema y accionamiento, coordinamos fabricación e instalamos dejando el recorrido probado.",
   },
 ];
 
 export function ProcessSection({ openAdvisorFor }) {
   return (
-    <section className="process-v3" id="proceso">
-      <div className="process-v3-shell">
-        <div className="process-v3-copy">
-          <span className="process-v3-kicker">CÓMO TRABAJAMOS · POPAYÁN</span>
-          <h2>No empezamos por un catálogo. Empezamos por tu ventana.</h2>
-          <p>
-            Antes de fabricar, entendemos qué quieres resolver y cómo funciona el espacio.
-            Eso nos permite recomendar con criterio y medir una sola vez, bien.
-          </p>
-          <button
-            type="button"
-            className="button process-v3-cta"
-            onClick={() => openAdvisorFor("Agendar visita sin costo")}
-          >
-            <CalendarCheck size={19} weight="bold" /> Agendar visita sin costo
-          </button>
-        </div>
+    <section className="process-v4" id="proceso">
+      <div className="process-v4-shell">
+        <header className="process-v4-heading">
+          <p className="process-v4-kicker">CÓMO TRABAJAMOS · HOMEEASY POPAYÁN</p>
+          <div className="process-v4-heading-grid">
+            <h2>Tu ventana primero. La solución después.</h2>
+            <div>
+              <p>
+                No elegimos una persiana desde una lista. Vemos el espacio, probamos materiales,
+                medimos y definimos contigo lo que mejor funciona antes de fabricar.
+              </p>
+              <button
+                type="button"
+                className="button process-v4-main-cta"
+                onClick={() => openAdvisorFor("Agendar visita sin costo")}
+              >
+                Agendar visita sin costo <ArrowRight size={18} />
+              </button>
+            </div>
+          </div>
+        </header>
 
-        <figure className="process-v3-visual">
-          <img
-            src="/assets/pentagrama/sheer-elegance-room-official.jpg"
-            alt="Ambiente con persianas Sheer Elegance como referencia de una solución instalada"
-            loading="lazy"
-            decoding="async"
-          />
-          <figcaption>
-            <span>VISITA SIN COSTO</span>
-            <strong>Vemos la ventana, la luz y el recorrido en el espacio real.</strong>
-          </figcaption>
-        </figure>
+        <div className="process-v4-story">
+          <figure className="process-v4-board">
+            <img
+              src="/assets/process-materials-approved.webp"
+              alt="Muestrarios de Sheer Elegance, velos, Screen y Blackout junto a cinta métrica, herrajes y plano de ventana de HomeEasy"
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption>
+              <span>MUESTRAS REALES · MEDICIÓN · SISTEMAS</span>
+              <p>La decisión se toma con la ventana y los materiales delante, no desde una miniatura.</p>
+            </figcaption>
+          </figure>
 
-        <div className="process-v3-list" aria-label="Proceso de asesoría, medición e instalación de HomeEasy">
-          {steps.map(({ n, title, copy, highlight }) => (
-            <article key={n} className={highlight ? "is-highlight" : undefined}>
-              <span>{n}</span>
-              <div>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </div>
-            </article>
-          ))}
+          <div className="process-v4-rail" aria-label="Proceso de asesoría e instalación de HomeEasy">
+            {processSteps.map(({ n, icon: Icon, title, copy }) => (
+              <article key={n}>
+                <div className="process-v4-number">{n}</div>
+                <Icon className="process-v4-icon" size={23} weight="regular" aria-hidden="true" />
+                <div className="process-v4-step-copy">
+                  <h3>{title}</h3>
+                  <p>{copy}</p>
+                </div>
+              </article>
+            ))}
+
+            <div className="process-v4-proof">
+              <Wrench size={18} weight="regular" aria-hidden="true" />
+              <p><strong>Instalación incluida en el proceso.</strong> Revisamos el funcionamiento antes de entregar.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
