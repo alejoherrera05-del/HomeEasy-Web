@@ -51,7 +51,7 @@ export function ProcessSection({ openAdvisorFor }) {
           <div className="process-v5-stories" aria-label="Así acompaña HomeEasy un proyecto">
             {processStories.map(({ eyebrow, title, copy }) => (
               <article key={title}>
-                <p className="process-v5-story-kicker">{eyrow}</p>
+                <p className="process-v5-story-kicker">{eyebrow}</p>
                 <h3>{title}</h3>
                 <p>{copy}</p>
               </article>
