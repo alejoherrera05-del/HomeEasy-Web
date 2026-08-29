@@ -1,0 +1,38 @@
+name: Process v5 visual QA
+
+on:
+  push:
+    branches: [feat/process-editorial-v5]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test and build
+        run: |
+          pnpm test
+          pnpm exec vite build --base=/
+      - name: Verify approved process image
+        run: |
+          test -s dist/client/assets/process-materials-approved.webp
+          file dist/client/assets/process-materials-approved.webp
+      - name: Upload visual QA build
+        uses: actions/upload-artifact@v4
+        with:
+          name: homeeasy-process-v5-qa
+          path: dist/client
+          retention-days: 1
