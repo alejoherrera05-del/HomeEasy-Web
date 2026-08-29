@@ -35,8 +35,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Prepare verified process image
+        run: |
+          node scripts/prepare-process-image.mjs
+          test -s public/assets/process-materials-final.webp
+          file public/assets/process-materials-final.webp
+          test $(stat -c%s public/assets/process-materials-final.webp) -gt 40000
+
       - name: Build staging site
         run: pnpm exec vite build --base=/HomeEasy-Web/
+
+      - name: Verify built process image
+        run: |
+          test -s dist/client/assets/process-materials-final.webp
+          file dist/client/assets/process-materials-final.webp
+          test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 40000
 
       - name: Adapt public asset URLs for Pages staging
         shell: bash
@@ -48,6 +61,7 @@ jobs:
           root = Path('dist/client')
           assert (root / 'index.html').exists()
           assert (root / 'assets' / 'hommy-hero-approved.png').exists()
+          assert (root / 'assets' / 'process-materials-final.webp').exists()
 
           pattern = re.compile(r'(?<!HomeEasy-Web)/assets/')
           changed = 0
