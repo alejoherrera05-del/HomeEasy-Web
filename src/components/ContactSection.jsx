@@ -48,28 +48,22 @@ export function ContactSection({ openAdvisorFor }) {
           </div>
           <div className="contact-v4-heading-grid">
             <h2>Ven a vernos. O vamos a tu espacio.</h2>
-            <div>
-              <p>
-                Estamos en la Transversal 9 # 6N-26, Popayán. Si prefieres,
-                agendamos una visita sin costo para revisar tu ventana antes de cotizar.
-              </p>
-              <div className="contact-v4-actions">
-                <button
-                  type="button"
-                  className="button"
-                  onClick={() => openAdvisorFor("Agendar visita sin costo")}
-                >
-                  <CalendarCheck size={18} weight="bold" /> Agendar visita sin costo
-                </button>
-                <a
-                  className="contact-v4-whatsapp-cta"
-                  href={whatsappUrl("Hola HomeEasy, quiero cotizar un proyecto.")}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Cotizar por WhatsApp <ArrowRight size={17} />
-                </a>
-              </div>
+            <div className="contact-v4-actions">
+              <button
+                type="button"
+                className="button"
+                onClick={() => openAdvisorFor("Agendar visita sin costo")}
+              >
+                <CalendarCheck size={18} weight="bold" /> Agendar visita sin costo
+              </button>
+              <a
+                className="contact-v4-whatsapp-cta"
+                href={whatsappUrl("Hola HomeEasy, quiero cotizar un proyecto.")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Cotizar por WhatsApp <ArrowRight size={17} />
+              </a>
             </div>
           </div>
         </header>
@@ -104,7 +98,6 @@ export function ContactSection({ openAdvisorFor }) {
             <img src="/assets/brand/triangulo.png" alt="" aria-hidden="true" />
             <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
           </div>
-          <p>Persianas y papel de colgadura en Popayán, Cauca.</p>
           <small>© 2026 HomeEasy</small>
         </div>
       </div>
