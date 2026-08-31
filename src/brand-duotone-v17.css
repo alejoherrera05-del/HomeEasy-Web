@@ -1,25 +1,39 @@
-/* HomeEasy wordmark v17 — wine/gold split only in header and footer. */
+/* HomeEasy wordmark v18 — solid wine Home + solid gold Easy. */
 
 .brand strong,
 .contact-v4-wordmark strong {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
   color: var(--rose-dark);
-  background: linear-gradient(
-    90deg,
-    var(--rose-dark) 0%,
-    var(--rose-dark) 50%,
-    var(--gold) 50%,
-    var(--gold) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: currentColor !important;
+  font-size: 0 !important;
 }
 
-@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
-  .brand strong,
-  .contact-v4-wordmark strong {
-    color: var(--rose-dark);
-    background: none;
-    -webkit-text-fill-color: currentColor;
-  }
+.brand strong::before,
+.contact-v4-wordmark strong::before,
+.brand strong::after,
+.contact-v4-wordmark strong::after {
+  display: inline;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: inherit;
+  letter-spacing: -.035em;
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+.brand strong::before,
+.contact-v4-wordmark strong::before {
+  content: "Home";
+  color: var(--rose-dark);
+}
+
+.brand strong::after,
+.contact-v4-wordmark strong::after {
+  content: "Easy";
+  color: var(--gold);
 }
