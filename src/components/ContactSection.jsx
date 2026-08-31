@@ -47,12 +47,8 @@ export function ContactSection({ openAdvisorFor }) {
             <span>HOMEEASY · PERSIANAS EN POPAYÁN</span>
           </div>
           <div className="contact-v4-heading-grid">
-            <h2>Cuéntanos qué ventana o pared quieres resolver.</h2>
+            <h2>Hablemos de tu espacio.</h2>
             <div className="contact-v4-heading-copy">
-              <p>
-                Cotizamos persianas a medida y papel de colgadura en Popayán. Puedes empezar desde aquí,
-                agendar una visita sin costo o escribirnos directamente.
-              </p>
               <div className="contact-v4-actions">
                 <button
                   type="button"
@@ -70,7 +66,7 @@ export function ContactSection({ openAdvisorFor }) {
                 </button>
                 <a
                   className="contact-v4-whatsapp-cta"
-                  href={whatsappUrl("Hola HomeEasy, quiero hablar sobre un proyecto.")}
+                  href={whatsappUrl("Hola HomeEasy, quiero hablar sobre un proyecto."))
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -111,7 +107,6 @@ export function ContactSection({ openAdvisorFor }) {
             <img src="/assets/brand/triangulo.png" alt="" aria-hidden="true" />
             <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
           </div>
-          <p>Persianas a medida · Papel de colgadura · Medición e instalación</p>
           <small>© 2026 HomeEasy</small>
         </div>
       </div>
