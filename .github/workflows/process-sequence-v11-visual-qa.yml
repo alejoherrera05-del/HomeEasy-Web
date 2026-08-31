@@ -1,0 +1,68 @@
+name: Process sequence v11 visual QA
+
+on:
+  push:
+    branches: [feat/process-sequence-v11]
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test
+          node scripts/prepare-process-image.mjs
+          pnpm exec vite build --base=/
+      - name: Start preview and Chrome
+        run: |
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-chrome about:blank > /tmp/chrome.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break; sleep .5; done
+      - name: Capture timeline sequence
+        run: |
+          cat > /tmp/capture.mjs <<'NODE'
+          import fs from 'node:fs';
+          const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+          const target = await (await fetch('http://127.0.0.1:9222/json/new?' + encodeURIComponent('http://127.0.0.1:4173/'), {method:'PUT'})).json();
+          const ws = new WebSocket(target.webSocketDebuggerUrl);
+          let id=0; const pending=new Map();
+          ws.onmessage=(event)=>{const m=JSON.parse(event.data); if(!m.id||!pending.has(m.id))return; const p=pending.get(m.id); pending.delete(m.id); m.error?p.reject(m.error):p.resolve(m.result);};
+          await new Promise(r=>ws.onopen=r);
+          const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id; pending.set(n,{resolve,reject}); ws.send(JSON.stringify({id:n,method,params}));});
+          await send('Page.enable'); await send('Runtime.enable');
+          async function setup(width,height,mobile){
+            await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile,screenWidth:width,screenHeight:height});
+            await send('Page.navigate',{url:'http://127.0.0.1:4173/'}); await sleep(1900);
+            await send('Runtime.evaluate',{expression:`(()=>{const n=document.getElementById('proceso'); n.scrollIntoView({block:'start'}); scrollBy(0,-74); return true;})()`});
+          }
+          async function shot(file){const s=await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(file,Buffer.from(s.data,'base64'));}
+          await setup(1440,900,false);
+          const waits=[120,500,450,450,450,550];
+          for(let i=0;i<waits.length;i++){await sleep(waits[i]); await shot(`desktop-sequence-${i+1}.png`);}
+          await setup(390,844,true); await sleep(2750); await shot('mobile-final.png');
+          ws.close();
+          NODE
+          node /tmp/capture.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-sequence-v11-screenshots
+          path: |
+            desktop-sequence-*.png
+            mobile-final.png
+          retention-days: 1
