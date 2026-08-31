@@ -46,6 +46,7 @@ jobs:
           await new Promise(r=>ws.onopen=r);
           const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id; pending.set(n,{resolve,reject}); ws.send(JSON.stringify({id:n,method,params}));});
           await send('Page.enable'); await send('Runtime.enable');
+          await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
           async function setup(width,height,mobile){
             await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile,screenWidth:width,screenHeight:height});
             await send('Page.navigate',{url:'http://127.0.0.1:4173/'}); await sleep(1900);
