@@ -1,5 +1,4 @@
 import {
-  ArrowRight,
   ChatCircleText,
   FileText,
   HouseLine,
@@ -41,7 +40,7 @@ const processSteps = [
   },
 ];
 
-export function ProcessSection({ openAdvisorFor }) {
+export function ProcessSection() {
   return (
     <section className="process-v5" id="proceso">
       <div className="process-v5-shell">
@@ -68,17 +67,6 @@ export function ProcessSection({ openAdvisorFor }) {
               </li>
             ))}
           </ol>
-        </div>
-
-        <div className="process-v5-closing">
-          <p>¿Quieres verlo en tu espacio?</p>
-          <button
-            type="button"
-            className="button process-v5-cta"
-            onClick={() => openAdvisorFor("Agendar visita sin costo")}
-          >
-            Agendar visita sin costo <ArrowRight size={18} weight="bold" />
-          </button>
         </div>
       </div>
     </section>
