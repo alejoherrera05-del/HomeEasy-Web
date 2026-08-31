@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App.jsx";
 import { initStorytellingReveals } from "./storytellingReveal.js";
+import { initCustomerCopyV15 } from "./customerCopyV15.js";
 import "./styles.css";
 import "./hero/heroScene.css";
 import "./visual-qa-fixes.css";
@@ -21,4 +22,7 @@ createRoot(document.getElementById("root")).render(
   </React.StrictMode>,
 );
 
-window.requestAnimationFrame(() => initStorytellingReveals());
+window.requestAnimationFrame(() => {
+  initStorytellingReveals();
+  initCustomerCopyV15();
+});
