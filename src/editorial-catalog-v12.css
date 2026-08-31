@@ -1,0 +1,398 @@
+/* HomeEasy catalogue v12 — editorial, calmer and easier to scan. */
+
+.products.section-shell {
+  width: min(1320px, calc(100% - 48px)) !important;
+}
+
+.products .catalog-entry-heading,
+.products .product-filters {
+  width: 100% !important;
+}
+
+.catalog-entry-heading {
+  max-width: 980px;
+}
+
+.catalog-entry-heading .section-label {
+  color: var(--rose-dark);
+}
+
+.product-filters {
+  gap: 6px;
+  margin-bottom: 26px;
+  padding: 0 0 18px !important;
+  border-bottom: 1px solid rgba(31, 29, 27, .10);
+}
+
+.product-filters button {
+  min-height: 38px;
+  padding: 8px 13px;
+  border-color: rgba(31, 29, 27, .12);
+  background: transparent;
+  color: #5b5551;
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.product-filters button:hover {
+  border-color: rgba(178, 86, 108, .4);
+  background: rgba(178, 86, 108, .04);
+}
+
+.product-filters button.active {
+  border-color: rgba(178, 86, 108, .22);
+  background: rgba(178, 86, 108, .09);
+  color: var(--rose-dark);
+}
+
+.catalog-layout {
+  display: block !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.catalog-list {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.catalog-scroll {
+  max-height: none !important;
+  display: flex !important;
+  gap: 0 !important;
+  overflow-x: auto !important;
+  padding: 0 0 15px !important;
+  border-bottom: 1px solid rgba(31, 29, 27, .12);
+  scrollbar-width: thin;
+}
+
+.catalog-product {
+  width: auto !important;
+  min-width: max-content !important;
+  min-height: 52px !important;
+  flex: 0 0 auto;
+  grid-template-columns: 1fr !important;
+  gap: 0 !important;
+  padding: 11px 15px 12px !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  background: transparent !important;
+  color: #625c58;
+}
+
+.catalog-product:first-child {
+  padding-left: 2px !important;
+  padding-right: 18px !important;
+}
+
+.catalog-product img,
+.catalog-product svg {
+  display: none !important;
+}
+
+.catalog-product small {
+  margin-bottom: 4px !important;
+  color: #948b85 !important;
+  font-size: 8px !important;
+  letter-spacing: .08em !important;
+}
+
+.catalog-product strong {
+  color: inherit;
+  font-size: 12.5px !important;
+  font-weight: 560 !important;
+  line-height: 1.2 !important;
+}
+
+.catalog-product:hover {
+  color: var(--rose-dark);
+}
+
+.catalog-product.selected {
+  border-bottom-color: var(--rose) !important;
+  color: var(--ink) !important;
+  box-shadow: none !important;
+}
+
+.product-explorer {
+  margin-top: 34px;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.18fr) minmax(350px, .72fr) !important;
+  gap: clamp(42px, 5.5vw, 78px);
+  align-items: stretch;
+  background: transparent !important;
+}
+
+.product-gallery {
+  min-height: 650px !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.product-media-frame {
+  inset: 0 0 88px !important;
+  border-radius: 4px;
+  background: #ded8d2 !important;
+}
+
+.product-media-frame > img {
+  object-position: center;
+}
+
+.video-slide {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.media-thumbnails {
+  height: 76px !important;
+  gap: 8px !important;
+  overflow-x: auto;
+  padding: 10px 0 0 !important;
+  background: transparent !important;
+}
+
+.media-thumbnails button {
+  width: 66px !important;
+  flex-basis: 66px !important;
+  grid-template-rows: 54px !important;
+  gap: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 2px !important;
+  opacity: .55;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.media-thumbnails button:hover,
+.media-thumbnails button.active {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+.media-thumbnails button > img,
+.video-thumb {
+  height: 54px !important;
+  border-radius: 2px !important;
+}
+
+.media-thumbnails button > span:last-child {
+  display: none !important;
+}
+
+.gallery-controls {
+  right: 14px !important;
+  bottom: 102px !important;
+  border: 1px solid rgba(255,255,255,.32);
+  border-radius: 999px;
+  background: rgba(25, 22, 20, .55);
+  backdrop-filter: blur(10px);
+}
+
+.gallery-controls button {
+  width: 38px;
+  height: 38px;
+}
+
+.gallery-controls span {
+  font-size: 9px;
+}
+
+.product-detail {
+  min-height: 650px;
+  padding: clamp(28px, 3vw, 44px) 0 12px !important;
+  justify-content: center;
+}
+
+.product-kind {
+  margin-bottom: 15px !important;
+  color: var(--rose-dark) !important;
+  font-size: 9px !important;
+  letter-spacing: .1em !important;
+}
+
+.product-detail-head h3 {
+  max-width: 9ch;
+  margin: 0 0 17px !important;
+  font-size: clamp(42px, 4.2vw, 61px) !important;
+  font-weight: 450 !important;
+  line-height: .98 !important;
+  letter-spacing: -.045em !important;
+  text-wrap: balance;
+}
+
+.product-detail-head > p:last-child {
+  max-width: 39ch !important;
+  margin-bottom: 0;
+  color: #67605b !important;
+  font-size: 14.5px !important;
+  line-height: 1.62 !important;
+}
+
+.product-specs {
+  margin: 32px 0 0 !important;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(31, 29, 27, .10);
+}
+
+.product-specs div {
+  min-width: 0;
+  display: block !important;
+  padding: 16px 18px 17px 0 !important;
+  border-bottom: 1px solid rgba(31, 29, 27, .08) !important;
+}
+
+.product-specs div:nth-child(even) {
+  padding-left: 18px !important;
+  padding-right: 0 !important;
+  border-left: 1px solid rgba(31, 29, 27, .08);
+}
+
+.product-specs dt {
+  margin-bottom: 7px;
+  color: #938a84 !important;
+  font-size: 8.5px !important;
+  font-weight: 750;
+  letter-spacing: .10em !important;
+}
+
+.product-specs dd {
+  color: #403a36 !important;
+  font-size: 12.5px !important;
+  line-height: 1.52 !important;
+}
+
+.product-detail-actions {
+  margin-top: 31px !important;
+  padding-top: 0 !important;
+  gap: 17px !important;
+}
+
+.product-detail-actions .button {
+  width: auto !important;
+  min-width: 210px;
+  padding-inline: 23px;
+}
+
+.product-detail-actions .text-button {
+  max-width: 32ch;
+  color: #706964;
+  font-size: 11.5px !important;
+  line-height: 1.45;
+}
+
+/* Keep the mobile catalogue intentionally simpler than desktop. */
+@media (max-width: 760px) {
+  .products.section-shell {
+    width: calc(100% - 30px) !important;
+  }
+
+  .product-filters {
+    margin-bottom: 0;
+    padding-bottom: 15px !important;
+  }
+
+  .catalog-list {
+    display: none !important;
+  }
+
+  .product-explorer {
+    margin-top: 20px;
+    grid-template-columns: 1fr !important;
+    gap: 0;
+  }
+
+  .product-gallery {
+    min-height: 485px !important;
+  }
+
+  .product-media-frame {
+    inset: 0 0 78px !important;
+  }
+
+  .media-thumbnails {
+    height: 68px !important;
+    padding-top: 8px !important;
+  }
+
+  .media-thumbnails button {
+    width: 56px !important;
+    flex-basis: 56px !important;
+    grid-template-rows: 48px !important;
+  }
+
+  .media-thumbnails button > img,
+  .video-thumb {
+    height: 48px !important;
+  }
+
+  .gallery-controls {
+    bottom: 88px !important;
+  }
+
+  .product-detail {
+    min-height: 0;
+    padding: 34px 2px 10px !important;
+  }
+
+  .product-detail-head h3 {
+    max-width: 10ch;
+    font-size: clamp(36px, 10.5vw, 45px) !important;
+  }
+
+  .product-detail-head > p:last-child {
+    max-width: 34ch !important;
+    font-size: 14px !important;
+  }
+
+  .product-specs {
+    grid-template-columns: 1fr;
+    margin-top: 26px !important;
+  }
+
+  .product-specs div,
+  .product-specs div:nth-child(even) {
+    padding: 14px 0 15px !important;
+    border-left: 0;
+  }
+
+  .product-specs dt {
+    margin-bottom: 5px;
+  }
+
+  .product-specs dd {
+    max-width: 34ch;
+    font-size: 13px !important;
+  }
+
+  .product-detail-actions {
+    margin-top: 26px !important;
+  }
+
+  .product-detail-actions .button {
+    width: 100% !important;
+  }
+
+  .product-detail-actions .text-button {
+    max-width: none;
+    align-self: center;
+    text-align: center;
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1050px) {
+  .product-explorer {
+    grid-template-columns: minmax(0, 1.06fr) minmax(330px, .76fr) !important;
+    gap: 38px;
+  }
+
+  .product-detail-head h3 {
+    font-size: clamp(40px, 5vw, 52px) !important;
+  }
+}
