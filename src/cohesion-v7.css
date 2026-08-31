@@ -1,4 +1,4 @@
-/* HomeEasy cohesion v8 — one grid, less copy, intentional vertical rhythm. */
+/* HomeEasy cohesion v9 — lighter rhythm, fewer interruptions and clearer hierarchy. */
 
 :root {
   --he-shell: 1320px;
@@ -20,7 +20,7 @@
   margin-inline: auto;
 }
 
-/* LESS TEXT -------------------------------------------------------------- */
+/* KEEP ONLY COPY THAT HELPS DECIDE -------------------------------------- */
 .recommender-heading > p,
 .catalog-entry-heading > p,
 .wallpaper-lead > p,
@@ -29,7 +29,7 @@
   display: none !important;
 }
 
-/* ONE HEADING LANGUAGE --------------------------------------------------- */
+/* QUIETER HEADING SCALE -------------------------------------------------- */
 :where(
   .recommender-heading,
   .catalog-entry-heading,
@@ -38,41 +38,105 @@
   .contact-v4-heading
 ) h2 {
   margin: 0 !important;
-  font-size: clamp(48px, 5.1vw, 74px) !important;
-  line-height: .97 !important;
-  letter-spacing: -.052em !important;
+  font-size: clamp(44px, 4.55vw, 66px) !important;
+  line-height: 1 !important;
+  letter-spacing: -.048em !important;
   font-weight: 510 !important;
   text-wrap: balance;
 }
 
 .catalog-entry-heading h2,
-.wallpaper-heading h2,
-.process-v5-intro h2 {
+.wallpaper-heading h2 {
   max-width: 14ch !important;
 }
 
-/* COMPACT SECTION RHYTHM ------------------------------------------------- */
+.process-v5-intro h2,
+.contact-v4-heading h2 {
+  max-width: 10ch !important;
+}
+
+/* BALANCED SECTION RHYTHM ----------------------------------------------- */
 .recommender.section-shell {
-  padding-top: clamp(64px, 5vw, 80px) !important;
-  padding-bottom: 30px !important;
+  padding-top: clamp(78px, 6vw, 94px) !important;
+  padding-bottom: clamp(62px, 5vw, 78px) !important;
+}
+
+.recommender-heading {
+  margin-bottom: 34px !important;
+}
+
+.recommender-card,
+.hommy-test-guide {
+  min-height: 620px !important;
 }
 
 .products.section-shell {
-  padding-top: 38px !important;
-  padding-bottom: 28px !important;
+  padding-top: clamp(60px, 4.8vw, 72px) !important;
+  padding-bottom: clamp(68px, 5.4vw, 82px) !important;
 }
 
 .catalog-entry-heading {
-  margin-bottom: 24px !important;
+  margin-bottom: 30px !important;
+}
+
+.catalog-layout {
+  border-color: rgba(31, 29, 27, .10) !important;
+}
+
+.catalog-list {
+  background: #f5f4f2 !important;
+}
+
+.catalog-scroll {
+  padding: 11px !important;
+}
+
+.catalog-product {
+  min-height: 68px !important;
+}
+
+.product-detail {
+  padding: clamp(34px, 3.5vw, 52px) !important;
+}
+
+.product-detail-head > p:last-child {
+  max-width: 44ch;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+.product-facts {
+  margin: 24px 0 18px !important;
+  border-color: rgba(31, 29, 27, .09) !important;
+}
+
+.product-facts div,
+.product-facts div + div,
+.product-specs div {
+  border-color: rgba(31, 29, 27, .08) !important;
+}
+
+.product-facts p {
+  font-size: 11.5px !important;
+  line-height: 1.45 !important;
+}
+
+.product-specs dt {
+  font-size: 10px !important;
+}
+
+.product-specs dd {
+  font-size: 12.5px !important;
+  line-height: 1.5 !important;
 }
 
 .wallpaper.section-shell {
-  padding-top: 34px !important;
-  padding-bottom: 34px !important;
+  padding-top: clamp(70px, 5.7vw, 86px) !important;
+  padding-bottom: clamp(72px, 5.8vw, 88px) !important;
 }
 
 .wallpaper-heading {
-  margin-bottom: 26px !important;
+  margin-bottom: 32px !important;
   align-items: end !important;
 }
 
@@ -87,34 +151,26 @@
   margin-top: 0 !important;
 }
 
+/* PROCESS --------------------------------------------------------------- */
 .process-v5-shell {
-  padding-top: 38px !important;
-  padding-bottom: 42px !important;
+  padding-top: clamp(74px, 6vw, 92px) !important;
+  padding-bottom: clamp(78px, 6.4vw, 98px) !important;
 }
 
 .process-v5-intro {
-  margin-bottom: 28px !important;
+  margin-bottom: 38px !important;
 }
 
 .process-v5-intro-grid {
-  grid-template-columns: minmax(0, 1.2fr) auto !important;
-  gap: 40px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: clamp(48px, 7vw, 96px) !important;
   align-items: end !important;
-}
-
-.process-v5-intro h2 {
-  max-width: 12.5ch !important;
 }
 
 .process-v5-intro-action {
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
-  gap: 20px;
-}
-
-.process-v5-intro-action > p {
-  max-width: 27ch;
 }
 
 .process-v5-cta {
@@ -123,13 +179,12 @@
 }
 
 .process-v5-editorial {
-  grid-template-columns: minmax(0, 1.08fr) minmax(360px, .72fr) !important;
-  gap: clamp(38px, 4.5vw, 66px) !important;
+  grid-template-columns: minmax(0, .96fr) minmax(430px, 1.04fr) !important;
+  gap: clamp(52px, 6vw, 82px) !important;
 }
 
-/* The approved photo is a core visual, never a reveal target. */
 .process-v5-visual {
-  top: 92px !important;
+  top: 104px !important;
   opacity: 1 !important;
   transform: none !important;
   clip-path: none !important;
@@ -144,62 +199,51 @@
 }
 
 .process-v5-steps li {
-  padding: clamp(22px, 2.15vw, 30px) 0 !important;
+  padding: clamp(21px, 2vw, 27px) 0 !important;
 }
 
 .process-v5-steps h3 {
-  max-width: 13ch !important;
-  font-size: clamp(28px, 2.35vw, 36px) !important;
-  line-height: 1 !important;
+  max-width: 14ch !important;
+  font-size: clamp(27px, 2.15vw, 34px) !important;
+  line-height: 1.03 !important;
 }
 
 .process-v5-steps li p {
-  max-width: 35ch !important;
-  margin-top: 9px !important;
-  font-size: 15px !important;
-  line-height: 1.5 !important;
-}
-
-/* Legacy selectors kept harmless for older snapshots. */
-.process-v5-stories article {
-  padding: clamp(28px, 3vw, 42px) 0 !important;
-}
-
-.process-v5-story-kicker {
-  margin-bottom: 9px !important;
-}
-
-.process-v5-stories h3 {
-  max-width: 8.8ch !important;
-  font-size: clamp(34px, 3.1vw, 48px) !important;
-  line-height: .99 !important;
-}
-
-.process-v5-stories article > p:last-child {
-  max-width: 29ch !important;
-  margin-top: 11px !important;
+  max-width: 38ch !important;
+  margin-top: 8px !important;
+  color: #6a645f !important;
   font-size: 14.5px !important;
   line-height: 1.48 !important;
 }
 
 /* CONTACT --------------------------------------------------------------- */
 .contact-v4-shell {
-  padding-top: 38px !important;
+  padding-top: clamp(74px, 6vw, 92px) !important;
 }
 
 .contact-v4-heading {
-  padding-bottom: 38px !important;
+  padding-bottom: 50px !important;
 }
 
 .contact-v4-heading-grid {
-  grid-template-columns: minmax(0, 1.2fr) auto !important;
-  gap: 44px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  gap: clamp(48px, 7vw, 96px) !important;
   align-items: end !important;
 }
 
+.contact-v4-heading-copy {
+  max-width: none !important;
+}
+
+.contact-v4-actions {
+  max-width: 610px;
+  margin-top: 0 !important;
+  justify-content: flex-end;
+}
+
 .contact-v4-directory {
-  padding: 36px 0 40px !important;
-  gap: clamp(40px, 5vw, 72px) !important;
+  padding: 52px 0 58px !important;
+  gap: clamp(48px, 6vw, 82px) !important;
 }
 
 .contact-v4-location {
@@ -207,20 +251,39 @@
 }
 
 .contact-v4-location strong {
-  font-size: clamp(30px, 2.7vw, 42px) !important;
+  font-size: clamp(30px, 2.65vw, 41px) !important;
 }
 
 .contact-v4-foot {
-  min-height: 68px !important;
-  grid-template-columns: 1fr auto auto !important;
+  min-height: 78px !important;
+  grid-template-columns: 1fr auto !important;
 }
 
-/* Major moments reveal, not every sentence. */
-.storytelling-ready .process-v5-stories article,
+/* SOFTER REVEALS --------------------------------------------------------- */
+.storytelling-ready .story-reveal {
+  transition-duration: 460ms !important;
+}
+
+.storytelling-ready .story-reveal:not(.is-story-visible) {
+  transform: translateY(14px) !important;
+}
+
 .storytelling-ready .process-v5-steps li,
 .storytelling-ready .wallpaper-comparison,
 .storytelling-ready .contact-v4-directory {
-  transition-duration: 480ms !important;
+  transition-duration: 420ms !important;
+}
+
+@media (max-width: 1050px) {
+  .process-v5-editorial {
+    grid-template-columns: minmax(0, .92fr) minmax(390px, 1.08fr) !important;
+    gap: 46px !important;
+  }
+
+  .contact-v4-heading-grid {
+    grid-template-columns: 1fr minmax(370px, .8fr) !important;
+    gap: 42px !important;
+  }
 }
 
 @media (max-width: 760px) {
@@ -233,70 +296,100 @@
     .process-v5-intro,
     .contact-v4-heading
   ) h2 {
-    font-size: clamp(40px, 11vw, 52px) !important;
-    line-height: .98 !important;
+    font-size: clamp(36px, 9.8vw, 46px) !important;
+    line-height: 1.01 !important;
+    letter-spacing: -.044em !important;
   }
 
   .recommender.section-shell {
-    padding-top: 50px !important;
-    padding-bottom: 22px !important;
+    padding-top: 58px !important;
+    padding-bottom: 58px !important;
+  }
+
+  .recommender-heading {
+    margin-bottom: 26px !important;
+  }
+
+  .recommender-card {
+    min-height: 0 !important;
+  }
+
+  .hommy-test-guide {
+    min-height: 260px !important;
   }
 
   .products.section-shell {
-    padding-top: 30px !important;
-    padding-bottom: 24px !important;
+    padding-top: 54px !important;
+    padding-bottom: 60px !important;
   }
 
   .catalog-entry-heading {
-    margin-bottom: 18px !important;
+    margin-bottom: 24px !important;
+  }
+
+  .catalog-scroll {
+    padding: 9px !important;
+  }
+
+  .product-detail {
+    padding: 30px 20px 34px !important;
+  }
+
+  .product-detail-head h3 {
+    font-size: 37px !important;
+  }
+
+  .product-facts p {
+    font-size: 12px !important;
+  }
+
+  .product-specs dt {
+    font-size: 9.5px !important;
+  }
+
+  .product-specs dd {
+    font-size: 12.5px !important;
   }
 
   .wallpaper.section-shell {
-    padding-top: 30px !important;
-    padding-bottom: 28px !important;
+    padding-top: 58px !important;
+    padding-bottom: 62px !important;
   }
 
   .wallpaper-heading {
-    margin-bottom: 20px !important;
+    margin-bottom: 26px !important;
   }
 
   .process-v5-shell {
-    padding-top: 32px !important;
-    padding-bottom: 38px !important;
+    padding-top: 58px !important;
+    padding-bottom: 64px !important;
   }
 
   .process-v5-intro {
-    margin-bottom: 20px !important;
+    margin-bottom: 30px !important;
   }
 
   .process-v5-intro-grid {
     grid-template-columns: 1fr !important;
-    gap: 16px !important;
+    gap: 22px !important;
   }
 
-  .process-v5-intro h2 {
-    max-width: 9.5ch !important;
+  .process-v5-intro h2,
+  .contact-v4-heading h2 {
+    max-width: 11ch !important;
   }
 
   .process-v5-intro-action {
-    flex-direction: column !important;
-    align-items: stretch !important;
     justify-content: flex-start !important;
-    gap: 0 !important;
-  }
-
-  .process-v5-intro-action > p {
-    max-width: 35ch !important;
   }
 
   .process-v5-cta {
     width: 100%;
-    margin-top: 18px !important;
   }
 
   .process-v5-editorial {
     grid-template-columns: 1fr !important;
-    gap: 14px !important;
+    gap: 28px !important;
   }
 
   .process-v5-visual {
@@ -310,60 +403,51 @@
   }
 
   .process-v5-steps li {
-    padding: 22px 0 24px !important;
+    padding: 20px 0 22px !important;
   }
 
   .process-v5-steps h3 {
-    max-width: 13ch !important;
-    font-size: clamp(29px, 8.2vw, 36px) !important;
+    max-width: 14ch !important;
+    font-size: clamp(27px, 7.4vw, 33px) !important;
   }
 
   .process-v5-steps li p {
-    max-width: 34ch !important;
-    font-size: 15px !important;
-    line-height: 1.5 !important;
-  }
-
-  .process-v5-stories article {
-    padding: 23px 0 26px !important;
-  }
-
-  .process-v5-stories h3 {
-    max-width: 9ch !important;
-    font-size: clamp(31px, 8.7vw, 38px) !important;
-  }
-
-  .process-v5-stories article > p:last-child {
-    max-width: 28ch !important;
-    font-size: 13.5px !important;
-    line-height: 1.45 !important;
+    max-width: 35ch !important;
+    font-size: 14.5px !important;
+    line-height: 1.46 !important;
   }
 
   .contact-v4-shell {
-    padding-top: 34px !important;
+    padding-top: 58px !important;
   }
 
   .contact-v4-heading {
-    padding-bottom: 28px !important;
+    padding-bottom: 40px !important;
   }
 
   .contact-v4-heading-grid {
     grid-template-columns: 1fr !important;
-    gap: 18px !important;
+    gap: 26px !important;
   }
 
-  .contact-v4-heading h2 {
-    max-width: 8.5ch !important;
+  .contact-v4-actions {
+    max-width: none;
+    margin-top: 0 !important;
+    justify-content: stretch;
   }
 
   .contact-v4-directory {
-    padding: 28px 0 32px !important;
-    gap: 22px !important;
+    padding: 40px 0 46px !important;
+    gap: 30px !important;
   }
 
   .contact-v4-foot {
-    padding: 20px 0 22px !important;
+    padding: 22px 0 26px !important;
     min-height: 0 !important;
     grid-template-columns: 1fr !important;
+  }
+
+  .storytelling-ready .story-reveal:not(.is-story-visible) {
+    transform: translateY(10px) !important;
   }
 }
