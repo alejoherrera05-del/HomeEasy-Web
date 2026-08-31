@@ -1,0 +1,25 @@
+/* HomeEasy wordmark v17 — wine/gold split only in header and footer. */
+
+.brand strong,
+.contact-v4-wordmark strong {
+  color: var(--rose-dark);
+  background: linear-gradient(
+    90deg,
+    var(--rose-dark) 0%,
+    var(--rose-dark) 50%,
+    var(--gold) 50%,
+    var(--gold) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@supports not ((background-clip: text) or (-webkit-background-clip: text)) {
+  .brand strong,
+  .contact-v4-wordmark strong {
+    color: var(--rose-dark);
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
