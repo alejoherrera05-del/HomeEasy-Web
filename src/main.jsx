@@ -10,6 +10,7 @@ import "./process-v4.css";
 import "./contact-v4.css";
 import "./storytelling-v6.css";
 import "./cohesion-v7.css";
+import "./editorial-catalog-v12.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
