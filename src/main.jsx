@@ -13,6 +13,7 @@ import "./cohesion-v7.css";
 import "./editorial-catalog-v12.css";
 import "./apple-air-v13.css";
 import "./apple-balance-v14.css";
+import "./customer-first-v15.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
