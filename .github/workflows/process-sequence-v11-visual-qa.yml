@@ -29,11 +29,19 @@ jobs:
       - name: Start preview and Chrome
         run: |
           nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite.log 2>&1 &
-          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          for i in {1..45}; do
+            curl -fsS http://127.0.0.1:4173/ >/dev/null && break
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/ >/dev/null
           CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
           test -n "$CHROME"
-          nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-chrome about:blank > /tmp/chrome.log 2>&1 &
-          for i in {1..30}; do curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break; sleep .5; done
+          nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --no-first-run --no-default-browser-check --remote-debugging-address=127.0.0.1 --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-chrome-$GITHUB_RUN_ID about:blank > /tmp/chrome.log 2>&1 &
+          for i in {1..90}; do
+            curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break
+            sleep .5
+          done
+          curl -fsS http://127.0.0.1:9222/json/version >/dev/null || { cat /tmp/chrome.log; exit 1; }
       - name: Capture timeline sequence
         run: |
           cat > /tmp/capture.mjs <<'NODE'
@@ -54,9 +62,9 @@ jobs:
           }
           async function shot(file){const s=await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(file,Buffer.from(s.data,'base64'));}
           await setup(1440,900,false);
-          const waits=[120,500,450,450,450,550];
+          const waits=[120,500,450,450,450,650];
           for(let i=0;i<waits.length;i++){await sleep(waits[i]); await shot(`desktop-sequence-${i+1}.png`);}
-          await setup(390,844,true); await sleep(2750); await shot('mobile-final.png');
+          await setup(390,844,true); await sleep(3100); await shot('mobile-final.png');
           ws.close();
           NODE
           node /tmp/capture.mjs
