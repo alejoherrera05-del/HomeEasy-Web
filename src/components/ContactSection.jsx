@@ -44,26 +44,39 @@ export function ContactSection({ openAdvisorFor }) {
         <header className="contact-v4-heading">
           <div className="contact-v4-brandline">
             <img src="/assets/brand/triangulo.png" alt="" aria-hidden="true" />
-            <span>HOMEEASY · POPAYÁN</span>
+            <span>HOMEEASY · PERSIANAS EN POPAYÁN</span>
           </div>
           <div className="contact-v4-heading-grid">
-            <h2>Ven a vernos. O vamos a tu espacio.</h2>
-            <div className="contact-v4-actions">
-              <button
-                type="button"
-                className="button"
-                onClick={() => openAdvisorFor("Agendar visita sin costo")}
-              >
-                <CalendarCheck size={18} weight="bold" /> Agendar visita sin costo
-              </button>
-              <a
-                className="contact-v4-whatsapp-cta"
-                href={whatsappUrl("Hola HomeEasy, quiero cotizar un proyecto.")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Cotizar por WhatsApp <ArrowRight size={17} />
-              </a>
+            <h2>Cuéntanos qué ventana o pared quieres resolver.</h2>
+            <div className="contact-v4-heading-copy">
+              <p>
+                Cotizamos persianas a medida y papel de colgadura en Popayán. Puedes empezar desde aquí,
+                agendar una visita sin costo o escribirnos directamente.
+              </p>
+              <div className="contact-v4-actions">
+                <button
+                  type="button"
+                  className="button"
+                  onClick={() => openAdvisorFor("Cotizar proyecto")}
+                >
+                  Cotizar proyecto <ArrowRight size={18} weight="bold" />
+                </button>
+                <button
+                  type="button"
+                  className="button secondary contact-v4-visit-cta"
+                  onClick={() => openAdvisorFor("Agendar visita sin costo")}
+                >
+                  <CalendarCheck size={18} weight="bold" /> Agendar visita sin costo
+                </button>
+                <a
+                  className="contact-v4-whatsapp-cta"
+                  href={whatsappUrl("Hola HomeEasy, quiero hablar sobre un proyecto.")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <WhatsappLogo size={19} weight="fill" /> Hablar por WhatsApp
+                </a>
+              </div>
             </div>
           </div>
         </header>
@@ -98,6 +111,7 @@ export function ContactSection({ openAdvisorFor }) {
             <img src="/assets/brand/triangulo.png" alt="" aria-hidden="true" />
             <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
           </div>
+          <p>Persianas a medida · Papel de colgadura · Medición e instalación</p>
           <small>© 2026 HomeEasy</small>
         </div>
       </div>
