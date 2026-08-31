@@ -92,9 +92,9 @@ test("ScrollTrigger refresh and update publish complete progress snapshots", asy
   assert.match(source, /ScrollTrigger\.config\(\{ ignoreMobileResize: true \}\)/);
   assert.match(source, /start:\s*\(\)\s*=>\s*getHeroPinStart\(\)/);
   assert.match(source, /scrub:\s*getHeroScrub\(\)/);
-  assert.ok(getHeroScrub(desktopView()) >= 1 && getHeroScrub(desktopView()) <= 1.2);
-  assert.equal(getHeroScrub(mobileView()), 0.8);
-  assert.equal(HERO_SCENE.scroll.scrub, 0.8);
+  assert.ok(getHeroScrub(desktopView()) >= 0.55 && getHeroScrub(desktopView()) <= 0.75);
+  assert.equal(getHeroScrub(mobileView()), 0.55);
+  assert.equal(HERO_SCENE.scroll.scrub, 0.55);
 });
 
 test("desktop holds the final ambient state for 28–32% while mobile timing stays approved", () => {
@@ -240,15 +240,15 @@ test("Hommy LED uses the approved canvas as its responsive mask", async () => {
   assert.doesNotMatch(styles, /\.hommy-eye-glow\s*\{/);
 });
 
-test("hero scroll is shorter without turning the four-state story into a jump", () => {
+test("hero scroll is compact and responsive without turning the four-state story into a jump", () => {
   const initialViewportHeight = 742;
   const mobileDistance = initialViewportHeight * HERO_SCENE.scroll.mobileVh;
-  assert.equal(HERO_SCENE.scroll.desktopVh, 1.7);
-  assert.equal(HERO_SCENE.scroll.tabletVh, 1.55);
-  assert.equal(HERO_SCENE.scroll.mobileVh, 1.35);
-  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 115);
-  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 175);
-  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 115);
+  assert.equal(HERO_SCENE.scroll.desktopVh, 1.05);
+  assert.equal(HERO_SCENE.scroll.tabletVh, 1);
+  assert.equal(HERO_SCENE.scroll.mobileVh, 0.9);
+  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 65);
+  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 100);
+  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 65);
   assert.equal(HERO_STAGES.at(-1).progress, HERO_SCENE.timeline.lampEnd);
 });
 
