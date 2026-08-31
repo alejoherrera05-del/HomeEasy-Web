@@ -1,29 +1,29 @@
-/* HomeEasy contact v5 — warm local close with three clear conversion paths. */
+/* HomeEasy contact v10 — two clear actions, local information second. */
 
 .contact-v4 {
   color: #1f1d1b;
   background: #f8f4f3;
-  border-top: 1px solid rgba(32, 29, 27, .11);
+  border-top: 1px solid rgba(32, 29, 27, .09);
 }
 
 .contact-v4-shell {
   width: min(1320px, calc(100% - 48px));
   margin: 0 auto;
-  padding-top: clamp(82px, 6.8vw, 108px);
+  padding-top: clamp(78px, 6.3vw, 98px);
 }
 
 .contact-v4-heading {
-  padding-bottom: clamp(52px, 5.4vw, 72px);
+  padding-bottom: clamp(48px, 4.8vw, 64px);
   border-bottom: 1px solid #d8d0ce;
 }
 
 .contact-v4-brandline {
-  margin-bottom: 27px;
+  margin-bottom: 24px;
   display: flex;
   align-items: center;
   gap: 12px;
   color: var(--rose-dark);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 760;
   letter-spacing: .13em;
 }
@@ -36,83 +36,93 @@
 
 .contact-v4-heading-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(420px, .72fr);
-  gap: clamp(54px, 8vw, 124px);
+  grid-template-columns: minmax(0, 1fr) minmax(390px, .72fr);
+  gap: clamp(52px, 7vw, 102px);
   align-items: end;
 }
 
 .contact-v4-heading h2 {
   max-width: 760px;
   margin: 0;
-  font-size: clamp(48px, 5.25vw, 76px);
-  line-height: .96;
-  letter-spacing: -.056em;
-  font-weight: 510;
+  font-size: clamp(46px, 4.9vw, 70px);
+  line-height: .98;
+  letter-spacing: -.05em;
+  font-weight: 500;
   text-wrap: balance;
 }
 
 .contact-v4-heading-copy {
-  max-width: 570px;
+  max-width: 560px;
 }
 
 .contact-v4-heading-copy > p {
+  max-width: 38ch;
   margin: 0;
   color: #625c57;
-  font-size: 18px;
-  line-height: 1.64;
+  font-size: 16px;
+  line-height: 1.58;
 }
 
 .contact-v4-actions {
-  margin-top: 28px;
+  margin-top: 22px;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.contact-v4-actions .button {
+.contact-v4-actions .button,
+.contact-v4-whatsapp-cta {
   min-height: 50px;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-}
-
-.contact-v4-visit-cta {
-  background: transparent !important;
 }
 
 .contact-v4-whatsapp-cta {
-  min-height: 46px;
-  padding: 0 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #267a49;
+  padding: 0 20px;
+  color: #236f43;
+  background: rgba(255, 255, 255, .55);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  border-bottom: 1px solid rgba(38, 122, 73, .45);
+  border: 1px solid rgba(38, 122, 73, .32);
+  border-radius: 999px;
+  transition:
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.contact-v4-whatsapp-cta:hover,
+.contact-v4-whatsapp-cta:focus-visible {
+  color: #195d36;
+  background: rgba(255, 255, 255, .88);
+  border-color: rgba(38, 122, 73, .52);
+  transform: translateY(-1px);
 }
 
 .contact-v4-directory {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(420px, .92fr);
-  gap: clamp(56px, 8vw, 116px);
-  padding: clamp(52px, 5.5vw, 76px) 0 clamp(48px, 5vw, 70px);
+  grid-template-columns: minmax(0, 1.12fr) minmax(360px, .88fr);
+  gap: clamp(54px, 7vw, 104px);
+  padding: clamp(48px, 4.8vw, 66px) 0 clamp(46px, 4.6vw, 62px);
 }
 
 .contact-v4-location {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) auto;
-  gap: 19px;
+  grid-template-columns: 50px minmax(0, 1fr) auto;
+  gap: 18px;
   align-items: start;
   color: #211e1b;
   text-decoration: none;
 }
 
 .contact-v4-location-icon {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
   color: var(--rose-dark);
@@ -135,16 +145,16 @@
 
 .contact-v4-location strong {
   max-width: 620px;
-  font-size: clamp(34px, 3.45vw, 50px);
-  line-height: 1.01;
-  letter-spacing: -.042em;
+  font-size: clamp(30px, 2.65vw, 41px);
+  line-height: 1.02;
+  letter-spacing: -.038em;
   font-weight: 550;
 }
 
 .contact-v4-location p {
   margin: 0;
   color: #6b645f;
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .contact-v4-route {
@@ -172,14 +182,11 @@
   color: #292521;
   text-decoration: none;
   border-bottom: 1px solid #d7cfcc;
+  transition: color 180ms ease, transform 180ms ease;
 }
 
 .contact-v4-channels > a > svg:first-child {
   color: var(--rose-dark);
-}
-
-.contact-v4-channels > a:first-child > svg:first-child {
-  color: #267a49;
 }
 
 .contact-v4-channels > a span {
@@ -188,15 +195,13 @@
 }
 
 .contact-v4-channels strong {
-  font-size: clamp(17px, 1.45vw, 21px);
+  font-size: clamp(17px, 1.35vw, 20px);
   line-height: 1.2;
   font-weight: 620;
 }
 
-.contact-v4-location,
-.contact-v4-channels > a,
-.contact-v4-whatsapp-cta {
-  transition: color 180ms ease, transform 180ms ease;
+.contact-v4-location {
+  transition: color 180ms ease;
 }
 
 .contact-v4-location:hover,
@@ -206,20 +211,15 @@
   color: var(--rose-dark);
 }
 
-.contact-v4-whatsapp-cta:hover,
-.contact-v4-whatsapp-cta:focus-visible {
-  color: #1d663c;
-}
-
 .contact-v4-channels > a:hover,
 .contact-v4-channels > a:focus-visible {
   transform: translateX(4px);
 }
 
 .contact-v4-foot {
-  min-height: 98px;
+  min-height: 78px;
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto;
   gap: 30px;
   align-items: center;
   color: #6c6560;
@@ -255,72 +255,57 @@
   letter-spacing: .11em;
 }
 
-.contact-v4-foot p,
 .contact-v4-foot > small {
   margin: 0;
   font-size: 11px;
 }
 
-.contact-v4-foot p {
-  color: #756d69;
-}
-
-@media (max-width: 1080px) {
+@media (max-width: 980px) {
   .contact-v4-heading-grid {
-    grid-template-columns: 1fr minmax(350px, .82fr);
-    gap: 44px;
+    grid-template-columns: 1fr minmax(340px, .82fr);
+    gap: 40px;
   }
 
   .contact-v4-directory {
     grid-template-columns: 1fr 1fr;
-    gap: 44px;
-  }
-
-  .contact-v4-foot {
-    grid-template-columns: 1fr auto;
-  }
-
-  .contact-v4-foot p {
-    grid-row: 2;
-    grid-column: 1 / -1;
-    padding-bottom: 20px;
+    gap: 40px;
   }
 }
 
 @media (max-width: 760px) {
   .contact-v4-shell {
     width: calc(100% - 30px);
-    padding-top: 62px;
+    padding-top: 58px;
   }
 
   .contact-v4-heading {
-    padding-bottom: 42px;
+    padding-bottom: 38px;
   }
 
   .contact-v4-brandline {
-    margin-bottom: 17px;
+    margin-bottom: 16px;
     font-size: 9.5px;
   }
 
   .contact-v4-heading-grid {
     grid-template-columns: 1fr;
-    gap: 21px;
+    gap: 20px;
   }
 
   .contact-v4-heading h2 {
-    max-width: 10.5ch;
-    font-size: clamp(43px, 12vw, 56px);
-    line-height: .97;
+    max-width: 11ch;
+    font-size: clamp(38px, 10.5vw, 48px);
+    line-height: 1;
   }
 
   .contact-v4-heading-copy > p {
-    max-width: 35ch;
-    font-size: 16px;
-    line-height: 1.58;
+    max-width: 32ch;
+    font-size: 15px;
+    line-height: 1.5;
   }
 
   .contact-v4-actions {
-    margin-top: 23px;
+    margin-top: 19px;
     display: grid;
     grid-template-columns: 1fr;
     gap: 9px;
@@ -330,19 +315,12 @@
   .contact-v4-whatsapp-cta {
     width: 100%;
     min-height: 52px;
-    justify-content: center;
-  }
-
-  .contact-v4-whatsapp-cta {
-    padding: 0 14px;
-    border: 1px solid rgba(38, 122, 73, .42);
-    border-radius: 999px;
   }
 
   .contact-v4-directory {
     grid-template-columns: 1fr;
-    gap: 34px;
-    padding: 42px 0 50px;
+    gap: 32px;
+    padding: 40px 0 46px;
   }
 
   .contact-v4-location {
@@ -356,7 +334,7 @@
   }
 
   .contact-v4-location strong {
-    font-size: 31px;
+    font-size: 30px;
   }
 
   .contact-v4-location p {
@@ -370,7 +348,7 @@
   }
 
   .contact-v4-channels > a {
-    min-height: 68px;
+    min-height: 66px;
   }
 
   .contact-v4-channels strong {
@@ -379,21 +357,12 @@
 
   .contact-v4-foot {
     min-height: 0;
-    padding: 23px 0 29px;
+    padding: 22px 0 26px;
     grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
   }
 
-  .contact-v4-foot p {
-    grid-row: auto;
-    grid-column: auto;
-    padding-bottom: 0;
-    max-width: 34ch;
-    line-height: 1.5;
-  }
-
-  .contact-v4-foot p,
   .contact-v4-foot > small {
     font-size: 11px;
   }
