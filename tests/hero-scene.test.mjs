@@ -240,14 +240,15 @@ test("Hommy LED uses the approved canvas as its responsive mask", async () => {
   assert.doesNotMatch(styles, /\.hommy-eye-glow\s*\{/);
 });
 
-test("mobile scroll has a calm opening and a perceptible ambient dwell", () => {
+test("hero scroll is shorter without turning the four-state story into a jump", () => {
   const initialViewportHeight = 742;
   const mobileDistance = initialViewportHeight * HERO_SCENE.scroll.mobileVh;
-  assert.equal(HERO_SCENE.scroll.desktopVh, 2.9);
-  assert.equal(HERO_SCENE.scroll.mobileVh, 2.1);
-  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 180);
-  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 275);
-  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 180);
+  assert.equal(HERO_SCENE.scroll.desktopVh, 1.7);
+  assert.equal(HERO_SCENE.scroll.tabletVh, 1.55);
+  assert.equal(HERO_SCENE.scroll.mobileVh, 1.35);
+  assert.ok(HERO_SCENE.timeline.introEnd * mobileDistance >= 115);
+  assert.ok(HERO_SCENE.stageThresholds.filteredAt * mobileDistance >= 175);
+  assert.ok((1 - HERO_SCENE.timeline.lampEnd) * mobileDistance >= 115);
   assert.equal(HERO_STAGES.at(-1).progress, HERO_SCENE.timeline.lampEnd);
 });
 
