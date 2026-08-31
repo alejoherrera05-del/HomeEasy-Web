@@ -1,0 +1,150 @@
+/* HomeEasy v14 — keep the Apple-inspired typography, remove the empty-stage feeling. */
+
+/* PRODUCTS + WALLPAPER: use the empty right side intentionally ---------- */
+.catalog-entry-heading,
+.wallpaper-heading {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.08fr) minmax(300px, .68fr) !important;
+  align-items: end !important;
+  gap: clamp(52px, 6.5vw, 96px) !important;
+}
+
+.catalog-entry-heading > div:first-child,
+.wallpaper-heading > div:first-child {
+  min-width: 0;
+}
+
+/* Large, but no longer billboard-sized. */
+.catalog-entry-heading h2,
+.wallpaper-heading h2 {
+  max-width: 10.8ch !important;
+  font-size: clamp(48px, 4.05vw, 62px) !important;
+  line-height: 1.015 !important;
+  letter-spacing: -.047em !important;
+  font-weight: 600 !important;
+}
+
+/* Kicker stays quiet and close to the headline. */
+.catalog-entry-heading .section-label,
+.wallpaper-heading .eyebrow {
+  display: block;
+  margin-bottom: 18px !important;
+  color: #8a8582 !important;
+  font-size: 11.5px !important;
+  line-height: 1.2;
+  letter-spacing: .055em !important;
+  font-weight: 650 !important;
+}
+
+/* Restore useful supporting copy to balance the composition. */
+.catalog-entry-heading > p {
+  display: block !important;
+  max-width: 34ch !important;
+  margin: 0 0 4px !important;
+  color: #6e6e73 !important;
+  font-family: var(--apple-font, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif);
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -.012em;
+}
+
+.wallpaper-lead {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: flex-end;
+  gap: 17px;
+  min-height: 0 !important;
+  max-width: 34ch !important;
+  margin: 0 0 4px !important;
+  padding: 0 !important;
+}
+
+.wallpaper-lead > p {
+  display: block !important;
+  margin: 0 !important;
+  max-width: 34ch;
+  color: #6e6e73 !important;
+  font-family: var(--apple-font, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif);
+  font-size: 17px !important;
+  line-height: 1.55 !important;
+  letter-spacing: -.012em;
+}
+
+.wallpaper-lead .text-button {
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.25;
+}
+
+/* Less empty runway before the actual content. */
+.products.section-shell {
+  padding-top: clamp(70px, 5vw, 86px) !important;
+  padding-bottom: clamp(82px, 6vw, 98px) !important;
+}
+
+.wallpaper.section-shell {
+  padding-top: clamp(72px, 5.2vw, 88px) !important;
+  padding-bottom: clamp(84px, 6.2vw, 100px) !important;
+}
+
+.catalog-entry-heading,
+.wallpaper-heading {
+  margin-bottom: 32px !important;
+}
+
+/* Let the content begin as part of the same composition. */
+.product-filters {
+  margin-top: 0 !important;
+}
+
+.wallpaper-comparison {
+  margin-top: 0 !important;
+}
+
+/* MOBILE: one clean column, no artificial empty right side. */
+@media (max-width: 760px) {
+  .catalog-entry-heading,
+  .wallpaper-heading {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    align-items: start !important;
+  }
+
+  .catalog-entry-heading h2,
+  .wallpaper-heading h2 {
+    max-width: 11.5ch !important;
+    font-size: clamp(38px, 10vw, 46px) !important;
+    line-height: 1.015 !important;
+    letter-spacing: -.043em !important;
+  }
+
+  .catalog-entry-heading .section-label,
+  .wallpaper-heading .eyebrow {
+    margin-bottom: 13px !important;
+    font-size: 10.5px !important;
+  }
+
+  .catalog-entry-heading > p,
+  .wallpaper-lead > p {
+    max-width: 33ch !important;
+    font-size: 15.5px !important;
+    line-height: 1.52 !important;
+  }
+
+  .wallpaper-lead {
+    gap: 13px;
+    max-width: 33ch !important;
+  }
+
+  .products.section-shell,
+  .wallpaper.section-shell {
+    padding-top: 60px !important;
+  }
+
+  .catalog-entry-heading,
+  .wallpaper-heading {
+    margin-bottom: 26px !important;
+  }
+}
