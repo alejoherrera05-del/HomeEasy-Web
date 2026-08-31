@@ -1,4 +1,4 @@
-/* HomeEasy cohesion v9 — lighter rhythm, fewer interruptions and clearer hierarchy. */
+/* HomeEasy cohesion v10 — lighter rhythm, fewer interruptions and clearer hierarchy. */
 
 :root {
   --he-shell: 1320px;
@@ -55,7 +55,7 @@
 
 .process-v5-intro h2,
 .contact-v4-heading h2 {
-  max-width: 11ch !important;
+  max-width: 12ch !important;
 }
 
 /* BALANCED SECTION RHYTHM ----------------------------------------------- */
@@ -149,97 +149,77 @@
 /* PROCESS --------------------------------------------------------------- */
 .process-v5-shell {
   padding-top: clamp(74px, 6vw, 92px) !important;
-  padding-bottom: clamp(78px, 6.4vw, 98px) !important;
+  padding-bottom: clamp(76px, 6.2vw, 96px) !important;
 }
 
 .process-v5-intro {
-  margin-bottom: 38px !important;
+  margin-bottom: 40px !important;
 }
 
 .process-v5-intro-grid {
-  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, .58fr) !important;
   gap: clamp(48px, 7vw, 96px) !important;
   align-items: end !important;
 }
 
-.process-v5-intro-action {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-end;
+.process-v5-intro-grid > p {
+  max-width: 34ch !important;
+  font-size: 16px !important;
+  line-height: 1.56 !important;
+}
+
+.process-v5-step h3 {
+  font-size: clamp(17px, 1.35vw, 20px) !important;
+  line-height: 1.12 !important;
+  font-weight: 650 !important;
+}
+
+.process-v5-step p {
+  font-size: 13.5px !important;
+  line-height: 1.48 !important;
+}
+
+.process-v5-closing {
+  margin-top: clamp(40px, 4.2vw, 58px) !important;
 }
 
 .process-v5-cta {
   margin-top: 0 !important;
-  white-space: nowrap;
-}
-
-.process-v5-editorial {
-  grid-template-columns: minmax(0, .96fr) minmax(430px, 1.04fr) !important;
-  gap: clamp(52px, 6vw, 82px) !important;
-}
-
-.process-v5-visual {
-  top: 104px !important;
-  opacity: 1 !important;
-  transform: none !important;
-  clip-path: none !important;
-}
-
-.process-v5-visual img {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  background: #e5e1dc;
-  opacity: 1 !important;
-}
-
-.process-v5-steps li {
-  padding: clamp(21px, 2vw, 27px) 0 !important;
-}
-
-.process-v5-steps h3 {
-  max-width: 14ch !important;
-  font-size: clamp(27px, 2.15vw, 34px) !important;
-  line-height: 1.03 !important;
-  font-weight: 520 !important;
-}
-
-.process-v5-steps li p {
-  max-width: 38ch !important;
-  margin-top: 8px !important;
-  color: #6a645f !important;
-  font-size: 14.5px !important;
-  line-height: 1.48 !important;
 }
 
 /* CONTACT --------------------------------------------------------------- */
 .contact-v4-shell {
-  padding-top: clamp(74px, 6vw, 92px) !important;
+  padding-top: clamp(72px, 5.8vw, 88px) !important;
 }
 
 .contact-v4-heading {
-  padding-bottom: 50px !important;
+  padding-bottom: 48px !important;
 }
 
 .contact-v4-heading-grid {
-  grid-template-columns: minmax(0, 1fr) auto !important;
-  gap: clamp(48px, 7vw, 96px) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(390px, .72fr) !important;
+  gap: clamp(48px, 7vw, 92px) !important;
   align-items: end !important;
 }
 
 .contact-v4-heading-copy {
-  max-width: none !important;
+  max-width: 560px !important;
+}
+
+.contact-v4-heading-copy > p {
+  font-size: 16px !important;
+  line-height: 1.56 !important;
 }
 
 .contact-v4-actions {
-  max-width: 610px;
-  margin-top: 0 !important;
-  justify-content: flex-end;
+  max-width: 560px;
+  margin-top: 22px !important;
+  justify-content: flex-start;
 }
 
 .contact-v4-directory {
-  padding: 52px 0 58px !important;
-  gap: clamp(48px, 6vw, 82px) !important;
+  padding: 48px 0 54px !important;
+  gap: clamp(48px, 6vw, 78px) !important;
 }
 
 .contact-v4-location {
@@ -264,21 +244,21 @@
   transform: translateY(12px) !important;
 }
 
-.storytelling-ready .process-v5-steps li,
+.storytelling-ready .process-v5-step,
 .storytelling-ready .wallpaper-comparison,
 .storytelling-ready .contact-v4-directory {
   transition-duration: 380ms !important;
 }
 
-@media (max-width: 1050px) {
-  .process-v5-editorial {
-    grid-template-columns: minmax(0, .92fr) minmax(390px, 1.08fr) !important;
-    gap: 46px !important;
+@media (max-width: 980px) {
+  .process-v5-intro-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr) !important;
+    gap: 38px !important;
   }
 
   .contact-v4-heading-grid {
-    grid-template-columns: 1fr minmax(370px, .8fr) !important;
-    gap: 42px !important;
+    grid-template-columns: 1fr minmax(340px, .82fr) !important;
+    gap: 40px !important;
   }
 }
 
@@ -363,12 +343,12 @@
   }
 
   .process-v5-intro {
-    margin-bottom: 30px !important;
+    margin-bottom: 32px !important;
   }
 
   .process-v5-intro-grid {
     grid-template-columns: 1fr !important;
-    gap: 22px !important;
+    gap: 16px !important;
   }
 
   .process-v5-intro h2,
@@ -376,60 +356,53 @@
     max-width: 12ch !important;
   }
 
-  .process-v5-intro-action {
-    justify-content: flex-start !important;
+  .process-v5-intro-grid > p {
+    max-width: 32ch !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
   }
 
-  .process-v5-cta {
-    width: 100%;
+  .process-v5-step h3 {
+    max-width: none !important;
+    font-size: 21px !important;
   }
 
-  .process-v5-editorial {
-    grid-template-columns: 1fr !important;
-    gap: 28px !important;
-  }
-
-  .process-v5-visual {
-    position: static !important;
-    margin-inline: 0 !important;
-  }
-
-  .process-v5-visual img {
-    width: 100% !important;
-    aspect-ratio: 4 / 3 !important;
-  }
-
-  .process-v5-steps li {
-    padding: 20px 0 22px !important;
-  }
-
-  .process-v5-steps h3 {
-    max-width: 14ch !important;
-    font-size: clamp(26px, 7vw, 32px) !important;
-  }
-
-  .process-v5-steps li p {
-    max-width: 35ch !important;
-    font-size: 14.5px !important;
+  .process-v5-step p {
+    max-width: 31ch !important;
+    font-size: 14px !important;
     line-height: 1.46 !important;
   }
 
+  .process-v5-closing {
+    margin-top: 34px !important;
+  }
+
   .contact-v4-shell {
-    padding-top: 58px !important;
+    padding-top: 56px !important;
   }
 
   .contact-v4-heading {
-    padding-bottom: 40px !important;
+    padding-bottom: 38px !important;
   }
 
   .contact-v4-heading-grid {
     grid-template-columns: 1fr !important;
-    gap: 26px !important;
+    gap: 20px !important;
+  }
+
+  .contact-v4-heading-copy {
+    max-width: none !important;
+  }
+
+  .contact-v4-heading-copy > p {
+    max-width: 32ch !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
   }
 
   .contact-v4-actions {
     max-width: none;
-    margin-top: 0 !important;
+    margin-top: 19px !important;
     justify-content: stretch;
   }
 
