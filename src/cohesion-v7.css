@@ -1,4 +1,4 @@
-/* HomeEasy cohesion v7 — one grid, less copy, intentional vertical rhythm. */
+/* HomeEasy cohesion v8 — one grid, less copy, intentional vertical rhythm. */
 
 :root {
   --he-shell: 1320px;
@@ -110,6 +110,11 @@
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
+  gap: 20px;
+}
+
+.process-v5-intro-action > p {
+  max-width: 27ch;
 }
 
 .process-v5-cta {
@@ -138,6 +143,24 @@
   opacity: 1 !important;
 }
 
+.process-v5-steps li {
+  padding: clamp(22px, 2.15vw, 30px) 0 !important;
+}
+
+.process-v5-steps h3 {
+  max-width: 13ch !important;
+  font-size: clamp(28px, 2.35vw, 36px) !important;
+  line-height: 1 !important;
+}
+
+.process-v5-steps li p {
+  max-width: 35ch !important;
+  margin-top: 9px !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+
+/* Legacy selectors kept harmless for older snapshots. */
 .process-v5-stories article {
   padding: clamp(28px, 3vw, 42px) 0 !important;
 }
@@ -174,12 +197,6 @@
   align-items: end !important;
 }
 
-.contact-v4-heading-grid > .contact-v4-actions {
-  max-width: none !important;
-  margin-top: 0 !important;
-  align-self: end;
-}
-
 .contact-v4-directory {
   padding: 36px 0 40px !important;
   gap: clamp(40px, 5vw, 72px) !important;
@@ -195,11 +212,12 @@
 
 .contact-v4-foot {
   min-height: 68px !important;
-  grid-template-columns: 1fr auto !important;
+  grid-template-columns: 1fr auto auto !important;
 }
 
 /* Major moments reveal, not every sentence. */
 .storytelling-ready .process-v5-stories article,
+.storytelling-ready .process-v5-steps li,
 .storytelling-ready .wallpaper-comparison,
 .storytelling-ready .contact-v4-directory {
   transition-duration: 480ms !important;
@@ -261,11 +279,19 @@
   }
 
   .process-v5-intro-action {
-    justify-content: stretch;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+  }
+
+  .process-v5-intro-action > p {
+    max-width: 35ch !important;
   }
 
   .process-v5-cta {
     width: 100%;
+    margin-top: 18px !important;
   }
 
   .process-v5-editorial {
@@ -281,6 +307,21 @@
   .process-v5-visual img {
     width: 100% !important;
     aspect-ratio: 4 / 3 !important;
+  }
+
+  .process-v5-steps li {
+    padding: 22px 0 24px !important;
+  }
+
+  .process-v5-steps h3 {
+    max-width: 13ch !important;
+    font-size: clamp(29px, 8.2vw, 36px) !important;
+  }
+
+  .process-v5-steps li p {
+    max-width: 34ch !important;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
   }
 
   .process-v5-stories article {
@@ -315,12 +356,6 @@
     max-width: 8.5ch !important;
   }
 
-  .contact-v4-heading-grid > .contact-v4-actions {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 8px !important;
-  }
-
   .contact-v4-directory {
     padding: 28px 0 32px !important;
     gap: 22px !important;
@@ -329,5 +364,6 @@
   .contact-v4-foot {
     padding: 20px 0 22px !important;
     min-height: 0 !important;
+    grid-template-columns: 1fr !important;
   }
 }
