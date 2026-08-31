@@ -1,4 +1,4 @@
-/* HomeEasy cohesion v10 — lighter rhythm, fewer interruptions and clearer hierarchy. */
+/* HomeEasy cohesion v11 — lighter rhythm, fewer interruptions and clearer hierarchy. */
 
 :root {
   --he-shell: 1320px;
@@ -149,7 +149,7 @@
 /* PROCESS --------------------------------------------------------------- */
 .process-v5-shell {
   padding-top: clamp(74px, 6vw, 92px) !important;
-  padding-bottom: clamp(76px, 6.2vw, 96px) !important;
+  padding-bottom: clamp(56px, 4.5vw, 70px) !important;
 }
 
 .process-v5-intro {
@@ -179,17 +179,9 @@
   line-height: 1.48 !important;
 }
 
-.process-v5-closing {
-  margin-top: clamp(40px, 4.2vw, 58px) !important;
-}
-
-.process-v5-cta {
-  margin-top: 0 !important;
-}
-
 /* CONTACT --------------------------------------------------------------- */
 .contact-v4-shell {
-  padding-top: clamp(72px, 5.8vw, 88px) !important;
+  padding-top: clamp(66px, 5.3vw, 82px) !important;
 }
 
 .contact-v4-heading {
@@ -244,7 +236,6 @@
   transform: translateY(12px) !important;
 }
 
-.storytelling-ready .process-v5-step,
 .storytelling-ready .wallpaper-comparison,
 .storytelling-ready .contact-v4-directory {
   transition-duration: 380ms !important;
@@ -339,7 +330,7 @@
 
   .process-v5-shell {
     padding-top: 58px !important;
-    padding-bottom: 64px !important;
+    padding-bottom: 52px !important;
   }
 
   .process-v5-intro {
@@ -373,12 +364,8 @@
     line-height: 1.46 !important;
   }
 
-  .process-v5-closing {
-    margin-top: 34px !important;
-  }
-
   .contact-v4-shell {
-    padding-top: 56px !important;
+    padding-top: 52px !important;
   }
 
   .contact-v4-heading {
