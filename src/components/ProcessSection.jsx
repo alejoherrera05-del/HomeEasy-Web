@@ -1,31 +1,43 @@
-import { ArrowRight } from "@phosphor-icons/react";
-
-const PROCESS_IMAGE = "/assets/process-materials-final.webp";
+import {
+  ArrowRight,
+  ChatCircleText,
+  FileText,
+  HouseLine,
+  Ruler,
+  Swatches,
+  Wrench,
+} from "@phosphor-icons/react";
 
 const processSteps = [
   {
     title: "Asesoría",
     copy: "Entendemos tu espacio, la luz y la privacidad que buscas.",
+    icon: ChatCircleText,
   },
   {
     title: "Cotización",
-    copy: "Te presentamos una propuesta clara para decidir.",
+    copy: "Te presentamos una propuesta clara y fácil de comparar.",
+    icon: FileText,
   },
   {
     title: "Visita sin costo",
-    copy: "Revisamos la ventana y las muestras en tu espacio.",
+    copy: "Vamos a tu espacio con muestras y revisamos la ventana.",
+    icon: HouseLine,
   },
   {
     title: "Medición",
-    copy: "Tomamos las medidas finales para fabricar.",
+    copy: "Tomamos las medidas finales para fabricar con precisión.",
+    icon: Ruler,
   },
   {
     title: "Sistema y material",
     copy: "Definimos tejido, accionamiento y acabado.",
+    icon: Swatches,
   },
   {
     title: "Instalación",
-    copy: "Instalamos y comprobamos el funcionamiento.",
+    copy: "Instalamos y verificamos que todo funcione correctamente.",
+    icon: Wrench,
   },
 ];
 
@@ -36,44 +48,37 @@ export function ProcessSection({ openAdvisorFor }) {
         <header className="process-v5-intro">
           <p className="process-v5-kicker">CÓMO TRABAJAMOS · POPAYÁN</p>
           <div className="process-v5-intro-grid">
-            <h2>Así llevamos tu proyecto.</h2>
-            <div className="process-v5-intro-action">
-              <button
-                type="button"
-                className="button process-v5-cta"
-                onClick={() => openAdvisorFor("Agendar visita sin costo")}
-              >
-                Agendar visita sin costo <ArrowRight size={18} />
-              </button>
-            </div>
+            <h2>De la asesoría a la instalación.</h2>
+            <p>Un proceso claro, acompañado y sin pasos innecesarios.</p>
           </div>
         </header>
 
-        <div className="process-v5-editorial">
-          <figure className="process-v5-visual">
-            <img
-              src={PROCESS_IMAGE}
-              alt="Muestrarios de persianas, cinta métrica, herrajes y un plano de ventana de HomeEasy"
-              width="1100"
-              height="825"
-              loading="lazy"
-              decoding="async"
-            />
-          </figure>
-
-          <ol className="process-v5-steps" aria-label="Proceso de servicio de HomeEasy">
-            {processSteps.map(({ title, copy }, index) => (
-              <li key={title}>
-                <span className="process-v5-step-number" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
+        <div className="process-v5-timeline" aria-label="Proceso de servicio de HomeEasy">
+          <ol className="process-v5-steps">
+            {processSteps.map(({ title, copy, icon: Icon }, index) => (
+              <li className="process-v5-step" key={title}>
+                <div className="process-v5-node" aria-hidden="true">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <Icon size={25} weight="regular" />
+                </div>
+                <div className="process-v5-step-copy">
                   <h3>{title}</h3>
                   <p>{copy}</p>
                 </div>
               </li>
             ))}
           </ol>
+        </div>
+
+        <div className="process-v5-closing">
+          <p>¿Quieres verlo en tu espacio?</p>
+          <button
+            type="button"
+            className="button process-v5-cta"
+            onClick={() => openAdvisorFor("Agendar visita sin costo")}
+          >
+            Agendar visita sin costo <ArrowRight size={18} weight="bold" />
+          </button>
         </div>
       </div>
     </section>
