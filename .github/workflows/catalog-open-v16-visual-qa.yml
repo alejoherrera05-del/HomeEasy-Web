@@ -37,10 +37,17 @@ jobs:
           await send('Page.enable'); await send('Runtime.enable');
           await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
           async function load(width,height,mobile){await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile,screenWidth:width,screenHeight:height}); await send('Page.navigate',{url:`http://127.0.0.1:${port}/`}); await sleep(2400);}
-          async function section(width,height,mobile,sectionId,file){await load(width,height,mobile); await send('Runtime.evaluate',{expression:`(()=>{const n=document.getElementById('${sectionId}'); if(!n)return false; n.scrollIntoView({block:'start'}); scrollBy(0,-76); return true;})()`}); await sleep(650); const r=await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(file,Buffer.from(r.data,'base64'));}
+          async function captureAt(width,height,mobile,selector,file){
+            await load(width,height,mobile);
+            await send('Runtime.evaluate',{expression:`(()=>{const n=document.querySelector(${JSON.stringify(selector)}); if(!n)return false; n.scrollIntoView({block:'start'}); scrollBy(0,-76); return true;})()`});
+            await sleep(650);
+            const r=await send('Page.captureScreenshot',{format:'png'});
+            fs.writeFileSync(file,Buffer.from(r.data,'base64'));
+          }
           const sizes=[[1440,900,false,'desktop'],[1024,900,false,'medium'],[390,844,true,'mobile']];
           for(const [w,h,m,label] of sizes){
-            for(const sectionId of ['recomendador','productos','papel-tapiz','proceso','contacto']) await section(w,h,m,sectionId,`${prefix}-${label}-${sectionId}.png`);
+            for(const sectionId of ['recomendador','productos','papel-tapiz','proceso','contacto']) await captureAt(w,h,m,`#${sectionId}`,`${prefix}-${label}-${sectionId}.png`);
+            await captureAt(w,h,m,'.product-detail',`${prefix}-${label}-product-detail.png`);
           }
           ws.close();
           NODE
