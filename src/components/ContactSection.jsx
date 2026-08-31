@@ -66,7 +66,7 @@ export function ContactSection({ openAdvisorFor }) {
                 </button>
                 <a
                   className="contact-v4-whatsapp-cta"
-                  href={whatsappUrl("Hola HomeEasy, quiero hablar sobre un proyecto."))
+                  href={whatsappUrl("Hola HomeEasy, quiero hablar sobre un proyecto.")}
                   target="_blank"
                   rel="noreferrer"
                 >
