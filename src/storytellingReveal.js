@@ -5,8 +5,6 @@ const REVEAL_SELECTORS = [
   ".wallpaper-comparison",
   ".process-v5-intro",
   ".process-v5-timeline",
-  ".process-v5-step",
-  ".process-v5-closing",
   ".contact-v4-heading",
   ".contact-v4-directory",
 ];
