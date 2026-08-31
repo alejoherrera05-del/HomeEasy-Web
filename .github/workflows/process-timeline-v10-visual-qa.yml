@@ -1,0 +1,78 @@
+name: Process timeline v10 visual QA
+
+on:
+  push:
+    branches: [feat/process-timeline-v10]
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install and build
+        run: |
+          pnpm install --frozen-lockfile
+          node scripts/prepare-process-image.mjs
+          pnpm exec vite build --base=/
+      - name: Start preview and Chrome
+        run: |
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-chrome about:blank > /tmp/chrome.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break; sleep .5; done
+      - name: Capture process and contact
+        run: |
+          cat > /tmp/capture.mjs <<'NODE'
+          import fs from 'node:fs';
+          const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+          const target = await (await fetch('http://127.0.0.1:9222/json/new?' + encodeURIComponent('http://127.0.0.1:4173/'), {method:'PUT'})).json();
+          const ws = new WebSocket(target.webSocketDebuggerUrl);
+          let id = 0; const pending = new Map();
+          ws.onmessage = (event) => { const m = JSON.parse(event.data); if (!m.id || !pending.has(m.id)) return; const p = pending.get(m.id); pending.delete(m.id); m.error ? p.reject(m.error) : p.resolve(m.result); };
+          await new Promise(r => ws.onopen = r);
+          const send = (method, params={}) => new Promise((resolve,reject)=>{ const n=++id; pending.set(n,{resolve,reject}); ws.send(JSON.stringify({id:n,method,params})); });
+          await send('Page.enable'); await send('Runtime.enable');
+          async function shot(width,height,mobile,section,file,full=false){
+            await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile,screenWidth:width,screenHeight:height});
+            await send('Page.navigate',{url:'http://127.0.0.1:4173/'}); await sleep(2200);
+            await send('Runtime.evaluate',{expression:`(async()=>{const wait=m=>new Promise(r=>setTimeout(r,m)); for(let y=0;y<document.body.scrollHeight;y+=Math.max(300,innerHeight*.72)){scrollTo(0,y); await wait(70);} scrollTo(0,0); await wait(300);})()`,awaitPromise:true});
+            if (!full) {
+              await send('Runtime.evaluate',{expression:`(()=>{const n=document.getElementById('${section}'); if(!n)return false; n.scrollIntoView({block:'start'}); scrollBy(0,-74); return true;})()`});
+              await sleep(650);
+              const s=await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(file,Buffer.from(s.data,'base64'));
+            } else {
+              const metrics=await send('Page.getLayoutMetrics'); const size=metrics.cssContentSize||metrics.contentSize;
+              const s=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:{x:0,y:0,width:Math.min(size.width,width),height:size.height,scale:1}}); fs.writeFileSync(file,Buffer.from(s.data,'base64'));
+            }
+          }
+          await shot(1440,900,false,'proceso','desktop-process.png');
+          await shot(1440,900,false,'contacto','desktop-contact.png');
+          await shot(390,844,true,'proceso','mobile-process.png');
+          await shot(390,844,true,'contacto','mobile-contact.png');
+          await shot(390,844,true,'','mobile-full.png',true);
+          ws.close();
+          NODE
+          node /tmp/capture.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: process-timeline-v10-screenshots
+          path: |
+            desktop-process.png
+            desktop-contact.png
+            mobile-process.png
+            mobile-contact.png
+            mobile-full.png
+          retention-days: 1
