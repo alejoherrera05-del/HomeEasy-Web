@@ -27,7 +27,7 @@ export function HomeEasyHero({ openAdvisorFor }) {
 
         <div className="hero-content">
           <h1>Persianas y papel de colgadura <span>en Popayán</span></h1>
-          <p className="hero-copy">Asesoramos, cotizamos, agendamos visita sin costo y realizamos medición e instalación para tu proyecto.</p>
+          <p className="hero-copy">Encuentra la solución que mejor funciona con tu luz, tu privacidad y tu espacio.</p>
           <div className="hero-actions">
             <button className="button" onClick={() => openAdvisorFor("Cotización de proyecto")}>Cotizar proyecto</button>
             <button className="button secondary" onClick={() => openAdvisorFor("Agendar visita sin costo")}>Agendar visita sin costo</button>
