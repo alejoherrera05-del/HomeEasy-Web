@@ -16,6 +16,7 @@ import "./apple-air-v13.css";
 import "./apple-balance-v14.css";
 import "./customer-first-v15.css";
 import "./catalog-flow-v16.css";
+import "./brand-duotone-v17.css";
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
