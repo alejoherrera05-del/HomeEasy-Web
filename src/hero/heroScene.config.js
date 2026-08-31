@@ -119,11 +119,11 @@ export const HERO_SCENE = {
   },
   desktopStageProgress: [0, 0.38, 0.56, 0.7],
   scroll: {
-    desktopVh: 1.7,
-    tabletVh: 1.55,
-    mobileVh: 1.35,
-    scrub: 0.8,
-    desktopScrub: 1.1,
+    desktopVh: 1.05,
+    tabletVh: 1,
+    mobileVh: 0.9,
+    scrub: 0.55,
+    desktopScrub: 0.65,
   },
 };
 
