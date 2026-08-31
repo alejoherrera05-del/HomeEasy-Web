@@ -25,7 +25,10 @@
 .catalog-entry-heading > p,
 .wallpaper-lead > p,
 .catalog-source,
-.wallpaper-source-note {
+.wallpaper-source-note,
+.catalog-count,
+.gallery-meta,
+.product-facts {
   display: none !important;
 }
 
@@ -38,21 +41,21 @@
   .contact-v4-heading
 ) h2 {
   margin: 0 !important;
-  font-size: clamp(44px, 4.55vw, 66px) !important;
-  line-height: 1 !important;
-  letter-spacing: -.048em !important;
-  font-weight: 510 !important;
+  font-size: clamp(40px, 4vw, 58px) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.04em !important;
+  font-weight: 470 !important;
   text-wrap: balance;
 }
 
 .catalog-entry-heading h2,
 .wallpaper-heading h2 {
-  max-width: 14ch !important;
+  max-width: 15ch !important;
 }
 
 .process-v5-intro h2,
 .contact-v4-heading h2 {
-  max-width: 10ch !important;
+  max-width: 11ch !important;
 }
 
 /* BALANCED SECTION RHYTHM ----------------------------------------------- */
@@ -105,20 +108,12 @@
   line-height: 1.6 !important;
 }
 
-.product-facts {
-  margin: 24px 0 18px !important;
-  border-color: rgba(31, 29, 27, .09) !important;
+.product-specs {
+  margin-top: 28px !important;
 }
 
-.product-facts div,
-.product-facts div + div,
 .product-specs div {
   border-color: rgba(31, 29, 27, .08) !important;
-}
-
-.product-facts p {
-  font-size: 11.5px !important;
-  line-height: 1.45 !important;
 }
 
 .product-specs dt {
@@ -206,6 +201,7 @@
   max-width: 14ch !important;
   font-size: clamp(27px, 2.15vw, 34px) !important;
   line-height: 1.03 !important;
+  font-weight: 520 !important;
 }
 
 .process-v5-steps li p {
@@ -261,17 +257,17 @@
 
 /* SOFTER REVEALS --------------------------------------------------------- */
 .storytelling-ready .story-reveal {
-  transition-duration: 460ms !important;
+  transition-duration: 420ms !important;
 }
 
 .storytelling-ready .story-reveal:not(.is-story-visible) {
-  transform: translateY(14px) !important;
+  transform: translateY(12px) !important;
 }
 
 .storytelling-ready .process-v5-steps li,
 .storytelling-ready .wallpaper-comparison,
 .storytelling-ready .contact-v4-directory {
-  transition-duration: 420ms !important;
+  transition-duration: 380ms !important;
 }
 
 @media (max-width: 1050px) {
@@ -296,9 +292,9 @@
     .process-v5-intro,
     .contact-v4-heading
   ) h2 {
-    font-size: clamp(36px, 9.8vw, 46px) !important;
-    line-height: 1.01 !important;
-    letter-spacing: -.044em !important;
+    font-size: clamp(34px, 9vw, 42px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.038em !important;
   }
 
   .recommender.section-shell {
@@ -336,11 +332,12 @@
   }
 
   .product-detail-head h3 {
-    font-size: 37px !important;
+    font-size: 34px !important;
+    font-weight: 500 !important;
   }
 
-  .product-facts p {
-    font-size: 12px !important;
+  .product-specs {
+    margin-top: 24px !important;
   }
 
   .product-specs dt {
@@ -376,7 +373,7 @@
 
   .process-v5-intro h2,
   .contact-v4-heading h2 {
-    max-width: 11ch !important;
+    max-width: 12ch !important;
   }
 
   .process-v5-intro-action {
@@ -408,7 +405,7 @@
 
   .process-v5-steps h3 {
     max-width: 14ch !important;
-    font-size: clamp(27px, 7.4vw, 33px) !important;
+    font-size: clamp(26px, 7vw, 32px) !important;
   }
 
   .process-v5-steps li p {
@@ -448,6 +445,6 @@
   }
 
   .storytelling-ready .story-reveal:not(.is-story-visible) {
-    transform: translateY(10px) !important;
+    transform: translateY(8px) !important;
   }
 }
