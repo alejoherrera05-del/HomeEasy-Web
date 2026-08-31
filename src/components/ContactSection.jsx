@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   ArrowUpRight,
-  CalendarCheck,
   FacebookLogo,
   InstagramLogo,
   MapPin,
@@ -9,18 +8,10 @@ import {
 } from "@phosphor-icons/react";
 
 const WHATSAPP_NUMBER = "573334319374";
-const WHATSAPP_DISPLAY = "+57 333 431 9374";
 const whatsappUrl = (message) => `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 const mapsUrl = "https://www.google.com/maps/search/?api=1&query=Transversal+9+%23+6N-26+Popay%C3%A1n+Colombia";
 
 const channels = [
-  {
-    label: "WHATSAPP",
-    value: WHATSAPP_DISPLAY,
-    href: whatsappUrl("Hola HomeEasy, quiero hacer una consulta."),
-    icon: WhatsappLogo,
-    weight: "fill",
-  },
   {
     label: "INSTAGRAM",
     value: "@homeeasypopayan",
@@ -49,6 +40,7 @@ export function ContactSection({ openAdvisorFor }) {
           <div className="contact-v4-heading-grid">
             <h2>Hablemos de tu espacio.</h2>
             <div className="contact-v4-heading-copy">
+              <p>Cuéntanos qué quieres transformar y te ayudamos a encontrar la mejor opción.</p>
               <div className="contact-v4-actions">
                 <button
                   type="button"
@@ -56,13 +48,6 @@ export function ContactSection({ openAdvisorFor }) {
                   onClick={() => openAdvisorFor("Cotizar proyecto")}
                 >
                   Cotizar proyecto <ArrowRight size={18} weight="bold" />
-                </button>
-                <button
-                  type="button"
-                  className="button secondary contact-v4-visit-cta"
-                  onClick={() => openAdvisorFor("Agendar visita sin costo")}
-                >
-                  <CalendarCheck size={18} weight="bold" /> Agendar visita sin costo
                 </button>
                 <a
                   className="contact-v4-whatsapp-cta"
@@ -91,7 +76,7 @@ export function ContactSection({ openAdvisorFor }) {
             </div>
           </a>
 
-          <nav className="contact-v4-channels" aria-label="Canales de contacto de HomeEasy">
+          <nav className="contact-v4-channels" aria-label="Redes sociales de HomeEasy">
             {channels.map(({ label, value, href, icon: Icon, weight }) => (
               <a key={label} href={href} target="_blank" rel="noreferrer">
                 <Icon size={24} weight={weight} aria-hidden="true" />
