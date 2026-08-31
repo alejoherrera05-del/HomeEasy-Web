@@ -1,0 +1,95 @@
+name: Apple air v13 visual QA
+
+on:
+  push:
+    branches: [feat/apple-air-v13]
+
+permissions:
+  contents: read
+
+jobs:
+  visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@9 --activate
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Prepare capture helper
+        run: |
+          cat > /tmp/capture-air.mjs <<'NODE'
+          import fs from 'node:fs';
+          const port = Number(process.env.PORT || 4173);
+          const prefix = process.env.PREFIX || 'head';
+          const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+          const page = await (await fetch('http://127.0.0.1:9222/json/new?' + encodeURIComponent(`http://127.0.0.1:${port}/`), {method:'PUT'})).json();
+          const ws = new WebSocket(page.webSocketDebuggerUrl);
+          let id=0; const pending=new Map();
+          ws.onmessage=(event)=>{const m=JSON.parse(event.data); if(!m.id||!pending.has(m.id))return; const p=pending.get(m.id); pending.delete(m.id); m.error?p.reject(m.error):p.resolve(m.result);};
+          await new Promise(r=>ws.onopen=r);
+          const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id; pending.set(n,{resolve,reject}); ws.send(JSON.stringify({id:n,method,params}));});
+          await send('Page.enable'); await send('Runtime.enable');
+          await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'no-preference'}]});
+
+          async function load(width,height,mobile){
+            await send('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile,screenWidth:width,screenHeight:height});
+            await send('Page.navigate',{url:`http://127.0.0.1:${port}/`});
+            await sleep(2200);
+          }
+          async function reveal(){
+            await send('Runtime.evaluate',{expression:`(async()=>{const wait=ms=>new Promise(r=>setTimeout(r,ms)); for(let y=0;y<document.body.scrollHeight;y+=Math.max(340,innerHeight*.72)){scrollTo(0,y);await wait(70)} scrollTo(0,0);await wait(400);return true;})()`,awaitPromise:true});
+          }
+          async function viewport(file){const r=await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(file,Buffer.from(r.data,'base64'));}
+          async function full(file){const m=await send('Page.getLayoutMetrics'); const s=m.cssContentSize||m.contentSize; const r=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:true,clip:{x:0,y:0,width:s.width,height:s.height,scale:1}}); fs.writeFileSync(file,Buffer.from(r.data,'base64'));}
+          async function section(width,height,mobile,id,file){await load(width,height,mobile);await reveal();await send('Runtime.evaluate',{expression:`(()=>{const n=document.getElementById('${id}');n.scrollIntoView({block:'start'});scrollBy(0,-76);return true;})()`});await sleep(600);await viewport(file);}
+
+          const sections=['inicio','recomendador','productos','papel-tapiz','proceso','contacto'];
+          for(const sectionId of sections){await section(1440,900,false,sectionId,`${prefix}-desktop-${sectionId}.png`);}
+          for(const sectionId of sections){await section(390,844,true,sectionId,`${prefix}-mobile-${sectionId}.png`);}
+          await load(1440,900,false); await reveal(); await full(`${prefix}-desktop-full.png`);
+          await load(390,844,true); await reveal(); await full(`${prefix}-mobile-full.png`);
+          ws.close();
+          NODE
+      - name: Start Chrome
+        run: |
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser)"
+          test -n "$CHROME"
+          nohup "$CHROME" --headless=new --no-sandbox --disable-gpu --disable-dev-shm-usage --remote-debugging-port=9222 --user-data-dir=/tmp/homeeasy-air-chrome about:blank > /tmp/chrome.log 2>&1 &
+          for i in {1..60}; do curl -fsS http://127.0.0.1:9222/json/version >/dev/null && break; sleep .5; done
+          curl -fsS http://127.0.0.1:9222/json/version >/dev/null
+      - name: Capture current main
+        run: |
+          git checkout main
+          pnpm install --frozen-lockfile
+          node scripts/prepare-process-image.mjs
+          pnpm exec vite build --base=/
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4173 --base=/ > /tmp/vite-main.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep 1; done
+          PREFIX=before PORT=4173 node /tmp/capture-air.mjs
+          pkill -f "vite preview.*4173" || true
+      - name: Capture proposed version
+        run: |
+          git checkout "$GITHUB_SHA"
+          pnpm install --frozen-lockfile
+          pnpm test
+          node scripts/prepare-process-image.mjs
+          pnpm exec vite build --base=/
+          nohup pnpm exec vite preview --host 127.0.0.1 --port 4174 --base=/ > /tmp/vite-head.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4174/ >/dev/null && break; sleep 1; done
+          PREFIX=after PORT=4174 node /tmp/capture-air.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apple-air-v13-screenshots
+          path: |
+            before-*.png
+            after-*.png
+          retention-days: 1
