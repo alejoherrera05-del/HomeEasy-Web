@@ -96,8 +96,6 @@ export const HERO_SCENE = {
     introEnd: 0.12,
     descentEnd: 0.38,
     privacyEnd: 0.56,
-    // Finish the physical story early enough that the illuminated room can
-    // breathe through the last 30% of the native desktop scroll range.
     lampEnd: 0.7,
     restEnd: 1,
   },
@@ -121,9 +119,9 @@ export const HERO_SCENE = {
   },
   desktopStageProgress: [0, 0.38, 0.56, 0.7],
   scroll: {
-    desktopVh: 2.9,
-    tabletVh: 3,
-    mobileVh: 2.1,
+    desktopVh: 1.55,
+    tabletVh: 1.45,
+    mobileVh: 1,
     scrub: 0.8,
     desktopScrub: 1.1,
   },
