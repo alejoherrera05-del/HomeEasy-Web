@@ -1,4 +1,4 @@
-/* HomeEasy process v10 — lightweight HTML timeline, no process image. */
+/* HomeEasy process v11 — sequential HTML timeline, no redundant CTA. */
 
 .wallpaper.section-shell {
   padding-bottom: clamp(56px, 4.8vw, 76px) !important;
@@ -18,7 +18,7 @@
 .process-v5-shell {
   width: min(1320px, calc(100% - 48px));
   margin: 0 auto;
-  padding: clamp(78px, 6.5vw, 102px) 0 clamp(76px, 6.4vw, 98px);
+  padding: clamp(78px, 6.5vw, 102px) 0 clamp(62px, 5vw, 78px);
 }
 
 .process-v5-intro {
@@ -64,6 +64,7 @@
   padding: 2px 0 0;
 }
 
+/* A quiet guide remains underneath; the rose/gold line draws itself on top. */
 .process-v5-timeline::before,
 .process-v5-timeline::after {
   content: "";
@@ -77,14 +78,13 @@
 }
 
 .process-v5-timeline::before {
-  background: rgba(56, 48, 45, .16);
+  background: rgba(56, 48, 45, .12);
 }
 
 .process-v5-timeline::after {
   background: linear-gradient(90deg, var(--rose-dark), #d0a14b);
   transform: scaleX(1);
   transform-origin: left center;
-  transition: transform 1050ms cubic-bezier(.2, .72, .2, 1);
 }
 
 .process-v5-steps {
@@ -99,12 +99,19 @@
 }
 
 .process-v5-step {
+  --step-delay: 0ms;
   min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
 }
+
+.process-v5-step:nth-child(2) { --step-delay: 520ms; }
+.process-v5-step:nth-child(3) { --step-delay: 980ms; }
+.process-v5-step:nth-child(4) { --step-delay: 1440ms; }
+.process-v5-step:nth-child(5) { --step-delay: 1900ms; }
+.process-v5-step:nth-child(6) { --step-delay: 2360ms; }
 
 .process-v5-node {
   position: relative;
@@ -113,7 +120,7 @@
   display: grid;
   place-items: center;
   color: #433d39;
-  background: rgba(255, 255, 255, .94);
+  background: rgba(255, 255, 255, .96);
   border: 1px solid rgba(89, 75, 70, .17);
   border-radius: 50%;
   box-shadow: 0 12px 30px rgba(48, 39, 36, .07);
@@ -175,44 +182,86 @@
   transform: translateY(-4px);
 }
 
-.process-v5-closing {
-  margin-top: clamp(42px, 4.5vw, 62px);
-  padding-top: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  border-top: 1px solid rgba(60, 51, 47, .12);
-}
-
-.process-v5-closing > p {
-  margin: 0;
-  color: #4f4844;
-  font-size: 15px;
-  font-weight: 610;
-}
-
-.process-v5-cta {
-  min-height: 50px;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  white-space: nowrap;
+/* The timeline stays laid out while its own children reveal in sequence. */
+.storytelling-ready .process-v5-timeline.story-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+  transition: none !important;
 }
 
 .storytelling-ready .process-v5-timeline.story-reveal::after {
   transform: scaleX(0);
 }
 
-.storytelling-ready .process-v5-timeline.story-reveal.is-story-visible::after {
-  transform: scaleX(1);
+.storytelling-ready .process-v5-timeline.story-reveal .process-v5-node {
+  opacity: 0;
+  transform: translateY(10px) scale(.72);
 }
 
-.storytelling-ready .process-v5-step:nth-child(2) { transition-delay: 55ms; }
-.storytelling-ready .process-v5-step:nth-child(3) { transition-delay: 100ms; }
-.storytelling-ready .process-v5-step:nth-child(4) { transition-delay: 145ms; }
-.storytelling-ready .process-v5-step:nth-child(5) { transition-delay: 190ms; }
-.storytelling-ready .process-v5-step:nth-child(6) { transition-delay: 235ms; }
+.storytelling-ready .process-v5-timeline.story-reveal .process-v5-step-copy {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.storytelling-ready .process-v5-timeline.story-reveal.is-story-visible::after {
+  animation: processLineX 2450ms linear both;
+}
+
+.storytelling-ready .process-v5-timeline.story-reveal.is-story-visible .process-v5-node {
+  animation: processNodeIn 440ms cubic-bezier(.18, .8, .24, 1.08) both;
+  animation-delay: var(--step-delay);
+}
+
+.storytelling-ready .process-v5-timeline.story-reveal.is-story-visible .process-v5-step-copy {
+  animation: processCopyIn 380ms cubic-bezier(.22, .72, .28, 1) both;
+  animation-delay: calc(var(--step-delay) + 125ms);
+}
+
+@keyframes processNodeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(.72);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.035);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes processCopyIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Draw one connector, pause, reveal the next node, then continue. */
+@keyframes processLineX {
+  0%, 8% { transform: scaleX(0); }
+  21%, 24% { transform: scaleX(.2); }
+  40%, 43% { transform: scaleX(.4); }
+  59%, 62% { transform: scaleX(.6); }
+  78%, 81% { transform: scaleX(.8); }
+  96%, 100% { transform: scaleX(1); }
+}
+
+@keyframes processLineY {
+  0%, 8% { transform: scaleY(0); }
+  21%, 24% { transform: scaleY(.2); }
+  40%, 43% { transform: scaleY(.4); }
+  59%, 62% { transform: scaleY(.6); }
+  78%, 81% { transform: scaleY(.8); }
+  96%, 100% { transform: scaleY(1); }
+}
 
 @media (max-width: 980px) {
   .process-v5-intro-grid {
@@ -232,7 +281,7 @@
 
   .process-v5-shell {
     width: calc(100% - 30px);
-    padding: 60px 0 66px;
+    padding: 60px 0 54px;
   }
 
   .process-v5-intro {
@@ -268,8 +317,8 @@
 
   .process-v5-timeline::before,
   .process-v5-timeline::after {
-    top: 28px;
-    bottom: 28px;
+    top: 25px;
+    bottom: 25px;
     left: 25px;
     right: auto;
     width: 1px;
@@ -279,6 +328,7 @@
   .process-v5-timeline::after {
     transform: scaleY(1);
     transform-origin: center top;
+    background: linear-gradient(180deg, var(--rose-dark), #d0a14b);
   }
 
   .process-v5-steps {
@@ -344,40 +394,31 @@
     transform: none;
   }
 
-  .process-v5-closing {
-    margin-top: 36px;
-    padding-top: 24px;
-    display: grid;
-    gap: 15px;
-  }
-
-  .process-v5-closing > p {
-    font-size: 14px;
-  }
-
-  .process-v5-cta {
-    width: 100%;
-    min-height: 52px;
-    justify-content: center;
-  }
-
   .storytelling-ready .process-v5-timeline.story-reveal::after {
     transform: scaleY(0);
   }
 
   .storytelling-ready .process-v5-timeline.story-reveal.is-story-visible::after {
-    transform: scaleY(1);
+    animation-name: processLineY;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .process-v5-timeline::after,
-  .process-v5-node {
+  .process-v5-node,
+  .process-v5-step-copy {
+    animation: none !important;
     transition: none !important;
   }
 
   .storytelling-ready .process-v5-timeline.story-reveal::after,
   .storytelling-ready .process-v5-timeline.story-reveal.is-story-visible::after {
+    transform: none !important;
+  }
+
+  .storytelling-ready .process-v5-timeline.story-reveal .process-v5-node,
+  .storytelling-ready .process-v5-timeline.story-reveal .process-v5-step-copy {
+    opacity: 1 !important;
     transform: none !important;
   }
 }
