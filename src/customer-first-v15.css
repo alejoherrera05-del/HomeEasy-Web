@@ -1,0 +1,116 @@
+/* HomeEasy v15 — customer-first headings. No filler copy, no supplier-facing language. */
+
+/* PRODUCTS -------------------------------------------------------------- */
+.products.section-shell {
+  padding-top: clamp(72px, 5.4vw, 90px) !important;
+}
+
+.catalog-entry-heading {
+  display: block !important;
+  margin-bottom: 30px !important;
+}
+
+/* A future customer does not need supplier/catalog metadata here. */
+.catalog-entry-heading .section-label,
+.catalog-entry-heading > p,
+.catalog-source,
+.catalog-count {
+  display: none !important;
+}
+
+/* Let the sentence read as a headline instead of a narrow paragraph. */
+.catalog-entry-heading h2 {
+  width: min(100%, 1040px) !important;
+  max-width: 1040px !important;
+  margin: 0 !important;
+  font-size: clamp(54px, 5vw, 72px) !important;
+  line-height: .99 !important;
+  letter-spacing: -.052em !important;
+  font-weight: 610 !important;
+  text-wrap: balance;
+}
+
+.product-filters {
+  margin-top: 0 !important;
+}
+
+/* Remove supplier names / technical source captions from the visible experience. */
+.video-slide > p,
+.gallery-meta {
+  display: none !important;
+}
+
+/* WALLPAPER ------------------------------------------------------------- */
+.wallpaper.section-shell {
+  padding-top: clamp(72px, 5.4vw, 90px) !important;
+}
+
+.wallpaper-heading {
+  display: block !important;
+  margin-bottom: 30px !important;
+}
+
+.wallpaper-heading .eyebrow,
+.wallpaper-lead > p,
+.wallpaper-source-note {
+  display: none !important;
+}
+
+.wallpaper-heading h2 {
+  width: min(100%, 1050px) !important;
+  max-width: 1050px !important;
+  margin: 0 !important;
+  font-size: clamp(54px, 5vw, 72px) !important;
+  line-height: .99 !important;
+  letter-spacing: -.052em !important;
+  font-weight: 610 !important;
+  text-wrap: balance;
+}
+
+.wallpaper-lead {
+  display: block !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 22px 0 0 !important;
+  padding: 0 !important;
+}
+
+.wallpaper-lead .text-button {
+  margin: 0 !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  line-height: 1.25;
+}
+
+.wallpaper-comparison {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 760px) {
+  .products.section-shell,
+  .wallpaper.section-shell {
+    padding-top: 58px !important;
+  }
+
+  .catalog-entry-heading,
+  .wallpaper-heading {
+    margin-bottom: 24px !important;
+  }
+
+  .catalog-entry-heading h2,
+  .wallpaper-heading h2 {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: clamp(38px, 10.2vw, 46px) !important;
+    line-height: 1.01 !important;
+    letter-spacing: -.045em !important;
+  }
+
+  .wallpaper-lead {
+    margin-top: 16px !important;
+  }
+
+  .wallpaper-lead .text-button {
+    font-size: 14.5px !important;
+  }
+}
