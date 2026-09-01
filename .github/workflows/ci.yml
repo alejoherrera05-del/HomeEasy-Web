@@ -50,6 +50,9 @@ jobs:
       - name: Test local trust and SEO contract
         run: pnpm run test:trust
 
+      - name: Test search metadata
+        run: pnpm run test:seo
+
       - name: Build production site
         run: pnpm run build
 

@@ -14,7 +14,8 @@
     "test:motion": "node --test tests/motion-hardening.test.mjs",
     "test:catalog": "node --test tests/catalog-mobile.test.mjs",
     "test:trust": "node --test tests/trust-seo.test.mjs",
-    "test": "pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion && pnpm run test:catalog && pnpm run test:trust",
+    "test:seo": "node --test tests/seo-metadata.test.mjs",
+    "test": "pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion && pnpm run test:catalog && pnpm run test:trust && pnpm run test:seo",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {

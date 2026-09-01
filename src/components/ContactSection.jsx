@@ -41,8 +41,8 @@ export function ContactSection({ openAdvisorFor }) {
           <div className="contact-v4-heading-grid">
             <h2>Persianas bien elegidas, medidas e instaladas.</h2>
             <div className="contact-v4-heading-copy">
-              <p>Te asesoramos, cotizamos e instalamos persianas y papel de colgadura en Popayán.</p>
-              <div className="contact-v4-actions">
+              <p>HomeEasy te asesora, mide e instala persianas y papel de colgadura en Popayán, con visita sin costo.</p>
+              <div className="contact-v4-actions" data-nosnippet>
                 <button
                   type="button"
                   className="button"
@@ -74,13 +74,13 @@ export function ContactSection({ openAdvisorFor }) {
           <address className="contact-v4-location">
             <div className="contact-v4-location-icon"><MapPin size={28} weight="fill" /></div>
             <div>
-              <span>VISÍTANOS</span>
+              <span>UBICACIÓN</span>
               <strong>Transversal 9 # 6N-26</strong>
               <p>Popayán, Cauca</p>
               <a className="contact-v4-phone" href="tel:+573334319374">+57 333 431 9374</a>
             </div>
             <a className="contact-v4-route" href={mapsUrl} target="_blank" rel="noreferrer">
-              <span>CÓMO LLEGAR</span>
+              <span>VER EN MAPS</span>
               <ArrowUpRight size={22} />
             </a>
           </address>

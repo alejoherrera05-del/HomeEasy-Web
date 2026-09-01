@@ -129,3 +129,12 @@ This section supersedes earlier mobile rules that required the hero pin at docum
 - The public service sequence has six customer-facing steps: asesoría, cotización, visita sin costo, medición, definición de sistema/material e instalación.
 - Wallpaper claims must remain grounded in official Pentagrama catalogues. The Conceptos catalogue supports the factual labels lavable, buena resistencia a la luz and fácil de retirar, plus roll sizes and case types; do not extrapolate unsupported performance claims.
 - Desktop and mobile hero layouts are separate compositions. The mobile hero must keep the Sheer Elegance action legible, Hommy grounded and all four light states reachable without clipping.
+
+## Search appearance and brand-trust requirements — 2026-09-01
+
+- Google results must present the business as `HomeEasy`, with `HomeEasy Popayán` retained as the alternate local name. Keep the visible brand, `WebSite` and `LocalBusiness` structured data, Open Graph site name, title metadata and social profiles consistent with that choice.
+- The canonical production origin is `https://homeeasy.com.co/`. Staging builds must continue to point canonical, Open Graph and structured-data URLs to that production origin so they do not compete with the public domain.
+- Keep the home-page title brand-first: `HomeEasy | Persianas y papel de colgadura en Popayán`. The H1 may remain service-first; the meta description and at least one prominent descriptive paragraph must name HomeEasy and state concrete local service facts.
+- Preserve a complete, stable favicon set: SVG source, square PNG fallback, root `favicon.ico` and Apple touch icon. The mark must remain the approved flat rose monogram and must not be regenerated or restyled.
+- Keep conversion buttons visible and accessible. Where a CTA-only group can pollute a search snippet, exclude that group with `data-nosnippet` without hiding the surrounding descriptive or contact information.
+- After changing search metadata or icons, validate the built HTML and deployed asset URLs, then request a fresh crawl when Search Console access is available. Search presentation is controlled by Google and may take days or weeks to update.
