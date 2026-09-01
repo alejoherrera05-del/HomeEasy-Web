@@ -42,55 +42,14 @@ jobs:
           file public/assets/process-materials-final.webp
           test $(stat -c%s public/assets/process-materials-final.webp) -gt 40000
 
-      - name: Build staging site
-        run: pnpm exec vite build --base=/HomeEasy-Web/
+      - name: Build production site for the custom domain
+        run: pnpm exec vite build --base=/
 
       - name: Verify built process image
         run: |
           test -s dist/client/assets/process-materials-final.webp
           file dist/client/assets/process-materials-final.webp
           test $(stat -c%s dist/client/assets/process-materials-final.webp) -gt 40000
-
-      - name: Adapt public asset URLs for Pages staging
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          root = Path('dist/client')
-          assert (root / 'index.html').exists()
-          assert (root / 'assets' / 'hommy-hero-approved.png').exists()
-          assert (root / 'assets' / 'process-materials-final.webp').exists()
-
-          pattern = re.compile(r'(?<!HomeEasy-Web)/assets/')
-          changed = 0
-          for path in root.rglob('*'):
-              if not path.is_file() or path.suffix not in {'.html', '.js', '.css'}:
-                  continue
-              text = path.read_text()
-              updated, count = pattern.subn('/HomeEasy-Web/assets/', text)
-              if count:
-                  path.write_text(updated)
-                  changed += count
-
-          print(f'Adapted {changed} public asset URL references for GitHub Pages staging.')
-
-          offenders = []
-          for path in root.rglob('*'):
-              if not path.is_file() or path.suffix not in {'.html', '.js', '.css'}:
-                  continue
-              text = path.read_text()
-              match = pattern.search(text)
-              if match:
-                  offenders.append((str(path), text[max(0, match.start() - 80):match.start() + 120]))
-
-          if offenders:
-              print('Unadapted root asset paths remain:')
-              for path, snippet in offenders[:10]:
-                  print(path, snippet)
-              raise SystemExit(1)
-          PY
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
