@@ -1,4 +1,4 @@
-/* HomeEasy wordmark v18 — solid wine Home + solid gold Easy. */
+/* HomeEasy wordmark v19 — solid wine Home + solid gold Easy. */
 
 .brand strong,
 .contact-v4-wordmark strong {
@@ -36,4 +36,25 @@
 .contact-v4-wordmark strong::after {
   content: "Easy";
   color: var(--gold);
+}
+
+/* Desktop only: give the brand more presence without touching mobile. */
+@media (min-width: 1024px) {
+  .brand strong::before,
+  .brand strong::after {
+    font-size: 22px;
+  }
+
+  .brand small {
+    font-size: 8.7px;
+  }
+
+  .contact-v4-wordmark strong::before,
+  .contact-v4-wordmark strong::after {
+    font-size: 22px;
+  }
+
+  .contact-v4-wordmark small {
+    font-size: 7.2px;
+  }
 }
