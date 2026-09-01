@@ -1,5 +1,5 @@
 const CUSTOMER_COPY = [
-  ["#productos .catalog-entry-heading h2", "Elige la persiana ideal para tu espacio."],
+  ["#productos .catalog-entry-heading h2", "Compara 12 sistemas según tu luz, privacidad y tipo de ventana."],
   ["#papel-tapiz .wallpaper-heading h2", "Dale carácter a tus paredes."],
 ];
 

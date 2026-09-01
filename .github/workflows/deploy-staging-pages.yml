@@ -45,6 +45,9 @@ jobs:
       - name: Build production site for the custom domain
         run: pnpm exec vite build --base=/
 
+      - name: Verify local trust and SEO contract
+        run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:trust
+
       - name: Verify built process image
         run: |
           test -s dist/client/assets/process-materials-final.webp

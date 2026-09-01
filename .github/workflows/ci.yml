@@ -47,8 +47,14 @@ jobs:
       - name: Test mobile catalog
         run: pnpm run test:catalog
 
+      - name: Test local trust and SEO contract
+        run: pnpm run test:trust
+
       - name: Build production site
         run: pnpm run build
+
+      - name: Verify built local trust and SEO contract
+        run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:trust
 
       - name: Test hosting worker
         run: pnpm run test:sites

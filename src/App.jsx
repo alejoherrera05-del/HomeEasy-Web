@@ -423,11 +423,11 @@ function Header({ openAdvisor }) {
   return (
     <header className="site-header">
       <Brand />
-      <nav className={open ? "nav-open" : ""} aria-label="Navegación principal">
+      <nav id="main-navigation" className={open ? "nav-open" : ""} aria-label="Navegación principal">
         {links.map(([label, href]) => <a key={href} href={href} onClick={() => setOpen(false)}>{label}</a>)}
         <button className="button small" onClick={() => { setOpen(false); openAdvisor(); }}>Cotizar proyecto</button>
       </nav>
-      <button className="menu-button" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open}>
+      <button className="menu-button" onClick={() => setOpen(!open)} aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} aria-controls="main-navigation">
         {open ? <X size={24} /> : <List size={24} />}
       </button>
     </header>
@@ -769,7 +769,8 @@ function Recommender() {
   };
   const openProduct = (productId) => {
     window.dispatchEvent(new CustomEvent("homeeasy:select-product", { detail: productId }));
-    document.querySelector("#productos")?.scrollIntoView({ behavior: "smooth" });
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.querySelector("#productos")?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
   };
   const progress = done ? 100 : ((step + 1) / questionFlow.length) * 100;
 

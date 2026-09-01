@@ -556,14 +556,14 @@ footer {
   .hero-content h1 { margin-bottom: 10px; font-size: clamp(28px, 8vw, 33px); }
   .hero-copy { max-width: 335px; font-size: 11.5px; line-height: 1.42; }
   .hero-actions { margin-top: 10px; }
-  .hero-actions .button { min-height: 38px; font-size: 9.5px; }
+  .hero-actions .button { min-height: 44px; font-size: 11px; }
   .hommy-hero-shell {
     right: -2vw;
     bottom: 38px;
     width: min(68vw, calc(42svh * .8));
     max-height: 42svh;
   }
-  .hero-sticky > .stage-track button { min-height: 38px; font-size: 8.5px; }
+  .hero-sticky > .stage-track button { min-height: 44px; font-size: 10px; }
 }
 
 /* Mobile recommender foundation. The complete quiz scene stays in normal flow;

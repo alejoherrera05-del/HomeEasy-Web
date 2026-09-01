@@ -1,9 +1,10 @@
-/* HomeEasy contact v10 — two clear actions, local information second. */
+/* HomeEasy contact v11 — three clear actions and complete local contact data. */
 
 .contact-v4 {
   color: #1f1d1b;
   background: #f8f4f3;
   border-top: 1px solid rgba(32, 29, 27, .09);
+  scroll-margin-top: 98px;
 }
 
 .contact-v4-shell {
@@ -72,6 +73,7 @@
 }
 
 .contact-v4-actions .button,
+.contact-v4-visit-cta,
 .contact-v4-whatsapp-cta {
   min-height: 50px;
   display: inline-flex;
@@ -80,6 +82,7 @@
   gap: 8px;
 }
 
+.contact-v4-visit-cta,
 .contact-v4-whatsapp-cta {
   padding: 0 20px;
   color: #236f43;
@@ -94,6 +97,28 @@
     background 180ms ease,
     border-color 180ms ease,
     transform 180ms ease;
+}
+
+.contact-v4-visit-cta {
+  padding: 0 20px;
+  color: var(--rose-dark);
+  background: rgba(255, 255, 255, .55);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid rgba(126, 52, 72, .28);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.contact-v4-visit-cta:hover,
+.contact-v4-visit-cta:focus-visible {
+  color: #6d2639;
+  background: rgba(255, 255, 255, .88);
+  border-color: rgba(126, 52, 72, .48);
+  transform: translateY(-1px);
 }
 
 .contact-v4-whatsapp-cta:hover,
@@ -118,6 +143,7 @@
   align-items: start;
   color: #211e1b;
   text-decoration: none;
+  font-style: normal;
 }
 
 .contact-v4-location-icon {
@@ -157,12 +183,27 @@
   font-size: 16px;
 }
 
+.contact-v4-phone {
+  width: fit-content;
+  color: var(--rose-dark);
+  font-size: 17px;
+  font-weight: 720;
+  text-decoration: none;
+}
+
+.contact-v4-phone:hover,
+.contact-v4-phone:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
 .contact-v4-route {
   padding-top: 3px;
   display: flex;
   align-items: center;
   gap: 7px;
   color: var(--rose-dark);
+  text-decoration: none;
 }
 
 .contact-v4-route span {
@@ -273,6 +314,10 @@
 }
 
 @media (max-width: 760px) {
+  .contact-v4 {
+    scroll-margin-top: 86px;
+  }
+
   .contact-v4-shell {
     width: calc(100% - 30px);
     padding-top: 58px;
@@ -312,6 +357,7 @@
   }
 
   .contact-v4-actions .button,
+  .contact-v4-visit-cta,
   .contact-v4-whatsapp-cta {
     width: 100%;
     min-height: 52px;

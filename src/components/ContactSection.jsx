@@ -1,6 +1,7 @@
 import {
   ArrowRight,
   ArrowUpRight,
+  CalendarCheck,
   FacebookLogo,
   InstagramLogo,
   MapPin,
@@ -38,9 +39,9 @@ export function ContactSection({ openAdvisorFor }) {
             <span>HOMEEASY · PERSIANAS EN POPAYÁN</span>
           </div>
           <div className="contact-v4-heading-grid">
-            <h2>Hablemos de tu espacio.</h2>
+            <h2>Persianas bien elegidas, medidas e instaladas.</h2>
             <div className="contact-v4-heading-copy">
-              <p>Cuéntanos qué quieres transformar y te ayudamos a encontrar la mejor opción.</p>
+              <p>Te asesoramos, cotizamos e instalamos persianas y papel de colgadura en Popayán.</p>
               <div className="contact-v4-actions">
                 <button
                   type="button"
@@ -48,6 +49,13 @@ export function ContactSection({ openAdvisorFor }) {
                   onClick={() => openAdvisorFor("Cotizar proyecto")}
                 >
                   Cotizar proyecto <ArrowRight size={18} weight="bold" />
+                </button>
+                <button
+                  type="button"
+                  className="contact-v4-visit-cta"
+                  onClick={() => openAdvisorFor("Agendar visita sin costo")}
+                >
+                  <CalendarCheck size={19} weight="bold" /> Agendar visita sin costo
                 </button>
                 <a
                   className="contact-v4-whatsapp-cta"
@@ -63,18 +71,19 @@ export function ContactSection({ openAdvisorFor }) {
         </header>
 
         <div className="contact-v4-directory">
-          <a className="contact-v4-location" href={mapsUrl} target="_blank" rel="noreferrer">
+          <address className="contact-v4-location">
             <div className="contact-v4-location-icon"><MapPin size={28} weight="fill" /></div>
             <div>
               <span>VISÍTANOS</span>
               <strong>Transversal 9 # 6N-26</strong>
               <p>Popayán, Cauca</p>
+              <a className="contact-v4-phone" href="tel:+573334319374">+57 333 431 9374</a>
             </div>
-            <div className="contact-v4-route">
+            <a className="contact-v4-route" href={mapsUrl} target="_blank" rel="noreferrer">
               <span>CÓMO LLEGAR</span>
               <ArrowUpRight size={22} />
-            </div>
-          </a>
+            </a>
+          </address>
 
           <nav className="contact-v4-channels" aria-label="Redes sociales de HomeEasy">
             {channels.map(({ label, value, href, icon: Icon, weight }) => (
