@@ -148,7 +148,7 @@ test("the built Pages artifact preserves the domain and visible local contact da
   assert.match(html, /src="\/assets\/[^"/]+\.js"/);
   assert.doesNotMatch(html, /\/HomeEasy-Web\//);
 
-  const bundleName = assetNames.find((name) => /^index-.*\.js$/.test(name));
+  const bundleName = assetNames.find((name) => /^(?:index|main)-.*\.js$/.test(name));
   assert.ok(bundleName, "Missing built JavaScript bundle");
   const bundle = await read(`dist/client/assets/${bundleName}`);
   assert.match(bundle, /\+57 333 431 9374/);

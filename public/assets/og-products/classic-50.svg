@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" style="display:block;width:100vw;height:100vh" role="img" aria-labelledby="title description">
   <title id="title">Classic 50 · HomeEasy Popayán</title>
-  <desc id="description">Ficha visual HomeEasy con fotografía oficial de Classic 50. Visita sin costo · Medición · Instalación en Popayán.</desc>
+  <desc id="description">Vista previa HomeEasy con fotografía oficial de Classic 50. Visita sin costo · Medición · Instalación en Popayán.</desc>
   <defs>
     <filter id="badge-shadow" x="-20%" y="-30%" width="140%" height="180%">
       <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#191919" flood-opacity=".16" />

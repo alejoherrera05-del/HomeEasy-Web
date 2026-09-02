@@ -1,5 +1,10 @@
 /* Product links and sharing — restrained, editorial, and native-first. */
 
+html.is-product-direct-entry {
+  scroll-behavior: auto !important;
+  scroll-snap-type: none !important;
+}
+
 .product-detail-actions {
   width: 100%;
   align-items: flex-start;
@@ -14,17 +19,6 @@
 .product-detail-actions .product-primary-actions .button {
   width: auto !important;
   min-width: 0;
-}
-
-.product-sheet-link {
-  border-color: rgba(142, 62, 82, .34) !important;
-  color: var(--rose-dark) !important;
-  background: transparent !important;
-}
-
-.product-sheet-link:hover {
-  border-color: var(--rose-dark) !important;
-  background: #fff !important;
 }
 
 .product-share-button {

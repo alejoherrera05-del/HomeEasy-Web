@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { access, readFile } from "node:fs/promises";
 import test from "node:test";
+import { getCatalogProductId, productPath, replaceCatalogProductUrl } from "../src/productRouting.js";
 
 const PUBLIC_ORIGIN = "https://homeeasy.com.co";
 const PRODUCT_IDS = [
@@ -81,12 +82,12 @@ test("the home share card uses the real brand system and only verified service f
   assert.doesNotMatch(source, /número 1|la mejor|líder|transforma tu espacio/iu);
 });
 
-test("all twelve systems have crawlable product pages and branded social cards", async () => {
+test("all twelve systems keep product metadata while loading the existing catalogue", async () => {
   const sitemap = await read("public/sitemap.xml");
 
   for (const productId of PRODUCT_IDS) {
     const [html, socialSource, socialImage] = await Promise.all([
-      read(`public/productos/${productId}/index.html`),
+      read(`productos/${productId}/index.html`),
       read(`public/assets/og-products/${productId}.svg`),
       readBinary(`public/assets/og-products/${productId}.jpg`),
     ]);
@@ -101,12 +102,10 @@ test("all twelve systems have crawlable product pages and branded social cards",
     assert.equal(metaContent(html, "og:image:width"), "1200");
     assert.equal(metaContent(html, "og:image:height"), "630");
     assert.equal(metaContent(html, "twitter:image"), socialUrl);
-    assert.match(html, /<main>/);
-    assert.match(html, /<figure class="product-photo">[\s\S]*?\/assets\/pentagrama\//);
-    assert.match(html, /data-share/);
-    assert.match(html, /Consultar por WhatsApp/);
-    assert.match(html, /Transversal 9 # 6N-26/);
-    assert.match(html, /\+57 333 431 9374/);
+    assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
+    assert.match(html, /<div id="root"><\/div>/);
+    assert.match(html, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
+    assert.doesNotMatch(html, /product-hero|product-specification|Ver ficha completa|Compartir ficha/);
     assert.match(sitemap, new RegExp(`<loc>${canonical.replaceAll("/", "\\/")}<\\/loc>`));
 
     assert.match(socialSource, /Visita sin costo · Medición · Instalación/);
@@ -121,24 +120,55 @@ test("all twelve systems have crawlable product pages and branded social cards",
   }
 });
 
-test("the catalogue exposes a permanent product link and resilient share action", async () => {
-  const [app, shareScript, sharingStyles] = await Promise.all([
+test("the catalogue keeps each permanent product URL inside the same explorer", async () => {
+  const [app, viteConfig, sharingStyles] = await Promise.all([
     read("src/App.jsx"),
-    read("public/product-share.js"),
+    read("vite.config.mjs"),
     read("src/catalog-sharing-v18.css"),
   ]);
 
-  assert.match(app, /href=\{`\/productos\/\$\{selected\.id\}\/`\}/);
   assert.match(app, /Compartir este producto/);
   assert.match(app, /navigator\.share/);
   assert.match(app, /navigator\.clipboard/);
   assert.match(app, /https:\/\/homeeasy\.com\.co/);
-  assert.match(shareScript, /navigator\.share/);
-  assert.match(shareScript, /navigator\.canShare/);
-  assert.match(shareScript, /navigator\.clipboard/);
-  assert.match(shareScript, /document\.execCommand\("copy"\)/);
+  assert.match(app, /productIdFromCurrentLocation/);
+  assert.match(app, /"\.catalog-mobile-selector"[\s\S]*?"\.product-explorer"/);
+  assert.match(app, /window\.scrollTo\(\{ top: Math\.max\(0, targetTop\), behavior: "auto" \}\)/);
+  assert.doesNotMatch(app, /Ver ficha completa/);
+  assert.match(viteConfig, /productPageInputs/);
+  assert.match(sharingStyles, /html\.is-product-direct-entry/);
+  assert.match(sharingStyles, /scroll-snap-type: none !important/);
   assert.match(sharingStyles, /min-height: 44px/);
   assert.match(sharingStyles, /@media \(max-width: 760px\)/);
+});
+
+test("product routing selects and rewrites catalogue URLs without navigation", () => {
+  assert.equal(productPath("sheer-elegance"), "/productos/sheer-elegance/");
+  assert.equal(
+    getCatalogProductId({ pathname: "/productos/honeycell/", search: "" }, PRODUCT_IDS),
+    "honeycell",
+  );
+  assert.equal(
+    getCatalogProductId({ pathname: "/", search: "?producto=romana" }, PRODUCT_IDS),
+    "romana",
+  );
+  assert.equal(getCatalogProductId({ pathname: "/productos/no-existe/", search: "" }, PRODUCT_IDS), null);
+
+  let replacedUrl = null;
+  const fakeWindow = {
+    location: {
+      href: "https://homeeasy.com.co/?producto=romana#productos",
+      pathname: "/",
+      search: "?producto=romana",
+      hash: "#productos",
+    },
+    history: {
+      state: null,
+      replaceState: (_state, _title, url) => { replacedUrl = url; },
+    },
+  };
+  replaceCatalogProductUrl(fakeWindow, "romana");
+  assert.equal(replacedUrl, "/productos/romana/");
 });
 
 test("the production build preserves every shareable product route", { skip: !requireBuiltArtifact }, async () => {
@@ -147,8 +177,10 @@ test("the production build preserves every shareable product route", { skip: !re
     const socialImagePath = `dist/client/assets/og-products/${productId}.jpg`;
     const [html, socialImage] = await Promise.all([read(htmlPath), readBinary(socialImagePath)]);
     assert.equal(canonicalHref(html), `${PUBLIC_ORIGIN}/productos/${productId}/`);
+    assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
+    assert.match(html, /<div id="root"><\/div>/);
+    assert.doesNotMatch(html, /product-hero|product-specification|Ver ficha completa/);
     assert.deepEqual(jpegDimensions(socialImage), { width: 1200, height: 630 });
   }
-  await access(new URL("../dist/client/product-share.js", import.meta.url));
-  await access(new URL("../dist/client/producto.css", import.meta.url));
+  await access(new URL("../dist/client/index.html", import.meta.url));
 });

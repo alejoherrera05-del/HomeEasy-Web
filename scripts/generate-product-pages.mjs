@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const appPath = path.join(root, "src", "App.jsx");
 const publicDirectory = path.join(root, "public");
-const productsDirectory = path.join(publicDirectory, "productos");
+const productsDirectory = path.join(root, "productos");
 const productSocialDirectory = path.join(publicDirectory, "assets", "og-products");
 const publicOrigin = "https://homeeasy.com.co";
 const lastModified = "2026-09-02";
@@ -175,17 +175,6 @@ function productJsonLd(product, canonical, image) {
   };
 }
 
-function relatedProductLinks(products, selectedId) {
-  return products
-    .filter((product) => product.id !== selectedId)
-    .map((product) => `
-          <a href="/productos/${escapeHtml(product.id)}/">
-            <span>${escapeHtml(product.tag)}</span>
-            <strong>${escapeHtml(product.name)}</strong>
-          </a>`)
-    .join("");
-}
-
 function splitCardTitle(name) {
   const words = name.split(" ");
   const lines = [];
@@ -235,7 +224,7 @@ function productSocialCard(product, image, index) {
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" style="display:block;width:100vw;height:100vh" role="img" aria-labelledby="title description">
   <title id="title">${escapeHtml(product.name)} · HomeEasy Popayán</title>
-  <desc id="description">Ficha visual HomeEasy con fotografía oficial de ${escapeHtml(product.name)}. Visita sin costo · Medición · Instalación en Popayán.</desc>
+  <desc id="description">Vista previa HomeEasy con fotografía oficial de ${escapeHtml(product.name)}. Visita sin costo · Medición · Instalación en Popayán.</desc>
   <defs>
     <filter id="badge-shadow" x="-20%" y="-30%" width="140%" height="180%">
       <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#191919" flood-opacity=".16" />
@@ -271,19 +260,12 @@ function productSocialCard(product, image, index) {
 `;
 }
 
-function productPage(product, products, image) {
+function productPage(product, image) {
   const canonical = `${publicOrigin}/productos/${product.id}/`;
   const title = `${product.name} en Popayán | HomeEasy`;
   const description = `${product.short} Conoce materiales, accionamiento y usos con HomeEasy en Popayán.`;
   const socialImageUrl = `${publicOrigin}/assets/og-products/${product.id}.jpg`;
-  const socialImageAlt = `Ficha HomeEasy de ${product.name} con fotografía oficial del sistema`;
-  const quoteMessage = encodeURIComponent(`Hola HomeEasy, quiero saber si ${product.name} funciona para mi ventana.`);
-  const imageDimensionsAttributes = image.dimensions
-    ? ` width="${image.dimensions.width}" height="${image.dimensions.height}"`
-    : "";
-  const facts = product.facts
-    .map((fact, index) => `<li><span>0${index + 1}</span><p>${escapeHtml(fact)}</p></li>`)
-    .join("");
+  const socialImageAlt = `Vista previa HomeEasy de ${product.name} con fotografía oficial del sistema`;
 
   return `<!doctype html>
 <html lang="es-CO">
@@ -295,7 +277,6 @@ function productPage(product, products, image) {
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <link rel="canonical" href="${canonical}" />
   <link rel="icon" href="/assets/homeeasy-triangle-mark.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="/producto.css" />
   <link rel="preload" href="${escapeHtml(image.src)}" as="image" />
 
   <meta property="og:type" content="product" />
@@ -321,103 +302,10 @@ ${jsonForHtml(productJsonLd(product, canonical, image))}
   </script>
   <title>${escapeHtml(title)}</title>
 </head>
-<body>
-  <header class="site-header">
-    <a class="brand" href="/" aria-label="HomeEasy, inicio">
-      <img src="/assets/homeeasy-triangle-mark.svg" alt="" width="34" height="30" />
-      <span><strong>Home</strong><em>Easy</em></span>
-    </a>
-    <nav aria-label="Navegación de la ficha">
-      <a href="/#productos">Catálogo completo</a>
-      <a href="/persianas-popayan/">Persianas en Popayán</a>
-    </nav>
-  </header>
-
-  <main>
-    <nav class="breadcrumbs" aria-label="Ruta de navegación">
-      <a href="/">Inicio</a><span aria-hidden="true">/</span>
-      <a href="/#productos">Catálogo</a><span aria-hidden="true">/</span>
-      <span aria-current="page">${escapeHtml(product.name)}</span>
-    </nav>
-
-    <article class="product-hero">
-      <figure class="product-photo">
-        <img src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}"${imageDimensionsAttributes} />
-        <figcaption>Imagen de referencia del catálogo oficial Pentagrama.</figcaption>
-      </figure>
-
-      <div class="product-intro">
-        <p class="product-kind">${escapeHtml(product.tag)} · Sistema Pentagrama</p>
-        <h1>${escapeHtml(product.name)}</h1>
-        <p class="product-lede">${escapeHtml(product.short)}</p>
-
-        <ul class="product-facts" aria-label="Características principales">
-          ${facts}
-        </ul>
-
-        <div class="product-actions">
-          <a class="primary-action" href="https://wa.me/573334319374?text=${quoteMessage}" target="_blank" rel="noreferrer">Consultar por WhatsApp</a>
-          <button
-            type="button"
-            class="share-action"
-            data-share
-            data-share-title="${escapeHtml(title)}"
-            data-share-text="Mira ${escapeHtml(product.name)} en HomeEasy Popayán."
-          >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a3 3 0 1 0-2.83-4L8.91 7.13a3 3 0 0 0-4.82 2.39 3 3 0 0 0 4.82 2.39l6.26 3.13A3 3 0 1 0 16 13.25L9.74 10.1a3.2 3.2 0 0 0 0-.2L16 6.75A3 3 0 0 0 18 8Z"/></svg>
-            Compartir ficha
-          </button>
-        </div>
-        <p class="share-status" data-share-status role="status" aria-live="polite"></p>
-        <p class="product-note">La medida final, el tejido y la compatibilidad del sistema se confirman durante la visita técnica.</p>
-      </div>
-    </article>
-
-    <section class="product-specification" aria-labelledby="product-specification-title">
-      <div class="section-heading">
-        <p>Información para decidir</p>
-        <h2 id="product-specification-title">¿Dónde y cómo funciona?</h2>
-      </div>
-      <dl>
-        <div><dt>Ideal para</dt><dd>${escapeHtml(product.ideal)}</dd></div>
-        <div><dt>Materiales</dt><dd>${escapeHtml(product.material)}</dd></div>
-        <div><dt>Accionamiento</dt><dd>${escapeHtml(product.control)}</dd></div>
-        <div><dt>Cómo funciona</dt><dd>${escapeHtml(product.system)}</dd></div>
-      </dl>
-    </section>
-
-    <aside class="local-contact" aria-label="Atención HomeEasy en Popayán">
-      <p>Asesoría local en Popayán</p>
-      <div>
-        <h2>Revisamos tu ventana antes de definir el sistema.</h2>
-        <p>Visita sin costo, medición y orientación sobre tejido, color y accionamiento.</p>
-      </div>
-      <address>
-        <a href="tel:+573334319374">+57 333 431 9374</a>
-        <span>Transversal 9 # 6N-26<br />Popayán, Cauca</span>
-      </address>
-    </aside>
-
-    <section class="related-products" aria-labelledby="related-products-title">
-      <div class="section-heading">
-        <p>Compara alternativas</p>
-        <h2 id="related-products-title">Otros sistemas de persianas</h2>
-      </div>
-      <div class="related-list">${relatedProductLinks(products, product.id)}
-      </div>
-    </section>
-  </main>
-
-  <footer>
-    <a class="brand" href="/">
-      <img src="/assets/homeeasy-triangle-mark.svg" alt="" width="30" height="27" />
-      <span><strong>Home</strong><em>Easy</em></span>
-    </a>
-    <p>Persianas y papel de colgadura en Popayán.</p>
-    <p class="source">Información de sistemas e imágenes basada en catálogos oficiales Pentagrama.</p>
-  </footer>
-
-  <script src="/product-share.js" defer></script>
+<body data-catalog-product="${escapeHtml(product.id)}">
+  <div id="root"></div>
+  <noscript>Activa JavaScript para abrir ${escapeHtml(product.name)} dentro del catálogo HomeEasy.</noscript>
+  <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
 `;
@@ -486,7 +374,7 @@ for (const [index, product] of products.entries()) {
   );
   const outputDirectory = path.join(productsDirectory, product.id);
   await mkdir(outputDirectory, { recursive: true });
-  await writeFile(path.join(outputDirectory, "index.html"), productPage(product, products, image), "utf8");
+  await writeFile(path.join(outputDirectory, "index.html"), productPage(product, image), "utf8");
 }
 
 await writeFile(path.join(publicDirectory, "sitemap.xml"), sitemap(products, images), "utf8");

@@ -21,6 +21,7 @@ import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 import { ProcessSection } from "./components/ProcessSection.jsx";
 import { ContactSection } from "./components/ContactSection.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
+import { getCatalogProductId, replaceCatalogProductUrl } from "./productRouting.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
@@ -244,6 +245,11 @@ const products = [
     facts: ["No se oxida ni se deforma", "Gran abanico de colores", "Control preciso del ingreso de luz"],
   },
 ];
+
+const productIds = products.map((product) => product.id);
+const productIdFromCurrentLocation = () => (
+  typeof window === "undefined" ? null : getCatalogProductId(window.location, productIds)
+);
 
 const recommenderQuestions = {
   space: {
@@ -859,7 +865,7 @@ function Products({ openAdvisorFor }) {
     ["grandes", "Grandes ventanales"], ["decorar", "Decorar"], ["termico", "Aislar calor"],
   ];
   const [filter, setFilter] = useState("todos");
-  const [selectedId, setSelectedId] = useState(products[0].id);
+  const [selectedId, setSelectedId] = useState(() => productIdFromCurrentLocation() || products[0].id);
   const [mediaIndex, setMediaIndex] = useState(0);
   const [shareStatus, setShareStatus] = useState("");
   const shareStatusTimerRef = useRef(null);
@@ -867,13 +873,19 @@ function Products({ openAdvisorFor }) {
   const productPickerRef = useRef(null);
   const productPickerTriggerRef = useRef(null);
   const [catalogHeadingVisible, setCatalogHeadingVisible] = useState(
-    () => typeof window !== "undefined" && window.location.hash === "#productos",
+    () => typeof window !== "undefined" && (window.location.hash === "#productos" || Boolean(productIdFromCurrentLocation())),
   );
+  const chooseProduct = (id, { syncUrl = true } = {}) => {
+    if (!products.some((product) => product.id === id)) return;
+    setSelectedId(id);
+    setMediaIndex(0);
+    if (syncUrl && typeof window !== "undefined") replaceCatalogProductUrl(window, id);
+  };
   useEffect(() => {
     const section = productsRef.current;
     if (!section) return undefined;
     const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY).matches;
-    const directEntry = window.location.hash === "#productos";
+    const directEntry = window.location.hash === "#productos" || Boolean(productIdFromCurrentLocation());
     if (directEntry || reducedMotion || typeof window.IntersectionObserver !== "function") {
       setCatalogHeadingVisible(true);
       return undefined;
@@ -886,13 +898,44 @@ function Products({ openAdvisorFor }) {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => {
+    const directProductId = productIdFromCurrentLocation();
+    if (!directProductId) return undefined;
+
+    const root = document.documentElement;
+    root.classList.add("is-product-direct-entry");
+    const jumpToSelectedProduct = () => {
+      const section = productsRef.current;
+      const isMobile = window.matchMedia("(max-width: 760px)").matches;
+      const targetSelector = isMobile
+        ? ".catalog-mobile-selector"
+        : ".product-explorer";
+      const target = section?.querySelector(targetSelector) || section;
+      if (!target) return;
+      const headerHeight = document.querySelector(".site-header")?.getBoundingClientRect().height || 0;
+      const entryGap = isMobile ? 0 : 12;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - headerHeight - entryGap;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: "auto" });
+    };
+    const frame = window.requestAnimationFrame(() => {
+      jumpToSelectedProduct();
+      window.requestAnimationFrame(jumpToSelectedProduct);
+    });
+    const settleTimer = window.setTimeout(jumpToSelectedProduct, 240);
+    const releaseTimer = window.setTimeout(() => root.classList.remove("is-product-direct-entry"), 420);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(settleTimer);
+      window.clearTimeout(releaseTimer);
+      root.classList.remove("is-product-direct-entry");
+    };
+  }, []);
   useEffect(() => () => window.clearTimeout(shareStatusTimerRef.current), []);
   useEffect(() => {
     const selectRecommendedProduct = (event) => {
       if (!products.some((product) => product.id === event.detail)) return;
       setFilter("todos");
-      setSelectedId(event.detail);
-      setMediaIndex(0);
+      chooseProduct(event.detail);
     };
     window.addEventListener("homeeasy:select-product", selectRecommendedProduct);
     return () => window.removeEventListener("homeeasy:select-product", selectRecommendedProduct);
@@ -930,13 +973,9 @@ function Products({ openAdvisorFor }) {
         await copyText(url);
         announceShareStatus("Enlace copiado. Ya puedes enviarlo.");
       } catch {
-        announceShareStatus("Abre la ficha y copia su dirección para compartirla.");
+        announceShareStatus("No pudimos copiarlo automáticamente. Copia la dirección del navegador.");
       }
     }
-  };
-  const chooseProduct = (id) => {
-    setSelectedId(id);
-    setMediaIndex(0);
   };
   const chooseFilter = (value) => {
     const nextProducts = value === "todos" ? products : products.filter((product) => product.filters.includes(value));
@@ -1130,7 +1169,6 @@ function Products({ openAdvisorFor }) {
             <div className="product-detail-actions">
               <div className="product-primary-actions">
                 <button type="button" className="button" onClick={() => openAdvisorFor(`Cotización: ${selected.name}`)}>Cotizar {selected.name}</button>
-                <a className="button secondary product-sheet-link" href={`/productos/${selected.id}/`}>Ver ficha completa <CaretRight size={17} /></a>
               </div>
               <button type="button" className="product-share-button" onClick={shareSelectedProduct}>
                 <ShareNetwork size={18} weight="bold" /> Compartir este producto
