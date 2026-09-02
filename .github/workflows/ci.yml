@@ -47,6 +47,9 @@ jobs:
       - name: Test mobile catalog
         run: pnpm run test:catalog
 
+      - name: Test product links and sharing metadata
+        run: pnpm run test:sharing
+
       - name: Test local trust and SEO contract
         run: pnpm run test:trust
 
@@ -58,6 +61,9 @@ jobs:
 
       - name: Verify built local trust and SEO contract
         run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:trust
+
+      - name: Verify built product routes and social cards
+        run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:sharing
 
       - name: Test hosting worker
         run: pnpm run test:sites

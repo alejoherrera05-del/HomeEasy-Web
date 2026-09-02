@@ -1,0 +1,76 @@
+/* Product links and sharing — restrained, editorial, and native-first. */
+
+.product-detail-actions {
+  width: 100%;
+  align-items: flex-start;
+}
+
+.product-primary-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.product-detail-actions .product-primary-actions .button {
+  width: auto !important;
+  min-width: 0;
+}
+
+.product-sheet-link {
+  border-color: rgba(142, 62, 82, .34) !important;
+  color: var(--rose-dark) !important;
+  background: transparent !important;
+}
+
+.product-sheet-link:hover {
+  border-color: var(--rose-dark) !important;
+  background: #fff !important;
+}
+
+.product-share-button {
+  min-height: 44px;
+  padding: 3px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--rose-dark);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.product-share-button:hover { color: var(--ink); }
+
+.product-share-status {
+  min-height: 18px;
+  margin: -9px 0 -5px;
+  color: var(--rose-dark);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .product-primary-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .product-detail-actions .product-primary-actions .button {
+    width: 100% !important;
+    min-height: 48px;
+  }
+
+  .product-share-button {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .product-share-status {
+    margin-top: -7px;
+    font-size: 12.5px;
+  }
+}

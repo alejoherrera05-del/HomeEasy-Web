@@ -101,6 +101,10 @@ export function ContactSection({ openAdvisorFor }) {
             <img src="/assets/brand/triangulo.png" alt="" aria-hidden="true" />
             <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
           </div>
+          <nav className="contact-v4-local-links" aria-label="Servicios HomeEasy en Popayán">
+            <a href="/persianas-popayan/">Persianas en Popayán</a>
+            <a href="/papel-de-colgadura-popayan/">Papel de colgadura en Popayán</a>
+          </nav>
           <small>© 2026 HomeEasy</small>
         </div>
       </div>

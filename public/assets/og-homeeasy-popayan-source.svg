@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" style="display:block;width:100vw;height:100vh" role="img" aria-labelledby="title description">
+  <title id="title">HomeEasy · Visita sin costo</title>
+  <desc id="description">Imagen de HomeEasy con Hommy, su personaje de marca, y datos reales del servicio: visita sin costo, medición, fabricación e instalación en Transversal 9 # 6N-26, Popayán.</desc>
+  <defs>
+    <linearGradient id="brand-fade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#F2F3F4" />
+      <stop offset=".42" stop-color="#F2F3F4" stop-opacity=".97" />
+      <stop offset=".72" stop-color="#F2F3F4" stop-opacity="0" />
+    </linearGradient>
+    <linearGradient id="floor-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".7" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity=".28" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#F2F3F4" />
+  <image href="/assets/hero-scene-v2/room-empty-straight.webp" x="0" y="-84" width="1200" height="800" preserveAspectRatio="xMidYMid slice" />
+  <image href="/assets/hero-scene-v6/furniture-original.png" x="-54" y="330" width="760" height="380" preserveAspectRatio="xMidYMid meet" />
+  <image href="/assets/hommy-hero-approved.png" x="680" y="-16" width="520" height="650" preserveAspectRatio="xMidYMid meet" />
+  <rect width="760" height="630" fill="url(#brand-fade)" />
+  <rect width="1200" height="630" fill="url(#floor-fade)" />
+
+  <g transform="translate(54 42) scale(.058)" fill="#B2566C">
+    <path fill-rule="evenodd" d="M512 42 78 954h286V850h-92l240-548 240 548h-92v104h286L512 42Zm-45 570h90v180h-90V612Z" />
+  </g>
+  <text x="124" y="87" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="36" font-weight="400" letter-spacing="-1.5">
+    <tspan fill="#B2566C">Home</tspan><tspan fill="#B48745">Easy</tspan>
+  </text>
+  <text x="125" y="112" fill="#5C5654" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" letter-spacing="1.05">PERSIANAS &amp; PAPEL DE COLGADURA</text>
+
+  <line x1="54" y1="177" x2="452" y2="177" stroke="#B2566C" stroke-width="3" />
+  <text x="54" y="247" fill="#191919" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="54" font-weight="400" letter-spacing="-2.1">Visita sin costo.</text>
+  <text x="54" y="298" fill="#373331" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="23" font-weight="400">
+    <tspan x="54" dy="0">Medición, fabricación</tspan>
+    <tspan x="54" dy="32">e instalación.</tspan>
+  </text>
+
+  <g transform="translate(54 417)" font-family="Manrope, Segoe UI, Arial, sans-serif">
+    <rect x="0" y="0" width="286" height="56" rx="28" fill="#B2566C" />
+    <text x="143" y="36" text-anchor="middle" fill="#FFFFFF" font-size="21" font-weight="400">+57 333 431 9374</text>
+    <text x="0" y="94" fill="#5C5654" font-size="18" font-weight="400">Transversal 9 # 6N-26 · Popayán</text>
+  </g>
+
+  <rect x="0" y="616" width="1200" height="14" fill="#B2566C" />
+</svg>

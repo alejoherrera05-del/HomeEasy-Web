@@ -43,10 +43,16 @@ jobs:
           test $(stat -c%s public/assets/process-materials-final.webp) -gt 40000
 
       - name: Build production site for the custom domain
-        run: pnpm exec vite build --base=/
+        run: pnpm run build
 
       - name: Verify local trust and SEO contract
         run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:trust
+
+      - name: Verify built product sharing contract
+        run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:sharing
+
+      - name: Verify search metadata and favicon contract
+        run: pnpm run test:seo
 
       - name: Verify built process image
         run: |

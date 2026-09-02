@@ -260,11 +260,33 @@
 .contact-v4-foot {
   min-height: 78px;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr auto auto;
   gap: 30px;
   align-items: center;
   color: #6c6560;
   border-top: 1px solid #d5cdca;
+}
+
+.contact-v4-local-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+}
+
+.contact-v4-local-links a {
+  color: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  text-decoration: none;
+  text-underline-offset: 4px;
+}
+
+.contact-v4-local-links a:hover,
+.contact-v4-local-links a:focus-visible {
+  color: var(--rose-dark);
+  text-decoration: underline;
 }
 
 .contact-v4-wordmark {
@@ -407,6 +429,10 @@
     grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
+  }
+
+  .contact-v4-local-links {
+    justify-content: flex-start;
   }
 
   .contact-v4-foot > small {

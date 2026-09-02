@@ -6,6 +6,7 @@ import {
   CheckCircle,
   List,
   PlayCircle,
+  ShareNetwork,
   WhatsappLogo,
   X,
 } from "@phosphor-icons/react";
@@ -23,8 +24,28 @@ import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
 const HOMEEASY_WHATSAPP_DISPLAY = "+57 333 431 9374";
+const HOMEEASY_PUBLIC_ORIGIN = "https://homeeasy.com.co";
 const HOMMY_MOBILE_VIEWPORT_QUERY = "(max-width: 760px), (max-width: 900px) and (max-height: 650px) and (hover: none) and (pointer: coarse)";
 const whatsappUrl = (message) => `https://wa.me/${HOMEEASY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+const productUrl = (productId) => `${HOMEEASY_PUBLIC_ORIGIN}/productos/${productId}/`;
+
+async function copyText(value) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(value);
+    return;
+  }
+
+  const input = document.createElement("textarea");
+  input.value = value;
+  input.setAttribute("readonly", "");
+  input.style.position = "fixed";
+  input.style.opacity = "0";
+  document.body.append(input);
+  input.select();
+  const copied = document.execCommand("copy");
+  input.remove();
+  if (!copied) throw new Error("Copy command unavailable");
+}
 
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({ type: "video", id, title, duration, label: "Video oficial" });
@@ -840,6 +861,8 @@ function Products({ openAdvisorFor }) {
   const [filter, setFilter] = useState("todos");
   const [selectedId, setSelectedId] = useState(products[0].id);
   const [mediaIndex, setMediaIndex] = useState(0);
+  const [shareStatus, setShareStatus] = useState("");
+  const shareStatusTimerRef = useRef(null);
   const productsRef = useRef(null);
   const productPickerRef = useRef(null);
   const productPickerTriggerRef = useRef(null);
@@ -863,6 +886,7 @@ function Products({ openAdvisorFor }) {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
+  useEffect(() => () => window.clearTimeout(shareStatusTimerRef.current), []);
   useEffect(() => {
     const selectRecommendedProduct = (event) => {
       if (!products.some((product) => product.id === event.detail)) return;
@@ -878,6 +902,38 @@ function Products({ openAdvisorFor }) {
   const selectedVisibleIndex = Math.max(0, visibleProducts.findIndex((product) => product.id === selected.id));
   const previousVisibleProduct = visibleProducts[(selectedVisibleIndex - 1 + visibleProducts.length) % visibleProducts.length];
   const nextVisibleProduct = visibleProducts[(selectedVisibleIndex + 1) % visibleProducts.length];
+  const announceShareStatus = (message) => {
+    window.clearTimeout(shareStatusTimerRef.current);
+    setShareStatus(message);
+    shareStatusTimerRef.current = window.setTimeout(() => setShareStatus(""), 4200);
+  };
+  const shareSelectedProduct = async () => {
+    const url = productUrl(selected.id);
+    const shareData = {
+      title: `${selected.name} en Popayán | HomeEasy`,
+      text: `Mira ${selected.name} en HomeEasy Popayán.`,
+      url,
+    };
+
+    try {
+      if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+        await navigator.share(shareData);
+        announceShareStatus("Opciones para compartir abiertas.");
+        return;
+      }
+
+      await copyText(url);
+      announceShareStatus("Enlace copiado. Ya puedes enviarlo.");
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      try {
+        await copyText(url);
+        announceShareStatus("Enlace copiado. Ya puedes enviarlo.");
+      } catch {
+        announceShareStatus("Abre la ficha y copia su dirección para compartirla.");
+      }
+    }
+  };
   const chooseProduct = (id) => {
     setSelectedId(id);
     setMediaIndex(0);
@@ -1072,7 +1128,14 @@ function Products({ openAdvisorFor }) {
               <div><dt>Cómo funciona</dt><dd>{selected.system}</dd></div>
             </dl>
             <div className="product-detail-actions">
-              <button type="button" className="button" onClick={() => openAdvisorFor(`Cotización: ${selected.name}`)}>Cotizar {selected.name}</button>
+              <div className="product-primary-actions">
+                <button type="button" className="button" onClick={() => openAdvisorFor(`Cotización: ${selected.name}`)}>Cotizar {selected.name}</button>
+                <a className="button secondary product-sheet-link" href={`/productos/${selected.id}/`}>Ver ficha completa <CaretRight size={17} /></a>
+              </div>
+              <button type="button" className="product-share-button" onClick={shareSelectedProduct}>
+                <ShareNetwork size={18} weight="bold" /> Compartir este producto
+              </button>
+              <p className="product-share-status" role="status" aria-live="polite">{shareStatus}</p>
               <a className="text-button" href="#recomendador">¿No sabes si es para ti? Pregúntale a Hommy <ArrowRight size={16} /></a>
             </div>
           </div>

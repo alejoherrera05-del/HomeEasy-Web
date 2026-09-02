@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" style="display:block;width:100vw;height:100vh" role="img" aria-labelledby="title description">
+  <title id="title">Sheer Vertesse · HomeEasy Popayán</title>
+  <desc id="description">Ficha visual HomeEasy con fotografía oficial de Sheer Vertesse. Visita sin costo · Medición · Instalación en Popayán.</desc>
+  <defs>
+    <filter id="badge-shadow" x="-20%" y="-30%" width="140%" height="180%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#191919" flood-opacity=".16" />
+    </filter>
+    <linearGradient id="photo-shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".55" stop-color="#191919" stop-opacity="0" />
+      <stop offset="1" stop-color="#191919" stop-opacity=".13" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#F2F3F4" />
+  <image href="/assets/pentagrama/vertesse-bedroom-official.jpg" x="0" y="0" width="1200" height="630" preserveAspectRatio="xMidYMid slice" />
+  <rect width="1200" height="458" fill="url(#photo-shade)" />
+
+  <g filter="url(#badge-shadow)">
+    <rect x="34" y="30" width="346" height="104" rx="3" fill="#F2F3F4" fill-opacity=".96" />
+  </g>
+  <g transform="translate(52 47) scale(.052)" fill="#B2566C">
+    <path fill-rule="evenodd" d="M512 42 78 954h286V850h-92l240-548 240 548h-92v104h286L512 42Zm-45 570h90v180h-90V612Z" />
+  </g>
+  <text x="116" y="82" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="32" font-weight="400" letter-spacing="-1.4"><tspan fill="#B2566C">Home</tspan><tspan fill="#B48745">Easy</tspan></text>
+  <text x="117" y="107" fill="#5C5654" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" letter-spacing="1">PERSIANAS &amp; PAPEL DE COLGADURA</text>
+
+  <rect x="0" y="458" width="1200" height="172" fill="#F2F3F4" fill-opacity=".98" />
+  <rect x="0" y="458" width="1200" height="7" fill="#B2566C" />
+  <text x="48" y="490" fill="#B2566C" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="17" font-weight="400" letter-spacing="1.7">VELO VERTICAL</text>
+  <text x="48" y="554" fill="#191919" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="42" font-weight="400" letter-spacing="-1.7"><tspan x="48" dy="0">Sheer Vertesse</tspan></text>
+
+  <line x1="674" y1="490" x2="674" y2="602" stroke="#D2CDC8" stroke-width="1" />
+  <text x="720" y="526" fill="#373331" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="22" font-weight="400"><tspan x="720" dy="0">Lamas que giran como una</tspan><tspan x="720" dy="31">vertical</tspan></text>
+  <text x="720" y="599" fill="#B2566C" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="20" font-weight="400">Visita sin costo</text>
+  <text x="1152" y="599" text-anchor="end" fill="#5C5654" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="16" font-weight="400">02 / 12</text>
+</svg>

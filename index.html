@@ -20,62 +20,95 @@
     <meta property="og:title" content="HomeEasy | Persianas y papel de colgadura en Popayán" />
     <meta property="og:description" content="HomeEasy en Popayán: persianas a la medida y papel de colgadura con asesoría, visita sin costo, medición, fabricación e instalación." />
     <meta property="og:url" content="https://homeeasy.com.co/" />
-    <meta property="og:image" content="https://homeeasy.com.co/assets/homeeasy-hero-room.jpg" />
-    <meta property="og:image:width" content="1536" />
-    <meta property="og:image:height" content="1024" />
-    <meta property="og:image:alt" content="Ambiente HomeEasy con persianas en un ventanal contemporáneo" />
+    <meta property="og:image" content="https://homeeasy.com.co/assets/og-homeeasy-popayan.jpg" />
+    <meta property="og:image:secure_url" content="https://homeeasy.com.co/assets/og-homeeasy-popayan.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Hommy de HomeEasy en un ambiente interior con datos de visita, medición e instalación" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="HomeEasy | Persianas y papel de colgadura en Popayán" />
     <meta name="twitter:description" content="HomeEasy en Popayán: persianas a la medida y papel de colgadura con asesoría, visita sin costo, medición, fabricación e instalación." />
-    <meta name="twitter:image" content="https://homeeasy.com.co/assets/homeeasy-hero-room.jpg" />
-    <meta name="twitter:image:alt" content="Ambiente HomeEasy con persianas en un ventanal contemporáneo" />
+    <meta name="twitter:image" content="https://homeeasy.com.co/assets/og-homeeasy-popayan.jpg" />
+    <meta name="twitter:image:alt" content="Hommy de HomeEasy en un ambiente interior con datos de visita, medición e instalación" />
 
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "LocalBusiness",
-        "@id": "https://homeeasy.com.co/#negocio",
-        "name": "HomeEasy",
-        "alternateName": "HomeEasy Popayán",
-        "url": "https://homeeasy.com.co/",
-        "description": "Persianas a la medida y papel de colgadura con asesoría, visita sin costo, medición, fabricación e instalación en Popayán.",
-        "image": "https://homeeasy.com.co/assets/homeeasy-hero-room.jpg",
-        "logo": {
-          "@type": "ImageObject",
-          "@id": "https://homeeasy.com.co/#logo",
-          "url": "https://homeeasy.com.co/favicon-512x512.png",
-          "contentUrl": "https://homeeasy.com.co/favicon-512x512.png",
-          "width": 512,
-          "height": 512
-        },
-        "telephone": "+573334319374",
-        "address": {
-          "@type": "PostalAddress",
-          "streetAddress": "Transversal 9 # 6N-26",
-          "addressLocality": "Popayán",
-          "addressRegion": "Cauca",
-          "addressCountry": "CO"
-        },
-        "areaServed": {
-          "@type": "City",
-          "name": "Popayán"
-        },
-        "sameAs": [
-          "https://www.instagram.com/homeeasypopayan/",
-          "https://www.facebook.com/homeeasypopayan/"
+        "@graph": [
+          {
+            "@type": ["LocalBusiness", "HomeGoodsStore"],
+            "@id": "https://homeeasy.com.co/#negocio",
+            "name": "HomeEasy",
+            "alternateName": "HomeEasy Popayán",
+            "description": "Persianas a la medida y papel de colgadura con asesoría, visita sin costo, medición, fabricación e instalación en Popayán.",
+            "url": "https://homeeasy.com.co/",
+            "image": "https://homeeasy.com.co/assets/og-homeeasy-popayan.jpg",
+            "logo": {
+              "@type": "ImageObject",
+              "@id": "https://homeeasy.com.co/#logo",
+              "url": "https://homeeasy.com.co/favicon-512x512.png",
+              "contentUrl": "https://homeeasy.com.co/favicon-512x512.png",
+              "width": 512,
+              "height": 512
+            },
+            "telephone": "+573334319374",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Transversal 9 # 6N-26",
+              "addressLocality": "Popayán",
+              "addressRegion": "Cauca",
+              "addressCountry": "CO"
+            },
+            "areaServed": {
+              "@type": "City",
+              "name": "Popayán"
+            },
+            "sameAs": [
+              "https://www.instagram.com/homeeasypopayan/",
+              "https://www.facebook.com/homeeasypopayan/"
+            ],
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": "+573334319374",
+              "contactType": "sales",
+              "availableLanguage": "Spanish"
+            },
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Servicios HomeEasy en Popayán",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Asesoría, medición e instalación de persianas en Popayán",
+                    "url": "https://homeeasy.com.co/persianas-popayan/",
+                    "areaServed": { "@type": "City", "name": "Popayán" }
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Asesoría e instalación de papel de colgadura en Popayán",
+                    "url": "https://homeeasy.com.co/papel-de-colgadura-popayan/",
+                    "areaServed": { "@type": "City", "name": "Popayán" }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://homeeasy.com.co/#website",
+            "url": "https://homeeasy.com.co/",
+            "name": "HomeEasy",
+            "alternateName": ["HomeEasy Popayán"],
+            "publisher": { "@id": "https://homeeasy.com.co/#negocio" },
+            "inLanguage": "es-CO"
+          }
         ]
-      }
-    </script>
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "@id": "https://homeeasy.com.co/#website",
-        "url": "https://homeeasy.com.co/",
-        "name": "HomeEasy",
-        "alternateName": ["HomeEasy Popayán"],
-        "inLanguage": "es-CO",
-        "publisher": { "@id": "https://homeeasy.com.co/#negocio" }
       }
     </script>
     <title>HomeEasy | Persianas y papel de colgadura en Popayán</title>

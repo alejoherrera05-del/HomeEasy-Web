@@ -105,6 +105,14 @@ This section supersedes earlier mobile rules that required the hero pin at docum
 
 - Use pnpm as the single package manager for this website. Keep `pnpm-lock.yaml` authoritative; do not reintroduce `package-lock.json` or a workspace file unless the project actually becomes a workspace.
 
+## Social sharing and product-link identity — user direction 2026-09-02
+
+- HomeEasy link previews must look deliberately art-directed and recognizably branded, never like a generic generated interior or a ready-made Canva template.
+- Use the real flat HomeEasy monogram, rose `#B2566C` / wine, restrained gold, the Home/Easy bicolor wordmark and light editorial typography. Avoid heavy display lettering.
+- Social-preview copy must come from facts already verified on the website or official Pentagrama catalogue: product name, product behavior, 12-system catalogue, visit without cost, measurement, installation, public address and WhatsApp. Do not add generic slogans or unsupported superiority claims.
+- Each catalogue system keeps a permanent `/productos/<slug>/` URL with static Open Graph metadata, its official primary Pentagrama photograph and a branded 1200 × 630 social card derived from that photograph.
+- Product pages and the catalogue expose a clear share action. Prefer the native Web Share API and provide an accessible copy-link fallback.
+
 ## Anti-template design rules
 
 - HomeEasy must not drift into generic AI/SaaS landing-page defaults. Avoid decorative card grids, card-inside-card compositions, gratuitous pills, glassmorphism, gradients used only for decoration, and repeated eyebrow tags above every heading.
