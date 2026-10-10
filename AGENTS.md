@@ -50,6 +50,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - Process/service content should explain how HomeEasy actually works rather than use a decorative connected-circle timeline. Prefer ordered editorial rows, typography and spacing over a repeated grid of decorative cards.
 - The standalone automation section is intentionally omitted from the current public-site narrative. Do not restore it simply to add content length; only reintroduce automation if there is a concrete product story or customer need worth showing.
 - Brand rose is `#B2566C` across the main UI unless a documented variant is intentionally required.
+- Approved HomeEasy web wordmark (2026-10-10): the complete text `HomeEasy` uses the single corporate rose `#B2566C`, with no gold letters; use the existing gold triangle asset `public/assets/brand/triangulogold.png` for the visible header/footer logo. Do not recolor that official asset or revert to a duotone wordmark without user approval.
 
 ## Mobile motion stability — user feedback 2026-08-28
 
