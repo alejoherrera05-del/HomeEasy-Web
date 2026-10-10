@@ -1,11 +1,11 @@
-/* HomeEasy wordmark v19 — solid wine Home + solid gold Easy. */
+/* HomeEasy wordmark — uniform brand rose; golden triangle remains a separate asset. */
 
 .brand strong,
 .contact-v4-wordmark strong {
   display: inline-flex;
   align-items: baseline;
   gap: 0;
-  color: var(--rose-dark);
+  color: var(--rose);
   background: none !important;
   -webkit-background-clip: initial !important;
   background-clip: initial !important;
@@ -29,13 +29,13 @@
 .brand strong::before,
 .contact-v4-wordmark strong::before {
   content: "Home";
-  color: var(--rose-dark);
+  color: var(--rose);
 }
 
 .brand strong::after,
 .contact-v4-wordmark strong::after {
   content: "Easy";
-  color: var(--gold);
+  color: var(--rose);
 }
 
 /* Desktop only: give the brand more presence without touching mobile. */
