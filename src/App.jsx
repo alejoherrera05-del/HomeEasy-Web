@@ -434,7 +434,7 @@ function recommendationReasons(match, answers) {
 function Brand() {
   return (
     <a className="brand" href="#inicio" aria-label="HomeEasy, inicio">
-      <img src="/assets/homeeasy-triangle-mark.svg" alt="" aria-hidden="true" />
+      <img src="/assets/brand/triangulogold.png" alt="" aria-hidden="true" />
       <span><strong>HomeEasy</strong><small>PERSIANAS & PAPEL DE COLGADURA</small></span>
     </a>
   );
@@ -1247,7 +1247,7 @@ function Process() {
 function Footer({ openAdvisorFor }) {
   return (
     <footer id="contacto">
-      <img className="contact-mark" src="/assets/homeeasy-triangle-mark.svg" alt="" aria-hidden="true" />
+      <img className="contact-mark" src="/assets/brand/triangulogold.png" alt="" aria-hidden="true" />
       <div className="footer-cta">
         <div className="footer-cta-copy">
           <p className="contact-location">HOMEEASY · POPAYÁN</p>
