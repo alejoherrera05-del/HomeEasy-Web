@@ -164,3 +164,14 @@ test("favicon declarations provide SVG, raster, ICO, and touch fallbacks", async
 test("the repeated closing conversion labels are excluded from generated search snippets", () => {
   assertNoSnippetContainer(contact, "contact-v4-actions");
 });
+
+test("visible commercial headings are authored in React, not rewritten by a DOM observer", async () => {
+  const [app, main] = await Promise.all([
+    readFile(new URL("../src/App.jsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/main.jsx", import.meta.url), "utf8"),
+  ]);
+  assert.match(app, /Compara 12 sistemas según tu luz, privacidad y tipo de ventana\./);
+  assert.match(app, /Dale carácter a tus paredes\./);
+  assert.match(app, /useEffect\(\(\) => initStorytellingReveals\(\), \[\]\)/);
+  assert.doesNotMatch(main, /customerCopyV15|initCustomerCopyV15|initStorytellingReveals/);
+});
