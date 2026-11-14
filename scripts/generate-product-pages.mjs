@@ -12,6 +12,13 @@ const publicOrigin = "https://homeeasy.com.co";
 const lastModified = "2026-11-14";
 const unchangedLocalPagesLastModified = "2026-09-02";
 
+// Curated horizontal photographs improve the shared preview while the first
+// gallery photo remains the primary product image for Google and the page.
+const sharePhotoOverrides = {
+  vertesse: "/assets/pentagrama/vertesse-study-official.jpg",
+  "onda-serena": "/assets/pentagrama/onda-serena-2-p16.jpg",
+};
+
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({
   type: "video",
@@ -124,6 +131,19 @@ async function primaryImageData(product) {
     mimeType: mimeTypeFor(absolutePath),
     dimensions,
   };
+}
+
+async function socialImageData(product, primary) {
+  const targetPath = sharePhotoOverrides[product.id];
+  if (!targetPath) return primary;
+  const photo = product.media.find((item) => item.type === "image" && item.src === targetPath);
+  if (!photo) throw new Error(`Unknown share image for ${product.id}: ${targetPath}`);
+  const result = await primaryImageData({ ...product, media: [photo] });
+  const { width, height } = result.dimensions || {};
+  if (!width || !height || width / height < 1.4) {
+    throw new Error(`The social photograph for ${product.id} is not horizontal`);
+  }
+  return result;
 }
 
 function productJsonLd(product, canonical, image) {
@@ -276,15 +296,17 @@ function productSocialCard(product, image, index) {
 `;
 }
 
-function productPage(product, image) {
+function productPage(product, image, socialImage = image) {
   const canonical = `${publicOrigin}/productos/${product.id}/`;
   const title = `${product.name} en Popayán | HomeEasy`;
   const description = `${product.short} Conoce materiales, accionamiento y usos con HomeEasy en Popayán.`;
-  const socialImageUrl = image.absoluteUrl;
-  const socialImageAlt = image.alt;
+  const socialImageUrl = socialImage.absoluteUrl;
+  const socialImageAlt = socialImage.alt;
   const imageWidth = image.dimensions?.width;
   const imageHeight = image.dimensions?.height;
-  if (!imageWidth || !imageHeight) throw new Error(`No image dimensions for ${product.id}`);
+  const socialWidth = socialImage.dimensions?.width;
+  const socialHeight = socialImage.dimensions?.height;
+  if (!imageWidth || !imageHeight || !socialWidth || !socialHeight) throw new Error(`No image dimensions for ${product.id}`);
   const whatsappLink = `https://wa.me/573334319374?text=${encodeURIComponent(`Hola HomeEasy, quiero cotizar ${product.name}.`)}`;
 
   return `<!doctype html>
@@ -320,9 +342,9 @@ function productPage(product, image) {
   <meta property="og:url" content="${canonical}" />
   <meta property="og:image" content="${socialImageUrl}" />
   <meta property="og:image:secure_url" content="${socialImageUrl}" />
-  <meta property="og:image:type" content="${image.mimeType}" />
-  <meta property="og:image:width" content="${imageWidth}" />
-  <meta property="og:image:height" content="${imageHeight}" />
+  <meta property="og:image:type" content="${socialImage.mimeType}" />
+  <meta property="og:image:width" content="${socialWidth}" />
+  <meta property="og:image:height" content="${socialHeight}" />
   <meta property="og:image:alt" content="${escapeHtml(socialImageAlt)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(title)}" />
@@ -418,6 +440,7 @@ await mkdir(productSocialDirectory, { recursive: true });
 
 for (const [index, product] of products.entries()) {
   const image = await primaryImageData(product);
+  const socialImage = await socialImageData(product, image);
   images.set(product.id, image);
   await writeFile(
     path.join(productSocialDirectory, `${product.id}.svg`),
@@ -426,7 +449,7 @@ for (const [index, product] of products.entries()) {
   );
   const outputDirectory = path.join(productsDirectory, product.id);
   await mkdir(outputDirectory, { recursive: true });
-  await writeFile(path.join(outputDirectory, "index.html"), productPage(product, image), "utf8");
+  await writeFile(path.join(outputDirectory, "index.html"), productPage(product, image, socialImage), "utf8");
 }
 
 await writeFile(path.join(publicDirectory, "sitemap.xml"), sitemap(products, images), "utf8");
