@@ -943,6 +943,11 @@ function Products({ openAdvisorFor }) {
   }, []);
   const visibleProducts = filter === "todos" ? products : products.filter((product) => product.filters.includes(filter));
   const selected = products.find((product) => product.id === selectedId) || products[0];
+  useEffect(() => {
+    if (getCatalogProductId(window.location, productIds) === selected.id) {
+      document.title = `${selected.name} en Popayán | HomeEasy`;
+    }
+  }, [selected.id]);
   const selectedVisibleIndex = Math.max(0, visibleProducts.findIndex((product) => product.id === selected.id));
   const previousVisibleProduct = visibleProducts[(selectedVisibleIndex - 1 + visibleProducts.length) % visibleProducts.length];
   const nextVisibleProduct = visibleProducts[(selectedVisibleIndex + 1) % visibleProducts.length];
@@ -1095,16 +1100,21 @@ function Products({ openAdvisorFor }) {
           <div className="catalog-count"><span>{String(visibleProducts.length).padStart(2, "0")}</span> soluciones para comparar</div>
           <div className="catalog-scroll">
             {visibleProducts.map((product) => (
-              <button
+              <a
                 key={product.id}
+                href={productUrl(product.id)}
                 className={`catalog-product ${selected.id === product.id ? "selected" : ""}`}
-                onClick={() => chooseProduct(product.id)}
-                aria-pressed={selected.id === product.id}
+                aria-current={selected.id === product.id ? "page" : undefined}
+                onClick={(event) => {
+                  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
+                  chooseProduct(product.id);
+                }}
               >
                 <img src={product.media.find((item) => item.type === "image")?.src} alt="" loading="lazy" decoding="async" />
                 <span><small>{product.tag}</small><strong>{product.name}</strong></span>
                 <CaretRight size={17} />
-              </button>
+              </a>
             ))}
           </div>
         </aside>
