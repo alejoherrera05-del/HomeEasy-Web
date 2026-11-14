@@ -16,7 +16,7 @@
     "test:sharing": "node --test tests/product-sharing.test.mjs",
     "test:trust": "node --test tests/trust-seo.test.mjs",
     "test:seo": "node --test tests/seo-metadata.test.mjs",
-    "test": "pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion && pnpm run test:catalog && pnpm run test:sharing && pnpm run test:trust && pnpm run test:seo",
+    "test": "node scripts/generate-product-pages.mjs && pnpm run test:hero && pnpm run test:hommy && pnpm run test:motion && pnpm run test:catalog && pnpm run test:sharing && pnpm run test:trust && pnpm run test:seo",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {
