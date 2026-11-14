@@ -94,9 +94,16 @@ test("all twelve systems keep product metadata while loading the existing catalo
     const canonical = `${PUBLIC_ORIGIN}/productos/${productId}/`;
     const photoPath = html.match(/<link rel="preload" href="(\/assets\/pentagrama\/[^"]+)" as="image"/)?.[1];
     assert.ok(photoPath, `Missing primary photograph for ${productId}`);
-    const socialUrl = `${PUBLIC_ORIGIN}${photoPath}`;
-    const productPhotograph = await readBinary(`public${photoPath}`);
-    const dimensions = jpegDimensions(productPhotograph);
+    const primaryUrl = `${PUBLIC_ORIGIN}${photoPath}`;
+    const socialUrl = metaContent(html, "og:image");
+    const socialPath = new URL(socialUrl).pathname;
+    assert.match(socialPath, /^\/assets\/pentagrama\/.+\.jpg$/);
+    const socialPhotograph = await readBinary(`public${socialPath}`);
+    const dimensions = jpegDimensions(socialPhotograph);
+    if (["vertesse", "onda-serena"].includes(productId)) {
+      assert.ok(dimensions.width / dimensions.height >= 1.4, `Poor social preview aspect ratio: ${productId}`);
+      assert.notEqual(socialUrl, primaryUrl, `Use the reviewed horizontal photograph for ${productId}`);
+    }
 
     assert.equal(canonicalHref(html), canonical);
     assert.equal(metaContent(html, "og:url"), canonical);
@@ -111,7 +118,7 @@ test("all twelve systems keep product metadata while loading the existing catalo
     const schema = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
     const productPage = schema["@graph"].find((node) => node["@type"] === "WebPage");
     assert.equal(productPage?.mainEntity?.["@id"], `${canonical}#producto`);
-    assert.equal(productPage?.primaryImageOfPage?.url, socialUrl);
+    assert.equal(productPage?.primaryImageOfPage?.url, primaryUrl);
     assert.equal(metaContent(html, "twitter:image"), socialUrl);
     assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
     assert.match(html, /<main class="product-prerender">/);
