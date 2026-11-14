@@ -61,14 +61,14 @@ test("the home share card uses the real brand system and only verified service f
   const [html, source, socialImage] = await Promise.all([
     read("index.html"),
     read("public/assets/og-homeeasy-popayan-source.svg"),
-    readBinary("public/assets/og-homeeasy-popayan.jpg"),
+    readBinary("public/assets/pentagrama/sheer-elegance-room-official.jpg"),
   ]);
 
-  assert.equal(metaContent(html, "og:image"), `${PUBLIC_ORIGIN}/assets/og-homeeasy-popayan.jpg`);
+  assert.equal(metaContent(html, "og:image"), `${PUBLIC_ORIGIN}/assets/pentagrama/sheer-elegance-room-official.jpg`);
   assert.equal(metaContent(html, "og:image:type"), "image/jpeg");
-  assert.equal(metaContent(html, "og:image:width"), "1200");
-  assert.equal(metaContent(html, "og:image:height"), "630");
-  assert.deepEqual(jpegDimensions(socialImage), { width: 1200, height: 630 });
+  assert.equal(metaContent(html, "og:image:width"), "1299");
+  assert.equal(metaContent(html, "og:image:height"), "731");
+  assert.deepEqual(jpegDimensions(socialImage), { width: 1299, height: 731 });
   assert.match(source, /#B2566C/i);
   assert.match(source, /#B48745/i);
   assert.match(source, /hommy-hero-approved\.png/);
@@ -92,18 +92,31 @@ test("all twelve systems keep product metadata while loading the existing catalo
       readBinary(`public/assets/og-products/${productId}.jpg`),
     ]);
     const canonical = `${PUBLIC_ORIGIN}/productos/${productId}/`;
-    const socialUrl = `${PUBLIC_ORIGIN}/assets/og-products/${productId}.jpg`;
+    const photoPath = html.match(/<link rel="preload" href="(\/assets\/pentagrama\/[^"]+)" as="image"/)?.[1];
+    assert.ok(photoPath, `Missing primary photograph for ${productId}`);
+    const socialUrl = `${PUBLIC_ORIGIN}${photoPath}`;
+    const productPhotograph = await readBinary(`public${photoPath}`);
+    const dimensions = jpegDimensions(productPhotograph);
 
     assert.equal(canonicalHref(html), canonical);
     assert.equal(metaContent(html, "og:url"), canonical);
     assert.equal(metaContent(html, "og:image"), socialUrl);
     assert.equal(metaContent(html, "og:image:secure_url"), socialUrl);
     assert.equal(metaContent(html, "og:image:type"), "image/jpeg");
-    assert.equal(metaContent(html, "og:image:width"), "1200");
-    assert.equal(metaContent(html, "og:image:height"), "630");
+    assert.equal(Number(metaContent(html, "og:image:width")), dimensions.width);
+    assert.equal(Number(metaContent(html, "og:image:height")), dimensions.height);
+    assert.equal(metaContent(html, "og:image:type"), "image/jpeg");
+    assert.equal(metaContent(html, "og:image:alt").length > 20, true);
+    assert.match(html, /"@type": "WebPage"/);
+    assert.match(html, /"primaryImageOfPage"/);
+    assert.match(html, new RegExp(`"mainEntity": \\{\\s*"@id": "${canonical.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\    assert.equal(metaContent(html, "og:image:width"), "1200");
+    assert.equal(metaContent(html, "og:image:height"), "630");")}#producto"`));
     assert.equal(metaContent(html, "twitter:image"), socialUrl);
     assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
-    assert.match(html, /<div id="root"><\/div>/);
+    assert.match(html, /<main class="product-prerender">/);
+    assert.match(html, new RegExp(`<h1>.+ en Popayán<\\/h1>`));
+    assert.match(html, /Cotizar [^<]+ por WhatsApp/);
+    assert.match(html, /<img class="product-prerender__photo"/);
     assert.match(html, /<script type="module" src="\/src\/main\.jsx"><\/script>/);
     assert.doesNotMatch(html, /product-hero|product-specification|Ver ficha completa|Compartir ficha/);
     assert.match(sitemap, new RegExp(`<loc>${canonical.replaceAll("/", "\\/")}<\\/loc>`));
@@ -178,7 +191,8 @@ test("the production build preserves every shareable product route", { skip: !re
     const [html, socialImage] = await Promise.all([read(htmlPath), readBinary(socialImagePath)]);
     assert.equal(canonicalHref(html), `${PUBLIC_ORIGIN}/productos/${productId}/`);
     assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
-    assert.match(html, /<div id="root"><\/div>/);
+    assert.match(html, /<main class="product-prerender">/);
+    assert.match(html, /<h1>.+ en Popayán<\/h1>/);
     assert.doesNotMatch(html, /product-hero|product-specification|Ver ficha completa/);
     assert.deepEqual(jpegDimensions(socialImage), { width: 1200, height: 630 });
   }
