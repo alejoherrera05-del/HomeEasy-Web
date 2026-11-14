@@ -101,6 +101,12 @@ test("local service pages are crawlable, canonical, and useful without JavaScrip
 
   const blindsPage = await read("public/persianas-popayan/index.html");
   assert.match(blindsPage, /Información de sistemas e imágenes basada en catálogos oficiales Pentagrama/);
+  for (const id of [
+    "sheer-elegance", "enrollable-blackout", "enrollable-screen",
+    "panel-japones", "onda-serena", "vertical",
+  ]) {
+    assert.match(blindsPage, new RegExp(`href="/productos/${id}/"`));
+  }
 });
 
 test("the image sitemap only associates images that appear on each page", async () => {
