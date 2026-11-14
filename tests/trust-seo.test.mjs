@@ -45,8 +45,8 @@ test("the custom domain is the only canonical public origin", async () => {
 
   assert.equal(canonicalHref(html), PUBLIC_ORIGIN);
   assert.equal(metaContent(html, "og:url"), PUBLIC_ORIGIN);
-  assert.equal(metaContent(html, "og:image"), `${PUBLIC_ORIGIN}assets/og-homeeasy-popayan.jpg`);
-  assert.equal(metaContent(html, "twitter:image"), `${PUBLIC_ORIGIN}assets/og-homeeasy-popayan.jpg`);
+  assert.equal(metaContent(html, "og:image"), `${PUBLIC_ORIGIN}assets/pentagrama/sheer-elegance-room-official.jpg`);
+  assert.equal(metaContent(html, "twitter:image"), `${PUBLIC_ORIGIN}assets/pentagrama/sheer-elegance-room-official.jpg`);
   assert.match(robots, /^Sitemap: https:\/\/homeeasy\.com\.co\/sitemap\.xml$/m);
   assert.match(sitemap, /<loc>https:\/\/homeeasy\.com\.co\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/homeeasy\.com\.co\/persianas-popayan\/<\/loc>/);
@@ -67,8 +67,12 @@ test("local business metadata has a stable identity and complete image text", as
   assert.equal(business.url, PUBLIC_ORIGIN);
   assert.equal(business.telephone, "+573334319374");
   assert.equal(business.address.addressLocality, "Popayán");
-  assert.equal(metaContent(html, "twitter:image:alt"), "Hommy de HomeEasy en un ambiente interior con datos de visita, medición e instalación");
-  assert.equal(business.image, `${PUBLIC_ORIGIN}assets/og-homeeasy-popayan.jpg`);
+  assert.equal(metaContent(html, "twitter:image:alt"), "Persiana Sheer Elegance instalada en un ambiente contemporáneo");
+  assert.equal(business.image, `${PUBLIC_ORIGIN}assets/pentagrama/sheer-elegance-room-official.jpg`);
+  const nodes = JSON.parse(html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/)[1])["@graph"];
+  const home = nodes.find((node) => node["@type"] === "WebPage");
+  assert.equal(home?.primaryImageOfPage?.url, business.image);
+  assert.match(html, /rel="image_src" href="https:\/\/homeeasy\.com\.co\/assets\/pentagrama\/sheer-elegance-room-official\.jpg"/);
 });
 
 test("local service pages are crawlable, canonical, and useful without JavaScript", async () => {
