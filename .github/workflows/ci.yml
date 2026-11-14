@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate canonical product pages and sitemap before validation
+        run: node scripts/generate-product-pages.mjs
+
       - name: Test hero scene
         run: pnpm run test:hero
 
