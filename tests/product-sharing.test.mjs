@@ -142,6 +142,12 @@ test("the catalogue keeps each permanent product URL inside the same explorer", 
   ]);
 
   assert.match(app, /Compartir este producto/);
+  assert.match(app, /href=\{productUrl\(product\.id\)\}/);
+  assert.match(app, /aria-current=\{selected\.id === product\.id \? "page" : undefined\}/);
+  assert.match(app, /event\.preventDefault\(\);\s*chooseProduct\(product\.id\);/);
+  assert.match(app, /document\.title = /);
+  assert.doesNotMatch(app, /className=\{`catalog-product[\s\S]*?aria-pressed=\{selected\.id === product\.id\}/);
+
   assert.match(app, /navigator\.share/);
   assert.match(app, /navigator\.clipboard/);
   assert.match(app, /https:\/\/homeeasy\.com\.co/);
