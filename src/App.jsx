@@ -21,6 +21,7 @@ import { MotionDebugPanel } from "./components/MotionDebugPanel.jsx";
 import { ProcessSection } from "./components/ProcessSection.jsx";
 import { ContactSection } from "./components/ContactSection.jsx";
 import { REDUCED_MOTION_QUERY } from "./motionSupport.js";
+import { initStorytellingReveals } from "./storytellingReveal.js";
 import { getCatalogProductId, replaceCatalogProductUrl } from "./productRouting.js";
 
 const HOMEEASY_WHATSAPP_NUMBER = "573334319374";
@@ -942,6 +943,11 @@ function Products({ openAdvisorFor }) {
   }, []);
   const visibleProducts = filter === "todos" ? products : products.filter((product) => product.filters.includes(filter));
   const selected = products.find((product) => product.id === selectedId) || products[0];
+  useEffect(() => {
+    if (getCatalogProductId(window.location, productIds) === selected.id) {
+      document.title = `${selected.name} en Popayán | HomeEasy`;
+    }
+  }, [selected.id]);
   const selectedVisibleIndex = Math.max(0, visibleProducts.findIndex((product) => product.id === selected.id));
   const previousVisibleProduct = visibleProducts[(selectedVisibleIndex - 1 + visibleProducts.length) % visibleProducts.length];
   const nextVisibleProduct = visibleProducts[(selectedVisibleIndex + 1) % visibleProducts.length];
@@ -1019,7 +1025,7 @@ function Products({ openAdvisorFor }) {
       ref={productsRef}
     >
       <div className="section-heading editorial-heading split-heading catalog-entry-heading">
-        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Explora las persianas según lo que necesitas controlar.</h2></div>
+        <div><span className="section-label">12 sistemas · catálogo Pentagrama</span><h2>Compara 12 sistemas según tu luz, privacidad y tipo de ventana.</h2></div>
         <p>Compara luz, privacidad, tamaño, tejido y accionamiento para entender rápidamente qué sistema puede funcionar mejor.</p>
       </div>
 
@@ -1094,16 +1100,21 @@ function Products({ openAdvisorFor }) {
           <div className="catalog-count"><span>{String(visibleProducts.length).padStart(2, "0")}</span> soluciones para comparar</div>
           <div className="catalog-scroll">
             {visibleProducts.map((product) => (
-              <button
+              <a
                 key={product.id}
+                href={productUrl(product.id)}
                 className={`catalog-product ${selected.id === product.id ? "selected" : ""}`}
-                onClick={() => chooseProduct(product.id)}
-                aria-pressed={selected.id === product.id}
+                aria-current={selected.id === product.id ? "page" : undefined}
+                onClick={(event) => {
+                  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  event.preventDefault();
+                  chooseProduct(product.id);
+                }}
               >
                 <img src={product.media.find((item) => item.type === "image")?.src} alt="" loading="lazy" decoding="async" />
                 <span><small>{product.tag}</small><strong>{product.name}</strong></span>
                 <CaretRight size={17} />
-              </button>
+              </a>
             ))}
           </div>
         </aside>
@@ -1191,7 +1202,7 @@ function Wallpaper({ openAdvisorFor }) {
       <div className="wallpaper-heading">
         <div>
           <p className="eyebrow rose">ANTES Y DESPUÉS</p>
-          <h2>El papel de colgadura transforma el carácter del espacio.</h2>
+          <h2>Dale carácter a tus paredes.</h2>
         </div>
         <div className="wallpaper-lead">
           <p>Con la referencia adecuada, el papel de colgadura aporta estilo, profundidad y personalidad al ambiente. En HomeEasy te ayudamos a elegir la opción ideal según tu espacio.</p>
@@ -1360,6 +1371,7 @@ function AdvisorModal({ open, onClose, context }) {
 }
 
 export function App() {
+  useEffect(() => initStorytellingReveals(), []);
   const [advisorOpen, setAdvisorOpen] = useState(false);
   const [advisorContext, setAdvisorContext] = useState("");
   const openAdvisor = useCallback(() => {

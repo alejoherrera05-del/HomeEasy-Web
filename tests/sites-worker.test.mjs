@@ -3,61 +3,63 @@ import { access } from "node:fs/promises";
 import test from "node:test";
 import worker from "../worker/index.js";
 
-test("serves existing static assets without a fallback", async () => {
-  const calls = [];
-  const response = await worker.fetch(new Request("https://example.test/assets/app.js"), {
-    ASSETS: {
-      fetch: async (request) => {
-        calls.push(new URL(request.url).pathname);
-        return new Response("asset", { status: 200 });
-      },
-    },
-  });
-
-  assert.equal(response.status, 200);
-  assert.deepEqual(calls, ["/assets/app.js"]);
-});
-
-test("falls back to index.html for an unknown app route", async () => {
-  const calls = [];
-  const response = await worker.fetch(
-    new Request("https://example.test/flow/step-two?source=share", {
-      headers: { accept: "text/html" },
-    }),
-    {
+test("serves existing static HTML and assets with their original responses", async () => {
+  for (const [pathname, contentType] of [
+    ["/", "text/html"],
+    ["/productos/sheer-elegance/", "text/html"],
+    ["/persianas-popayan/", "text/html"],
+    ["/assets/app.js", "application/javascript"],
+  ]) {
+    const calls = [];
+    const response = await worker.fetch(new Request(`https://example.test${pathname}`), {
       ASSETS: {
         fetch: async (request) => {
-          const url = new URL(request.url);
-          calls.push(url.pathname + url.search);
-          return new Response(url.pathname === "/index.html" ? "app" : "missing", {
-            status: url.pathname === "/index.html" ? 200 : 404,
-          });
-        },
-      },
-    },
-  );
-
-  assert.equal(response.status, 200);
-  assert.deepEqual(calls, ["/flow/step-two?source=share", "/index.html"]);
-});
-
-test("does not turn missing API or write requests into the app shell", async () => {
-  for (const request of [
-    new Request("https://example.test/api/missing", { headers: { accept: "application/json" } }),
-    new Request("https://example.test/flow", { method: "POST", headers: { accept: "text/html" } }),
-  ]) {
-    let calls = 0;
-    const response = await worker.fetch(request, {
-      ASSETS: {
-        fetch: async () => {
-          calls += 1;
-          return new Response("missing", { status: 404 });
+          calls.push(new URL(request.url).pathname);
+          return new Response("asset", { status: 200, headers: { "content-type": contentType } });
         },
       },
     });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("content-type"), contentType);
+    assert.deepEqual(calls, [pathname]);
+  }
+});
 
+test("unknown product pages and other missing paths remain genuine 404s", async () => {
+  for (const pathname of [
+    "/productos/no-existe/",
+    "/flow/step-two?source=share",
+    "/assets/missing.jpg",
+    "/api/missing",
+  ]) {
+    const calls = [];
+    const request = new Request(`https://example.test${pathname}`, { headers: { accept: "text/html" } });
+    const response = await worker.fetch(request, {
+      ASSETS: {
+        fetch: async (req) => {
+          calls.push(new URL(req.url).pathname + new URL(req.url).search);
+          return new Response("Not found", { status: 404 });
+        },
+      },
+    });
     assert.equal(response.status, 404);
-    assert.equal(calls, 1);
+    assert.equal(await response.text(), "Not found");
+    assert.deepEqual(calls, [new URL(request.url).pathname + new URL(request.url).search]);
+  }
+});
+
+test("forwards original HTTP methods and requests, without translating them", async () => {
+  for (const method of ["HEAD", "POST"]) {
+    const request = new Request("https://example.test/api/item", { method });
+    let forwardedMethod = "";
+    const response = await worker.fetch(request, {
+      ASSETS: { fetch: async (req) => {
+        forwardedMethod = req.method;
+        return new Response(null, { status: 405 });
+      } },
+    });
+    assert.equal(forwardedMethod, method);
+    assert.equal(response.status, 405);
   }
 });
 

@@ -1,5 +1,9 @@
 /* Product links and sharing — restrained, editorial, and native-first. */
 
+/* Real product links retain the same catalogue styling and keyboard affordances. */
+.catalog-scroll a.catalog-product { text-decoration: none; cursor: pointer; }
+.catalog-scroll a.catalog-product:focus-visible { outline: 2px solid var(--rose); outline-offset: -2px; }
+
 html.is-product-direct-entry {
   scroll-behavior: auto !important;
   scroll-snap-type: none !important;

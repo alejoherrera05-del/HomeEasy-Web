@@ -45,6 +45,9 @@ jobs:
       - name: Build production site for the custom domain
         run: pnpm run build
 
+      - name: Verify generated pages and sitemap match committed sources
+        run: git diff --exit-code -- productos public/sitemap.xml
+
       - name: Verify local trust and SEO contract
         run: HOMEEASY_REQUIRE_DIST=1 pnpm run test:trust
 
