@@ -9,7 +9,8 @@ const publicDirectory = path.join(root, "public");
 const productsDirectory = path.join(root, "productos");
 const productSocialDirectory = path.join(publicDirectory, "assets", "og-products");
 const publicOrigin = "https://homeeasy.com.co";
-const lastModified = "2026-09-02";
+const lastModified = "2026-11-14";
+const unchangedLocalPagesLastModified = "2026-09-02";
 
 const photo = (src, label, alt) => ({ type: "image", src, label, alt });
 const officialVideo = (id, title, duration) => ({
@@ -149,6 +150,21 @@ function productJsonLd(product, canonical, image) {
         ],
       },
       {
+        "@type": "WebPage",
+        "@id": `${canonical}#pagina`,
+        url: canonical,
+        name: `${product.name} en Popayán | HomeEasy`,
+        description: product.short,
+        inLanguage: "es-CO",
+        isPartOf: { "@id": `${publicOrigin}/#website` },
+        mainEntity: { "@id": `${canonical}#producto` },
+        primaryImageOfPage: {
+          "@type": "ImageObject",
+          url: image.absoluteUrl,
+          ...(image.dimensions || {}),
+        },
+      },
+      {
         "@type": "BreadcrumbList",
         itemListElement: [
           {
@@ -244,7 +260,7 @@ function productSocialCard(product, image, index) {
   <g transform="translate(52 47) scale(.052)" fill="#B2566C">
     <path fill-rule="evenodd" d="M512 42 78 954h286V850h-92l240-548 240 548h-92v104h286L512 42Zm-45 570h90v180h-90V612Z" />
   </g>
-  <text x="116" y="82" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="32" font-weight="400" letter-spacing="-1.4"><tspan fill="#B2566C">Home</tspan><tspan fill="#B48745">Easy</tspan></text>
+  <text x="116" y="82" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="32" font-weight="400" letter-spacing="-1.4"><tspan fill="#B2566C">Home</tspan><tspan fill="#B2566C">Easy</tspan></text>
   <text x="117" y="107" fill="#5C5654" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="14" font-weight="400" letter-spacing="1">PERSIANAS &amp; PAPEL DE COLGADURA</text>
 
   <rect x="0" y="458" width="1200" height="172" fill="#F2F3F4" fill-opacity=".98" />
@@ -264,8 +280,12 @@ function productPage(product, image) {
   const canonical = `${publicOrigin}/productos/${product.id}/`;
   const title = `${product.name} en Popayán | HomeEasy`;
   const description = `${product.short} Conoce materiales, accionamiento y usos con HomeEasy en Popayán.`;
-  const socialImageUrl = `${publicOrigin}/assets/og-products/${product.id}.jpg`;
-  const socialImageAlt = `Vista previa HomeEasy de ${product.name} con fotografía oficial del sistema`;
+  const socialImageUrl = image.absoluteUrl;
+  const socialImageAlt = image.alt;
+  const imageWidth = image.dimensions?.width;
+  const imageHeight = image.dimensions?.height;
+  if (!imageWidth || !imageHeight) throw new Error(`No image dimensions for ${product.id}`);
+  const whatsappLink = `https://wa.me/573334319374?text=${encodeURIComponent(`Hola HomeEasy, quiero cotizar ${product.name}.`)}`;
 
   return `<!doctype html>
 <html lang="es-CO">
@@ -278,6 +298,19 @@ function productPage(product, image) {
   <link rel="canonical" href="${canonical}" />
   <link rel="icon" href="/assets/homeeasy-triangle-mark.svg" type="image/svg+xml" />
   <link rel="preload" href="${escapeHtml(image.src)}" as="image" />
+  <link rel="image_src" href="${escapeHtml(image.absoluteUrl)}" />
+  <style>
+    .product-prerender {font: 16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif;color:#292728;background:#f7f7f7;max-width:1160px;margin:auto;padding:clamp(20px,5vw,66px)}
+    .product-prerender a {color:#a3435b}
+    .product-prerender__brand {font-size:24px;font-weight:700;text-decoration:none;color:#b2566c!important}
+    .product-prerender__crumbs {font-size:14px;margin:20px 0 28px}
+    .product-prerender__card {display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,4vw,55px);align-items:center}
+    .product-prerender__photo {width:100%;height:auto;display:block;border-radius:12px}
+    .product-prerender h1 {font-size:clamp(32px,4vw,54px);line-height:1.12;margin:0 0 16px}
+    .product-prerender__tag {font-weight:600;color:#b2566c;letter-spacing:.06em;text-transform:uppercase;font-size:13px}
+    .product-prerender__cta {display:inline-block;background:#b2566c;color:white!important;padding:12px 22px;border-radius:8px;text-decoration:none;font-weight:700}
+    @media(max-width:700px){.product-prerender__card{grid-template-columns:1fr}}
+  </style>
 
   <meta property="og:type" content="product" />
   <meta property="og:locale" content="es_CO" />
@@ -287,9 +320,9 @@ function productPage(product, image) {
   <meta property="og:url" content="${canonical}" />
   <meta property="og:image" content="${socialImageUrl}" />
   <meta property="og:image:secure_url" content="${socialImageUrl}" />
-  <meta property="og:image:type" content="image/jpeg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="${image.mimeType}" />
+  <meta property="og:image:width" content="${imageWidth}" />
+  <meta property="og:image:height" content="${imageHeight}" />
   <meta property="og:image:alt" content="${escapeHtml(socialImageAlt)}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${escapeHtml(title)}" />
@@ -303,8 +336,26 @@ ${jsonForHtml(productJsonLd(product, canonical, image))}
   <title>${escapeHtml(title)}</title>
 </head>
 <body data-catalog-product="${escapeHtml(product.id)}">
-  <div id="root"></div>
-  <noscript>Activa JavaScript para abrir ${escapeHtml(product.name)} dentro del catálogo HomeEasy.</noscript>
+  <div id="root">
+    <main class="product-prerender">
+      <a class="product-prerender__brand" href="/">HomeEasy</a>
+      <nav class="product-prerender__crumbs" aria-label="Ruta de navegación"><a href="/">Inicio</a> / <a href="/persianas-popayan/">Persianas en Popayán</a> / ${escapeHtml(product.name)}</nav>
+      <article class="product-prerender__card">
+        <img class="product-prerender__photo" src="${escapeHtml(image.src)}" alt="${escapeHtml(image.alt)}" width="${imageWidth}" height="${imageHeight}" fetchpriority="high" />
+        <div>
+          <p class="product-prerender__tag">${escapeHtml(product.tag)}</p>
+          <h1>${escapeHtml(product.name)} en Popayán</h1>
+          <p>${escapeHtml(product.short)}</p>
+          <p><strong>Ideal para:</strong> ${escapeHtml(product.ideal)}</p>
+          <p><strong>Material:</strong> ${escapeHtml(product.material)}</p>
+          <p><strong>Accionamiento:</strong> ${escapeHtml(product.control)}</p>
+          <p><a class="product-prerender__cta" href="${escapeHtml(whatsappLink)}">Cotizar ${escapeHtml(product.name)} por WhatsApp</a></p>
+          <p>Asesoría, medición e instalación de persianas y cortinas en Popayán.</p>
+        </div>
+      </article>
+    </main>
+  </div>
+  <noscript><p>Conoce este sistema y solicita tu cotización por WhatsApp. Puedes navegar por la ficha sin JavaScript.</p></noscript>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
@@ -331,10 +382,11 @@ function sitemap(products, images) {
   <url>
     <loc>${publicOrigin}/</loc>
     <lastmod>${lastModified}</lastmod>
+    <image:image><image:loc>${publicOrigin}/assets/pentagrama/sheer-elegance-room-official.jpg</image:loc></image:image>
   </url>
   <url>
     <loc>${publicOrigin}/persianas-popayan/</loc>
-    <lastmod>${lastModified}</lastmod>
+    <lastmod>${unchangedLocalPagesLastModified}</lastmod>
     <image:image>
       <image:loc>${publicOrigin}/assets/pentagrama/sheer-elegance-room-official.jpg</image:loc>
     </image:image>
@@ -347,7 +399,7 @@ function sitemap(products, images) {
   </url>
   <url>
     <loc>${publicOrigin}/papel-de-colgadura-popayan/</loc>
-    <lastmod>${lastModified}</lastmod>
+    <lastmod>${unchangedLocalPagesLastModified}</lastmod>
     <image:image>
       <image:loc>${publicOrigin}/assets/wallpaper-room.jpg</image:loc>
     </image:image>
