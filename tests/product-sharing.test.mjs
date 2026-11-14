@@ -105,12 +105,13 @@ test("all twelve systems keep product metadata while loading the existing catalo
     assert.equal(metaContent(html, "og:image:type"), "image/jpeg");
     assert.equal(Number(metaContent(html, "og:image:width")), dimensions.width);
     assert.equal(Number(metaContent(html, "og:image:height")), dimensions.height);
-    assert.equal(metaContent(html, "og:image:type"), "image/jpeg");
-    assert.equal(metaContent(html, "og:image:alt").length > 20, true);
+    assert.ok(metaContent(html, "og:image:alt").length > 20);
     assert.match(html, /"@type": "WebPage"/);
     assert.match(html, /"primaryImageOfPage"/);
-    assert.match(html, new RegExp(`"mainEntity": \\{\\s*"@id": "${canonical.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\    assert.equal(metaContent(html, "og:image:width"), "1200");
-    assert.equal(metaContent(html, "og:image:height"), "630");")}#producto"`));
+    const schema = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+    const productPage = schema["@graph"].find((node) => node["@type"] === "WebPage");
+    assert.equal(productPage?.mainEntity?.["@id"], `${canonical}#producto`);
+    assert.equal(productPage?.primaryImageOfPage?.url, socialUrl);
     assert.equal(metaContent(html, "twitter:image"), socialUrl);
     assert.match(html, new RegExp(`data-catalog-product="${productId}"`));
     assert.match(html, /<main class="product-prerender">/);
